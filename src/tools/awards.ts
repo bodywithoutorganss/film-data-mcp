@@ -161,18 +161,17 @@ export async function handleSearchAwards(
   _wikidataClient: WikidataClient
 ): Promise<string> {
   const { query } = SearchAwardsSchema.parse(args);
-  const lowerQuery = query.toLowerCase();
+  const tokens = query.toLowerCase().split(/\s+/).filter(Boolean);
 
-  const matchingCeremonies = CEREMONIES.filter(
-    (c) => c.id.includes(lowerQuery) || c.label.toLowerCase().includes(lowerQuery)
+  const matchesAll = (fields: string[]) =>
+    tokens.every((token) => fields.some((f) => f.includes(token)));
+
+  const matchingCeremonies = CEREMONIES.filter((c) =>
+    matchesAll([c.id, c.label.toLowerCase()])
   );
 
-  const matchingCategories = AWARD_CATEGORIES.filter(
-    (c) =>
-      c.id.includes(lowerQuery) ||
-      c.label.toLowerCase().includes(lowerQuery) ||
-      c.domain.includes(lowerQuery) ||
-      c.ceremony.includes(lowerQuery)
+  const matchingCategories = AWARD_CATEGORIES.filter((c) =>
+    matchesAll([c.id, c.label.toLowerCase(), c.domain, c.ceremony])
   );
 
   return JSON.stringify({ ceremonies: matchingCeremonies, categories: matchingCategories }, null, 2);
