@@ -5,6 +5,34 @@ import { z } from "zod";
 import { TMDBClient } from "../utils/tmdb-client.js";
 import { buildToolDef } from "../utils/tool-helpers.js";
 
+// Slices cast/crew arrays in-place and records original counts in _truncated.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function truncateCredits(result: any, limit: number): void {
+  if (limit === 0) return;
+
+  const creditKeys = ["credits", "aggregate_credits", "combined_credits", "movie_credits", "tv_credits"];
+  let applied = false;
+
+  for (const key of creditKeys) {
+    const credits = result[key];
+    if (!credits) continue;
+
+    const totalCast = credits.cast?.length ?? 0;
+    const totalCrew = credits.crew?.length ?? 0;
+    const needsTruncation = totalCast > limit || totalCrew > limit;
+
+    if (!needsTruncation) continue;
+
+    if (credits.cast) credits.cast = credits.cast.slice(0, limit);
+    if (credits.crew) credits.crew = credits.crew.slice(0, limit);
+
+    if (!applied) {
+      result._truncated = { total_cast: totalCast, total_crew: totalCrew };
+      applied = true;
+    }
+  }
+}
+
 // --- Movie Details ---
 
 const movieAppendFields = ["credits", "videos", "images", "watch/providers", "keywords", "recommendations", "similar", "release_dates", "external_ids"] as const;
@@ -34,8 +62,9 @@ export async function handleMovieDetails(
   args: unknown,
   client: TMDBClient
 ): Promise<string> {
-  const { movie_id, append } = MovieDetailsSchema.parse(args);
+  const { movie_id, append, credits_limit } = MovieDetailsSchema.parse(args);
   const result = await client.getMovieDetails(movie_id, append as string[] | undefined);
+  truncateCredits(result, credits_limit);
   return JSON.stringify(result, null, 2);
 }
 
@@ -68,8 +97,9 @@ export async function handleTVDetails(
   args: unknown,
   client: TMDBClient
 ): Promise<string> {
-  const { series_id, append } = TVDetailsSchema.parse(args);
+  const { series_id, append, credits_limit } = TVDetailsSchema.parse(args);
   const result = await client.getTVDetails(series_id, append as string[] | undefined);
+  truncateCredits(result, credits_limit);
   return JSON.stringify(result, null, 2);
 }
 
@@ -102,7 +132,8 @@ export async function handlePersonDetails(
   args: unknown,
   client: TMDBClient
 ): Promise<string> {
-  const { person_id, append } = PersonDetailsSchema.parse(args);
+  const { person_id, append, credits_limit } = PersonDetailsSchema.parse(args);
   const result = await client.getPersonDetails(person_id, append as string[] | undefined);
+  truncateCredits(result, credits_limit);
   return JSON.stringify(result, null, 2);
 }
