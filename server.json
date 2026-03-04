@@ -1,9 +1,9 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-09-29/server.schema.json",
-  "name": "io.github.tcehjaava/tmdb-mcp-server",
-  "description": "MCP server for The Movie Database (TMDB) API",
+  "name": "io.github.bodywithoutorganss/film-data-mcp",
+  "description": "MCP server for film data: TMDB API and Wikidata awards",
   "repository": {
-    "url": "https://github.com/tcehjaava/tmdb-mcp-server",
+    "url": "https://github.com/bodywithoutorganss/film-data-mcp",
     "source": "github"
   },
   "version": "0.1.1",
@@ -11,7 +11,7 @@
     {
       "registryType": "npm",
       "registryBaseUrl": "https://registry.npmjs.org",
-      "identifier": "tmdb-mcp-server",
+      "identifier": "film-data-mcp",
       "version": "0.1.1",
       "transport": {
         "type": "stdio"

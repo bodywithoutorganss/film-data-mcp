@@ -30,26 +30,23 @@ describe("Wikidata types", () => {
     );
   });
 
-  it("models an award with optional fields", () => {
+  it("models an award with optional year", () => {
     const award: WikidataAward = {
       wikidataId: "Q131520",
       label: "Academy Award for Best Cinematography",
       year: 2018,
-      forWork: { wikidataId: "Q28936680", label: "Blade Runner 2049" },
       ceremony: "academy-awards",
     };
     expect(award.year).toBe(2018);
-    expect(award.forWork?.label).toBe("Blade Runner 2049");
   });
 
-  it("models an award without forWork", () => {
+  it("models an award without year", () => {
     const award: WikidataAward = {
       wikidataId: "Q131520",
       label: "Academy Award for Best Cinematography",
-      year: 2020,
       ceremony: "academy-awards",
     };
-    expect(award.forWork).toBeUndefined();
+    expect(award.year).toBeUndefined();
   });
 
   it("models a nomination with forWork", () => {

@@ -60,7 +60,7 @@ const tmdbClient = new TMDBClient(tmdbToken);
  */
 const server = new Server(
     {
-        name: "tmdb-mcp-server",
+        name: "film-data-mcp",
         version: "0.1.0",
     },
     {
@@ -147,7 +147,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 async function startStdioServer() {
     const transport = new StdioServerTransport();
     await server.connect(transport);
-    console.error("TMDB MCP Server running on stdio");
+    console.error("Film Data MCP running on stdio");
     console.error("Ready for Claude Desktop connection");
 }
 
@@ -166,7 +166,7 @@ async function startHttpServer() {
     app.get("/health", (_req, res) => {
         res.json({
             status: "ok",
-            server: "tmdb-mcp-server",
+            server: "film-data-mcp",
             version: "0.1.0",
             transport: "streamable-http",
         });
@@ -207,7 +207,7 @@ async function startHttpServer() {
 
     // Start HTTP server
     app.listen(port, () => {
-        console.error(`TMDB MCP Server running on HTTP`);
+        console.error(`Film Data MCP running on HTTP`);
         console.error(`Port: ${port}`);
         console.error(`MCP endpoint: http://localhost:${port}/mcp`);
         console.error(`Health check: http://localhost:${port}/health`);
@@ -223,7 +223,7 @@ async function main() {
     const transportMode = process.env.MCP_TRANSPORT || "stdio";
 
     console.error("=".repeat(50));
-    console.error("TMDB MCP Server");
+    console.error("Film Data MCP");
     console.error("=".repeat(50));
     console.error(`Transport mode: ${transportMode}`);
     console.error(`Node environment: ${process.env.NODE_ENV || "production"}`);
