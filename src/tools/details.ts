@@ -15,11 +15,18 @@ export const MovieDetailsSchema = z.object({
     .array(z.enum(movieAppendFields))
     .optional()
     .describe("Additional data to include: credits, videos, images, watch/providers, keywords, recommendations, similar, release_dates, external_ids"),
+  credits_limit: z
+    .number()
+    .int()
+    .min(0)
+    .optional()
+    .default(20)
+    .describe("Max cast and crew entries when credits is appended. Default 20. Pass 0 for unlimited."),
 });
 
 export const movieDetailsTool = buildToolDef(
   "movie_details",
-  "Get full movie details from TMDB. Optionally bundle credits, videos, images, watch providers, and more in a single call using the append parameter.",
+  "Get full movie details from TMDB. Optionally bundle credits, videos, images, watch providers, and more in a single call using the append parameter. Credits are limited to top 20 cast + crew by default (use credits_limit to adjust, 0 for unlimited).",
   MovieDetailsSchema
 );
 
@@ -42,11 +49,18 @@ export const TVDetailsSchema = z.object({
     .array(z.enum(tvAppendFields))
     .optional()
     .describe("Additional data to include: credits, aggregate_credits, videos, images, watch/providers, keywords, recommendations, similar, content_ratings, external_ids"),
+  credits_limit: z
+    .number()
+    .int()
+    .min(0)
+    .optional()
+    .default(20)
+    .describe("Max cast and crew entries when credits is appended. Default 20. Pass 0 for unlimited."),
 });
 
 export const tvDetailsTool = buildToolDef(
   "tv_details",
-  "Get full TV series details from TMDB. Optionally bundle credits, videos, images, watch providers, and more in a single call using the append parameter.",
+  "Get full TV series details from TMDB. Optionally bundle credits, videos, images, watch providers, and more in a single call using the append parameter. Credits are limited to top 20 cast + crew by default (use credits_limit to adjust, 0 for unlimited).",
   TVDetailsSchema
 );
 
@@ -69,11 +83,18 @@ export const PersonDetailsSchema = z.object({
     .array(z.enum(personAppendFields))
     .optional()
     .describe("Additional data to include: combined_credits, movie_credits, tv_credits, images, external_ids"),
+  credits_limit: z
+    .number()
+    .int()
+    .min(0)
+    .optional()
+    .default(20)
+    .describe("Max cast and crew entries when credits is appended. Default 20. Pass 0 for unlimited."),
 });
 
 export const personDetailsTool = buildToolDef(
   "person_details",
-  "Get full person details from TMDB including biography, filmography, and external IDs. Use the append parameter to bundle credits and images in a single call.",
+  "Get full person details from TMDB including biography, filmography, and external IDs. Use the append parameter to bundle credits and images in a single call. Credits are limited to top 20 entries by default (use credits_limit to adjust, 0 for unlimited).",
   PersonDetailsSchema
 );
 
