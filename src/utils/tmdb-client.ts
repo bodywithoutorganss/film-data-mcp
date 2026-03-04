@@ -304,19 +304,19 @@ export class TMDBClient {
     /**
      * Get movies currently in theaters
      */
-    async getNowPlaying(page: number = 1): Promise<PaginatedResult<TMDBMovie>> {
-        return this.get<PaginatedResult<TMDBMovie>>("/movie/now_playing", {
-            page: String(page),
-        });
+    async getNowPlaying(page: number = 1, region?: string): Promise<PaginatedResult<TMDBMovie>> {
+        const params: Record<string, string> = { page: String(page) };
+        if (region) params.region = region;
+        return this.get<PaginatedResult<TMDBMovie>>("/movie/now_playing", params);
     }
 
     /**
      * Get upcoming movies
      */
-    async getUpcoming(page: number = 1): Promise<PaginatedResult<TMDBMovie>> {
-        return this.get<PaginatedResult<TMDBMovie>>("/movie/upcoming", {
-            page: String(page),
-        });
+    async getUpcoming(page: number = 1, region?: string): Promise<PaginatedResult<TMDBMovie>> {
+        const params: Record<string, string> = { page: String(page) };
+        if (region) params.region = region;
+        return this.get<PaginatedResult<TMDBMovie>>("/movie/upcoming", params);
     }
 
     /**
