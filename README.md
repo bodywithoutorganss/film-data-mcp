@@ -43,8 +43,8 @@ Wikidata SPARQL-powered awards data covering 21 ceremonies/festivals (Oscars, Ca
 
 | Tool | Description |
 |------|-------------|
-| **get_person_awards** | Award wins and nominations for a person (by TMDB person ID) |
-| **get_film_awards** | All awards a film has received (by TMDB movie ID) |
+| **get_person_awards** | Award wins and nominations for a person (by TMDB person ID). Includes completeness indicator. |
+| **get_film_awards** | All awards a film has received (by TMDB movie ID). Includes crew nomination cross-referencing and completeness indicator. |
 | **get_award_history** | All winners of a specific award category across years |
 | **search_awards** | Search the awards registry by ceremony, category, or domain |
 
@@ -113,7 +113,7 @@ Add to your Claude Desktop configuration:
 
 ```bash
 npm run watch      # Watch mode
-npm test           # Unit tests (236 tests, no network)
+npm test           # Unit tests (244 tests, no network)
 npm run inspector  # MCP Inspector for debugging
 npm run format     # Prettier
 ```
@@ -134,7 +134,7 @@ Some tool responses can exceed LLM context windows. A few patterns to keep in mi
 - **Credits** are limited to the top 20 cast + crew by default. Use `credits_limit` to adjust (e.g., `credits_limit: 5` for compact results, `credits_limit: 0` for unlimited). For filmography exploration, `discover` with `with_crew`/`with_cast` filters returns paginated results.
 - **Watch providers** return all ~40 regions by default. Use the `region` parameter (e.g., `"US"`) to get a single country — keeps responses small.
 - **Person combined credits** can be large for prolific filmmakers. `credits_limit` helps, or use `discover` with person ID filters for a paginated approach.
-- **Wikidata awards** have a ~1-2 year lag. Very recent award wins may not appear in `get_film_awards` or `get_person_awards` results.
+- **Wikidata awards** have a ~1-2 year lag. Very recent award wins may not appear in `get_film_awards` or `get_person_awards` results. Check the `completeness` field to distinguish "entity found, no awards data" from "entity not found."
 
 ## ID Stability
 
