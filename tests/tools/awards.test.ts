@@ -147,7 +147,7 @@ describe("awards tools", () => {
   });
 
   describe("get_award_history", () => {
-    it("looks up category by ID and returns history", async () => {
+    it("looks up category by ID and returns grouped history", async () => {
       mockWikidataClient.getAwardHistory.mockResolvedValue([
         { recipientId: "Q460277", recipientLabel: "Roger Deakins", year: 2018 },
       ]);
@@ -160,6 +160,71 @@ describe("awards tools", () => {
       const parsed = JSON.parse(result);
       expect(parsed.category).toBe("Academy Award for Best Cinematography");
       expect(parsed.history).toHaveLength(1);
+      expect(parsed.history[0].year).toBe(2018);
+      expect(parsed.history[0].recipients).toHaveLength(1);
+      expect(parsed.history[0].recipients[0].label).toBe("Roger Deakins");
+    });
+
+    it("groups results by year", async () => {
+      mockWikidataClient.getAwardHistory.mockResolvedValue([
+        { recipientId: "Q1", recipientLabel: "Roger Deakins", year: 2020, forWork: { wikidataId: "Q2", label: "1917" } },
+        { recipientId: "Q3", recipientLabel: "1917", year: 2020 },
+        { recipientId: "Q4", recipientLabel: "Emmanuel Lubezki", year: 2015 },
+      ]);
+
+      const result = JSON.parse(
+        await handleGetAwardHistory(
+          { category: "academy-best-cinematography" },
+          mockTmdbClient as any,
+          mockWikidataClient as any
+        )
+      );
+
+      expect(result.history).toHaveLength(2);
+      expect(result.history[0].year).toBe(2020);
+      expect(result.history[0].recipients).toHaveLength(2);
+      expect(result.history[0].recipients[0].label).toBe("Roger Deakins");
+      expect(result.history[1].year).toBe(2015);
+      expect(result.history[1].recipients).toHaveLength(1);
+    });
+
+    it("groups entries without year under null", async () => {
+      mockWikidataClient.getAwardHistory.mockResolvedValue([
+        { recipientId: "Q1", recipientLabel: "Alice", year: 2020 },
+        { recipientId: "Q2", recipientLabel: "Bob" },
+      ]);
+
+      const result = JSON.parse(
+        await handleGetAwardHistory(
+          { category: "academy-best-cinematography" },
+          mockTmdbClient as any,
+          mockWikidataClient as any
+        )
+      );
+
+      expect(result.history).toHaveLength(2);
+      const nullGroup = result.history.find((h: any) => h.year === null);
+      expect(nullGroup).toBeDefined();
+      expect(nullGroup.recipients).toHaveLength(1);
+      expect(nullGroup.recipients[0].label).toBe("Bob");
+    });
+
+    it("handles single-recipient years", async () => {
+      mockWikidataClient.getAwardHistory.mockResolvedValue([
+        { recipientId: "Q1", recipientLabel: "Alice", year: 2023 },
+      ]);
+
+      const result = JSON.parse(
+        await handleGetAwardHistory(
+          { category: "academy-best-cinematography" },
+          mockTmdbClient as any,
+          mockWikidataClient as any
+        )
+      );
+
+      expect(result.history).toHaveLength(1);
+      expect(result.history[0].year).toBe(2023);
+      expect(result.history[0].recipients).toHaveLength(1);
     });
 
     it("throws for unknown category", async () => {

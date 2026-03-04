@@ -118,7 +118,28 @@ export async function handleGetAwardHistory(
   const cat = findCategory(category);
   if (!cat) throw new Error(`Unknown award category: ${category}`);
 
-  const history = await wikidataClient.getAwardHistory(cat.wikidataId);
+  const entries = await wikidataClient.getAwardHistory(cat.wikidataId);
+
+  const groups = new Map<number | null, Array<{ id: string; label: string; forWork?: { wikidataId: string; label: string } }>>();
+
+  for (const entry of entries) {
+    const year = entry.year ?? null;
+    if (!groups.has(year)) groups.set(year, []);
+    groups.get(year)!.push({
+      id: entry.recipientId,
+      label: entry.recipientLabel,
+      ...(entry.forWork ? { forWork: entry.forWork } : {}),
+    });
+  }
+
+  const history = Array.from(groups.entries())
+    .sort((a, b) => {
+      if (a[0] === null) return 1;
+      if (b[0] === null) return -1;
+      return b[0] - a[0];
+    })
+    .map(([year, recipients]) => ({ year, recipients }));
+
   return JSON.stringify({ category: cat.label, ceremony: cat.ceremony, history }, null, 2);
 }
 
