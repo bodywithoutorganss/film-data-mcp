@@ -58,6 +58,15 @@ describe("MovieDetailsSchema", () => {
   it("rejects negative credits_limit", () => {
     expect(() => MovieDetailsSchema.parse({ movie_id: 550, credits_limit: -1 })).toThrow();
   });
+
+  it("accepts optional region", () => {
+    const result = MovieDetailsSchema.parse({ movie_id: 550, region: "US" });
+    expect(result.region).toBe("US");
+  });
+
+  it("rejects region with wrong length", () => {
+    expect(() => MovieDetailsSchema.parse({ movie_id: 550, region: "USA" })).toThrow();
+  });
 });
 
 describe("TVDetailsSchema", () => {
@@ -95,6 +104,15 @@ describe("TVDetailsSchema", () => {
 
   it("rejects negative credits_limit", () => {
     expect(() => TVDetailsSchema.parse({ series_id: 1396, credits_limit: -1 })).toThrow();
+  });
+
+  it("accepts optional region", () => {
+    const result = TVDetailsSchema.parse({ series_id: 1396, region: "GB" });
+    expect(result.region).toBe("GB");
+  });
+
+  it("rejects region with wrong length", () => {
+    expect(() => TVDetailsSchema.parse({ series_id: 1396, region: "USA" })).toThrow();
   });
 });
 
@@ -250,6 +268,56 @@ describe("handleMovieDetails", () => {
 
     expect(result._truncated).toBeUndefined();
   });
+
+  it("filters watch/providers to region", async () => {
+    mockClient.getMovieDetails.mockResolvedValue({
+      id: 550, title: "Fight Club",
+      "watch/providers": { results: { US: { flatrate: [{ provider_name: "Netflix" }] }, GB: { flatrate: [{ provider_name: "Sky" }] } } },
+    });
+
+    const result = JSON.parse(
+      await handleMovieDetails({ movie_id: 550, append: ["watch/providers"], region: "US" }, mockClient as any)
+    );
+
+    expect(result["watch/providers"].results).toEqual({ US: { flatrate: [{ provider_name: "Netflix" }] } });
+  });
+
+  it("normalizes lowercase region to uppercase", async () => {
+    mockClient.getMovieDetails.mockResolvedValue({
+      id: 550, title: "Fight Club",
+      "watch/providers": { results: { US: { flatrate: [] } } },
+    });
+
+    const result = JSON.parse(
+      await handleMovieDetails({ movie_id: 550, append: ["watch/providers"], region: "us" }, mockClient as any)
+    );
+
+    expect(result["watch/providers"].results).toEqual({ US: { flatrate: [] } });
+  });
+
+  it("returns empty results with note when region not found", async () => {
+    mockClient.getMovieDetails.mockResolvedValue({
+      id: 550, title: "Fight Club",
+      "watch/providers": { results: { US: { flatrate: [] } } },
+    });
+
+    const result = JSON.parse(
+      await handleMovieDetails({ movie_id: 550, append: ["watch/providers"], region: "JP" }, mockClient as any)
+    );
+
+    expect(result["watch/providers"].results).toEqual({});
+    expect(result["watch/providers"]._note).toContain("JP");
+  });
+
+  it("does not affect result when watch/providers not appended", async () => {
+    mockClient.getMovieDetails.mockResolvedValue({ id: 550, title: "Fight Club" });
+
+    const result = JSON.parse(
+      await handleMovieDetails({ movie_id: 550, region: "US" }, mockClient as any)
+    );
+
+    expect(result["watch/providers"]).toBeUndefined();
+  });
 });
 
 describe("handleTVDetails", () => {
@@ -277,6 +345,19 @@ describe("handleTVDetails", () => {
     await handleTVDetails({ series_id: 1396, append: ["credits", "videos"] }, mockClient as any);
 
     expect(mockClient.getTVDetails).toHaveBeenCalledWith(1396, ["credits", "videos"]);
+  });
+
+  it("filters watch/providers to region", async () => {
+    mockClient.getTVDetails.mockResolvedValue({
+      id: 1396, name: "Breaking Bad",
+      "watch/providers": { results: { US: { flatrate: [{ provider_name: "Netflix" }] }, DE: { flatrate: [] } } },
+    });
+
+    const result = JSON.parse(
+      await handleTVDetails({ series_id: 1396, append: ["watch/providers"], region: "US" }, mockClient as any)
+    );
+
+    expect(result["watch/providers"].results).toEqual({ US: { flatrate: [{ provider_name: "Netflix" }] } });
   });
 
   it("slices aggregate_credits to credits_limit", async () => {
