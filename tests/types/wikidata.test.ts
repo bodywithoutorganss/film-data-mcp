@@ -52,6 +52,18 @@ describe("Wikidata types", () => {
     expect(award.forWork).toBeUndefined();
   });
 
+  it("models a nomination with forWork", () => {
+    const nom: WikidataNomination = {
+      wikidataId: "Q131520",
+      label: "Academy Award for Best Cinematography",
+      year: 2008,
+      forWork: { wikidataId: "Q183081", label: "No Country for Old Men" },
+      ceremony: "academy-awards",
+    };
+    expect(nom.year).toBe(2008);
+    expect(nom.forWork?.label).toBe("No Country for Old Men");
+  });
+
   it("models a resolved entity", () => {
     const entity: ResolvedEntity = {
       wikidataId: "Q460277",
