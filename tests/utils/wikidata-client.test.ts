@@ -3,6 +3,7 @@
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { WikidataClient } from "../../src/utils/wikidata-client.js";
+import type { WikidataAward, WikidataNomination } from "../../src/types/wikidata.js";
 
 // Mock fetch globally
 const mockFetch = vi.fn();
@@ -129,6 +130,133 @@ describe("WikidataClient", () => {
       await expect(client.resolvePersonByTmdbId("488")).rejects.toThrow(
         "Wikidata SPARQL error: 429 Too Many Requests"
       );
+    });
+  });
+
+  describe("awards queries", () => {
+    it("gets person wins (P166)", async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          results: {
+            bindings: [
+              {
+                award: { type: "uri", value: "http://www.wikidata.org/entity/Q131520" },
+                awardLabel: { type: "literal", value: "Academy Award for Best Cinematography" },
+                date: { type: "literal", value: "2018-03-04T00:00:00Z" },
+              },
+            ],
+          },
+        }),
+      });
+
+      const wins = await client.getPersonWins("Q460277");
+      expect(wins).toHaveLength(1);
+      expect(wins[0].wikidataId).toBe("Q131520");
+      expect(wins[0].label).toBe("Academy Award for Best Cinematography");
+      expect(wins[0].year).toBe(2018);
+    });
+
+    it("gets person nominations (P1411) with forWork", async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          results: {
+            bindings: [
+              {
+                award: { type: "uri", value: "http://www.wikidata.org/entity/Q131520" },
+                awardLabel: { type: "literal", value: "Academy Award for Best Cinematography" },
+                date: { type: "literal", value: "2008-02-24T00:00:00Z" },
+                forWork: { type: "uri", value: "http://www.wikidata.org/entity/Q183081" },
+                forWorkLabel: { type: "literal", value: "No Country for Old Men" },
+              },
+            ],
+          },
+        }),
+      });
+
+      const noms = await client.getPersonNominations("Q460277");
+      expect(noms).toHaveLength(1);
+      expect(noms[0].forWork).toEqual({ wikidataId: "Q183081", label: "No Country for Old Men" });
+      expect(noms[0].year).toBe(2008);
+    });
+
+    it("gets film awards (P166)", async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          results: {
+            bindings: [
+              {
+                award: { type: "uri", value: "http://www.wikidata.org/entity/Q102427" },
+                awardLabel: { type: "literal", value: "Academy Award for Best Picture" },
+                date: { type: "literal", value: "2020-02-09T00:00:00Z" },
+              },
+              {
+                award: { type: "uri", value: "http://www.wikidata.org/entity/Q179808" },
+                awardLabel: { type: "literal", value: "Palme d'Or" },
+                date: { type: "literal", value: "2019-05-25T00:00:00Z" },
+              },
+            ],
+          },
+        }),
+      });
+
+      const awards = await client.getFilmAwards("Q61448040");
+      expect(awards).toHaveLength(2);
+      expect(awards[0].label).toBe("Academy Award for Best Picture");
+      expect(awards[1].label).toBe("Palme d'Or");
+    });
+
+    it("gets award history by category QID", async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          results: {
+            bindings: [
+              {
+                recipient: { type: "uri", value: "http://www.wikidata.org/entity/Q460277" },
+                recipientLabel: { type: "literal", value: "Roger Deakins" },
+                date: { type: "literal", value: "2018-03-04T00:00:00Z" },
+                forWork: { type: "uri", value: "http://www.wikidata.org/entity/Q28936680" },
+                forWorkLabel: { type: "literal", value: "Blade Runner 2049" },
+              },
+            ],
+          },
+        }),
+      });
+
+      const history = await client.getAwardHistory("Q131520");
+      expect(history).toHaveLength(1);
+      expect(history[0].recipientLabel).toBe("Roger Deakins");
+      expect(history[0].year).toBe(2018);
+    });
+
+    it("filters wins to only recognized award QIDs", async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          results: {
+            bindings: [
+              {
+                award: { type: "uri", value: "http://www.wikidata.org/entity/Q131520" },
+                awardLabel: { type: "literal", value: "Academy Award for Best Cinematography" },
+                date: { type: "literal", value: "2018-03-04T00:00:00Z" },
+              },
+              {
+                award: { type: "uri", value: "http://www.wikidata.org/entity/Q999999" },
+                awardLabel: { type: "literal", value: "Commander of the Order of the British Empire" },
+                date: { type: "literal", value: "2013-01-01T00:00:00Z" },
+              },
+            ],
+          },
+        }),
+      });
+
+      const wins = await client.getPersonWins("Q460277");
+      // Only Q131520 is in the registry; CBE (Q999999) should be filtered out
+      expect(wins).toHaveLength(1);
+      expect(wins[0].label).toBe("Academy Award for Best Cinematography");
     });
   });
 });

@@ -1,7 +1,8 @@
 // ABOUTME: SPARQL client for Wikidata entity resolution and awards queries.
 // ABOUTME: Resolves TMDB/IMDb IDs to Wikidata entities, queries award and nomination data.
 
-import type { SparqlResponse, ResolvedEntity } from "../types/wikidata.js";
+import type { SparqlResponse, ResolvedEntity, WikidataAward, WikidataNomination } from "../types/wikidata.js";
+import { AWARD_CATEGORIES } from "../types/awards-registry.js";
 
 const SPARQL_ENDPOINT = "https://query.wikidata.org/sparql";
 const USER_AGENT = "film-data-mcp/1.0";
@@ -75,5 +76,114 @@ export class WikidataClient {
     `;
     const data = await this.executeSparql(query);
     return this.parseResolvedEntity(data, "imdb_id");
+  }
+
+  private registeredQids(): Set<string> {
+    return new Set(AWARD_CATEGORIES.map((c) => c.wikidataId));
+  }
+
+  private lookupCeremony(awardQid: string): string {
+    const cat = AWARD_CATEGORIES.find((c) => c.wikidataId === awardQid);
+    return cat?.ceremony ?? "unknown";
+  }
+
+  async getPersonWins(wikidataId: string): Promise<WikidataAward[]> {
+    const query = `
+      SELECT ?award ?awardLabel ?date WHERE {
+        wd:${wikidataId} p:P166 ?stmt .
+        ?stmt ps:P166 ?award .
+        OPTIONAL { ?stmt pq:P585 ?date }
+        SERVICE wikibase:label { bd:serviceParam wikibase:language "en" . }
+      }
+    `;
+    const data = await this.executeSparql(query);
+    const knownQids = this.registeredQids();
+    return data.results.bindings
+      .map((b) => {
+        const qid = this.extractEntityId(b.award.value);
+        return {
+          wikidataId: qid,
+          label: b.awardLabel?.value ?? "Unknown",
+          year: b.date ? new Date(b.date.value).getFullYear() : undefined,
+          ceremony: this.lookupCeremony(qid),
+        };
+      })
+      .filter((a) => knownQids.has(a.wikidataId));
+  }
+
+  async getPersonNominations(wikidataId: string): Promise<WikidataNomination[]> {
+    const query = `
+      SELECT ?award ?awardLabel ?date ?forWork ?forWorkLabel WHERE {
+        wd:${wikidataId} p:P1411 ?stmt .
+        ?stmt ps:P1411 ?award .
+        OPTIONAL { ?stmt pq:P585 ?date }
+        OPTIONAL { ?stmt pq:P1686 ?forWork }
+        SERVICE wikibase:label { bd:serviceParam wikibase:language "en" . }
+      }
+    `;
+    const data = await this.executeSparql(query);
+    const knownQids = this.registeredQids();
+    return data.results.bindings
+      .map((b) => {
+        const qid = this.extractEntityId(b.award.value);
+        return {
+          wikidataId: qid,
+          label: b.awardLabel?.value ?? "Unknown",
+          year: b.date ? new Date(b.date.value).getFullYear() : undefined,
+          forWork: b.forWork
+            ? { wikidataId: this.extractEntityId(b.forWork.value), label: b.forWorkLabel?.value ?? "Unknown" }
+            : undefined,
+          ceremony: this.lookupCeremony(qid),
+        };
+      })
+      .filter((n) => knownQids.has(n.wikidataId));
+  }
+
+  async getFilmAwards(wikidataId: string): Promise<WikidataAward[]> {
+    const query = `
+      SELECT ?award ?awardLabel ?date WHERE {
+        wd:${wikidataId} p:P166 ?stmt .
+        ?stmt ps:P166 ?award .
+        OPTIONAL { ?stmt pq:P585 ?date }
+        SERVICE wikibase:label { bd:serviceParam wikibase:language "en" . }
+      }
+    `;
+    const data = await this.executeSparql(query);
+    const knownQids = this.registeredQids();
+    return data.results.bindings
+      .map((b) => {
+        const qid = this.extractEntityId(b.award.value);
+        return {
+          wikidataId: qid,
+          label: b.awardLabel?.value ?? "Unknown",
+          year: b.date ? new Date(b.date.value).getFullYear() : undefined,
+          ceremony: this.lookupCeremony(qid),
+        };
+      })
+      .filter((a) => knownQids.has(a.wikidataId));
+  }
+
+  async getAwardHistory(
+    categoryQid: string
+  ): Promise<Array<{ recipientId: string; recipientLabel: string; year?: number; forWork?: { wikidataId: string; label: string } }>> {
+    const query = `
+      SELECT ?recipient ?recipientLabel ?date ?forWork ?forWorkLabel WHERE {
+        ?recipient p:P166 ?stmt .
+        ?stmt ps:P166 wd:${categoryQid} .
+        OPTIONAL { ?stmt pq:P585 ?date }
+        OPTIONAL { ?stmt pq:P1686 ?forWork }
+        SERVICE wikibase:label { bd:serviceParam wikibase:language "en" . }
+      }
+      ORDER BY DESC(?date)
+    `;
+    const data = await this.executeSparql(query);
+    return data.results.bindings.map((b) => ({
+      recipientId: this.extractEntityId(b.recipient.value),
+      recipientLabel: b.recipientLabel?.value ?? "Unknown",
+      year: b.date ? new Date(b.date.value).getFullYear() : undefined,
+      forWork: b.forWork
+        ? { wikidataId: this.extractEntityId(b.forWork.value), label: b.forWorkLabel?.value ?? "Unknown" }
+        : undefined,
+    }));
   }
 }
