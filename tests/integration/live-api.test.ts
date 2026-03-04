@@ -15,7 +15,7 @@ describe.skipIf(!TMDB_TOKEN)("live TMDB API", () => {
 
   // Known stable entities
   const PARASITE_ID = 496243;
-  const DEAKINS_ID = 5914;
+  const DEAKINS_ID = 151;
   const BREAKING_BAD_ID = 1396;
 
   it("searches for Parasite and finds it", LIVE_TIMEOUT, async () => {
@@ -68,7 +68,7 @@ describe.skipIf(!TMDB_TOKEN)("live Wikidata SPARQL", () => {
   const wikidataClient = new WikidataClient();
 
   it("resolves Roger Deakins by TMDB person ID", LIVE_TIMEOUT, async () => {
-    const entity = await wikidataClient.resolvePersonByTmdbId("5914");
+    const entity = await wikidataClient.resolvePersonByTmdbId("151");
     expect(entity).not.toBeNull();
     expect(entity!.label).toMatch(/Deakins/i);
   });
@@ -80,7 +80,7 @@ describe.skipIf(!TMDB_TOKEN)("live Wikidata SPARQL", () => {
   });
 
   it("finds awards for Roger Deakins including Oscar wins", LIVE_TIMEOUT, async () => {
-    const entity = await wikidataClient.resolvePersonByTmdbId("5914");
+    const entity = await wikidataClient.resolvePersonByTmdbId("151");
     expect(entity).not.toBeNull();
     const wins = await wikidataClient.getPersonWins(entity!.wikidataId);
     // Deakins has won at least one Oscar for cinematography
