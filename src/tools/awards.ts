@@ -67,11 +67,21 @@ export async function handleGetPersonAwards(
 ): Promise<string> {
   const { person_id } = GetPersonAwardsSchema.parse(args);
   const entity = await resolvePerson(person_id, tmdbClient, wikidataClient);
-  const [wins, nominations] = await Promise.all([
+  const [wins, nominations, p166ClaimCount] = await Promise.all([
     wikidataClient.getPersonWins(entity.wikidataId),
     wikidataClient.getPersonNominations(entity.wikidataId),
+    wikidataClient.countAllP166Claims(entity.wikidataId),
   ]);
-  return JSON.stringify({ entity, wins, nominations }, null, 2);
+  return JSON.stringify({
+    entity,
+    wins,
+    nominations,
+    completeness: {
+      entityFound: true,
+      p166ClaimCount,
+      registeredAwardCount: wins.length,
+    },
+  }, null, 2);
 }
 
 // --- get_film_awards ---

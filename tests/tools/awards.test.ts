@@ -48,6 +48,7 @@ describe("awards tools", () => {
           forWork: { wikidataId: "Q183081", label: "No Country for Old Men" },
         },
       ]);
+      mockWikidataClient.countAllP166Claims.mockResolvedValue(15);
 
       const result = await handleGetPersonAwards(
         { person_id: 151 },
@@ -69,6 +70,7 @@ describe("awards tools", () => {
       });
       mockWikidataClient.getPersonWins.mockResolvedValue([]);
       mockWikidataClient.getPersonNominations.mockResolvedValue([]);
+      mockWikidataClient.countAllP166Claims.mockResolvedValue(0);
 
       const result = await handleGetPersonAwards(
         { person_id: 151 },
@@ -96,6 +98,29 @@ describe("awards tools", () => {
       await expect(
         handleGetPersonAwards({ person_id: 12345 }, mockTmdbClient as any, mockWikidataClient as any)
       ).rejects.toThrow("Could not resolve TMDB person 12345 to a Wikidata entity");
+    });
+
+    it("includes completeness indicator with p166 claim count", async () => {
+      mockWikidataClient.resolvePersonByTmdbId.mockResolvedValue({
+        wikidataId: "Q460277", label: "Roger Deakins", resolvedVia: "tmdb_id",
+      });
+      mockWikidataClient.getPersonWins.mockResolvedValue([
+        { wikidataId: "Q131520", label: "Academy Award for Best Cinematography", year: 2018, ceremony: "academy-awards" },
+      ]);
+      mockWikidataClient.getPersonNominations.mockResolvedValue([]);
+      mockWikidataClient.countAllP166Claims.mockResolvedValue(5);
+
+      const result = await handleGetPersonAwards(
+        { person_id: 151 },
+        mockTmdbClient as any,
+        mockWikidataClient as any
+      );
+      const parsed = JSON.parse(result);
+      expect(parsed.completeness).toEqual({
+        entityFound: true,
+        p166ClaimCount: 5,
+        registeredAwardCount: 1,
+      });
     });
   });
 
