@@ -41,15 +41,29 @@ export interface AwardHistoryEntry {
   forWork?: WikidataEntity;
 }
 
+export interface AwardsCompleteness {
+  entityFound: boolean;
+  p166ClaimCount: number;
+  registeredAwardCount: number;
+}
+
+export interface CrewNominationEntry {
+  person: { name: string; role: string };
+  nominations: WikidataNomination[];
+}
+
 export interface PersonAwardsResult {
   entity: ResolvedEntity;
   wins: WikidataAward[];
   nominations: WikidataNomination[];
+  completeness: AwardsCompleteness;
 }
 
 export interface FilmAwardsResult {
   entity: ResolvedEntity;
   awards: WikidataAward[];
+  crewNominations: CrewNominationEntry[];
+  completeness: AwardsCompleteness;
 }
 
 export type ResolutionMethod = "tmdb_id" | "imdb_id";
