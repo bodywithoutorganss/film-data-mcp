@@ -63,11 +63,21 @@ describe.skipIf(!TMDB_TOKEN)("live TMDB API", () => {
     expect(drama!.name).toBe("Drama");
   });
 
-  it("searches keywords for 'masculinity'", LIVE_TIMEOUT, async () => {
+  it("searches keywords and finds 'masculinity'", LIVE_TIMEOUT, async () => {
     const result = await client.searchKeywords("masculinity");
     expect(result.results.length).toBeGreaterThan(0);
-    expect(result.results[0]).toHaveProperty("id");
-    expect(result.results[0]).toHaveProperty("name");
+    const names = result.results.map(k => k.name);
+    expect(names).toContain("masculinity");
+  });
+
+  it("gets Kartemquin Films filmography", LIVE_TIMEOUT, async () => {
+    const { handleCompanyFilmography } = await import("../../src/tools/reference.js");
+    const result = await handleCompanyFilmography(
+      { company_id: 13042, media_type: "movie" }, client
+    );
+    const parsed = JSON.parse(result);
+    expect(parsed.results.length).toBeGreaterThan(0);
+    expect(parsed.total_results).toBeGreaterThan(0);
   });
 });
 
