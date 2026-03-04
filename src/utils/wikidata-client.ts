@@ -29,6 +29,10 @@ export class WikidataClient {
     return uri.split("/").pop()!;
   }
 
+  private cleanLabel(label: string): string {
+    return /^Q\d+$/.test(label) ? `Unknown (${label})` : label;
+  }
+
   private parseResolvedEntity(
     data: SparqlResponse,
     resolvedVia: "tmdb_id" | "imdb_id"
@@ -38,7 +42,7 @@ export class WikidataClient {
     const first = bindings[0];
     return {
       wikidataId: this.extractEntityId(first.entity.value),
-      label: first.entityLabel?.value ?? "Unknown",
+      label: first.entityLabel ? this.cleanLabel(first.entityLabel.value) : "Unknown",
       resolvedVia,
     };
   }
@@ -120,7 +124,7 @@ export class WikidataClient {
         const qid = this.extractEntityId(b.award.value);
         return {
           wikidataId: qid,
-          label: b.awardLabel?.value ?? "Unknown",
+          label: b.awardLabel ? this.cleanLabel(b.awardLabel.value) : "Unknown",
           year: b.date ? new Date(b.date.value).getFullYear() : undefined,
           ceremony: this.lookupCeremony(qid),
         };
@@ -150,10 +154,10 @@ export class WikidataClient {
         const qid = this.extractEntityId(b.award.value);
         return {
           wikidataId: qid,
-          label: b.awardLabel?.value ?? "Unknown",
+          label: b.awardLabel ? this.cleanLabel(b.awardLabel.value) : "Unknown",
           year: b.date ? new Date(b.date.value).getFullYear() : undefined,
           forWork: b.forWork
-            ? { wikidataId: this.extractEntityId(b.forWork.value), label: b.forWorkLabel?.value ?? "Unknown" }
+            ? { wikidataId: this.extractEntityId(b.forWork.value), label: b.forWorkLabel ? this.cleanLabel(b.forWorkLabel.value) : "Unknown" }
             : undefined,
           ceremony: this.lookupCeremony(qid),
         };
@@ -181,10 +185,10 @@ export class WikidataClient {
     const data = await this.executeSparql(query);
     return data.results.bindings.map((b) => ({
       recipientId: this.extractEntityId(b.recipient.value),
-      recipientLabel: b.recipientLabel?.value ?? "Unknown",
+      recipientLabel: b.recipientLabel ? this.cleanLabel(b.recipientLabel.value) : "Unknown",
       year: b.date ? new Date(b.date.value).getFullYear() : undefined,
       forWork: b.forWork
-        ? { wikidataId: this.extractEntityId(b.forWork.value), label: b.forWorkLabel?.value ?? "Unknown" }
+        ? { wikidataId: this.extractEntityId(b.forWork.value), label: b.forWorkLabel ? this.cleanLabel(b.forWorkLabel.value) : "Unknown" }
         : undefined,
     }));
   }

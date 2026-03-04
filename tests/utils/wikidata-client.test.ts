@@ -251,6 +251,65 @@ describe("WikidataClient", () => {
       expect(history[0].year).toBe(2018);
     });
 
+    it("replaces QID-like labels with Unknown (QID) in award history", async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          results: {
+            bindings: [
+              {
+                recipient: { type: "uri", value: "http://www.wikidata.org/entity/Q585668" },
+                recipientLabel: { type: "literal", value: "Q585668" },
+                date: { type: "literal", value: "2020-01-01" },
+              },
+            ],
+          },
+        }),
+      });
+
+      const result = await client.getAwardHistory("Q131520");
+      expect(result[0].recipientLabel).toBe("Unknown (Q585668)");
+    });
+
+    it("preserves normal labels", async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          results: {
+            bindings: [
+              {
+                recipient: { type: "uri", value: "http://www.wikidata.org/entity/Q460277" },
+                recipientLabel: { type: "literal", value: "Roger Deakins" },
+                date: { type: "literal", value: "2020-01-01" },
+              },
+            ],
+          },
+        }),
+      });
+
+      const result = await client.getAwardHistory("Q131520");
+      expect(result[0].recipientLabel).toBe("Roger Deakins");
+    });
+
+    it("preserves Unknown fallback when label is missing entirely", async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          results: {
+            bindings: [
+              {
+                recipient: { type: "uri", value: "http://www.wikidata.org/entity/Q460277" },
+                date: { type: "literal", value: "2020-01-01" },
+              },
+            ],
+          },
+        }),
+      });
+
+      const result = await client.getAwardHistory("Q131520");
+      expect(result[0].recipientLabel).toBe("Unknown");
+    });
+
     it("filters wins to only recognized award QIDs", async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
