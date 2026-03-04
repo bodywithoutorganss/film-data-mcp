@@ -102,19 +102,26 @@ const AWARD_RELEVANT_JOBS = new Set([
 
 const MAX_CREW_LOOKUPS = 5;
 
+interface CrewNominationsResult {
+  crewNominations: CrewNominationEntry[];
+  skippedCrew: Array<{ name: string; role: string; reason: string }>;
+}
+
 async function getFilmCrewNominations(
   movieId: number,
   filmWikidataId: string,
   tmdbClient: TMDBClient,
   wikidataClient: WikidataClient
-): Promise<CrewNominationEntry[]> {
+): Promise<CrewNominationsResult> {
   const details = await tmdbClient.getMovieDetails(movieId, ["credits"]);
   const credits = (details as any).credits;
-  if (!credits?.crew) return [];
+  if (!credits?.crew) return { crewNominations: [], skippedCrew: [] };
 
   const relevantCrew = credits.crew
     .filter((c: any) => AWARD_RELEVANT_JOBS.has(c.job))
     .slice(0, MAX_CREW_LOOKUPS);
+
+  const skippedCrew: Array<{ name: string; role: string; reason: string }> = [];
 
   const results = await Promise.all(
     relevantCrew.map(async (member: any) => {
@@ -122,6 +129,7 @@ async function getFilmCrewNominations(
       try {
         entity = await resolvePerson(member.id, tmdbClient, wikidataClient);
       } catch {
+        skippedCrew.push({ name: member.name, role: member.job, reason: "unresolvable" });
         return null;
       }
 
@@ -139,7 +147,10 @@ async function getFilmCrewNominations(
     })
   );
 
-  return results.filter((r): r is NonNullable<typeof r> => r !== null);
+  return {
+    crewNominations: results.filter((r): r is NonNullable<typeof r> => r !== null),
+    skippedCrew,
+  };
 }
 
 export async function handleGetFilmAwards(
@@ -149,7 +160,7 @@ export async function handleGetFilmAwards(
 ): Promise<string> {
   const { movie_id } = GetFilmAwardsSchema.parse(args);
   const entity = await resolveMovie(movie_id, tmdbClient, wikidataClient);
-  const [awards, p166ClaimCount, crewNominations] = await Promise.all([
+  const [awards, p166ClaimCount, crewResult] = await Promise.all([
     wikidataClient.getFilmAwards(entity.wikidataId),
     wikidataClient.countAllP166Claims(entity.wikidataId),
     getFilmCrewNominations(movie_id, entity.wikidataId, tmdbClient, wikidataClient),
@@ -157,7 +168,8 @@ export async function handleGetFilmAwards(
   return JSON.stringify({
     entity,
     awards,
-    crewNominations,
+    crewNominations: crewResult.crewNominations,
+    ...(crewResult.skippedCrew.length > 0 ? { skippedCrew: crewResult.skippedCrew } : {}),
     completeness: {
       entityFound: true,
       p166ClaimCount,
