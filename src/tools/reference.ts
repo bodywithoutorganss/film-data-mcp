@@ -159,3 +159,43 @@ export async function handleCompanyDetails(
 
   return JSON.stringify(result, null, 2);
 }
+
+// --- Company Filmography ---
+
+export const CompanyFilmographySchema = z.object({
+  company_id: z.number().int().positive().describe("TMDB company ID"),
+  media_type: z.enum(["movie", "tv"]).describe("Browse movies or TV shows"),
+  page: z.number().int().positive().optional().describe("Page number (default 1)"),
+  sort_by: z.string().optional().describe("Sort order (default: release date descending). Examples: 'vote_average.desc', 'popularity.desc'"),
+});
+
+export const companyFilmographyTool = buildToolDef(
+  "company_filmography",
+  "Browse a production company's catalog of movies or TV shows. Returns paginated results sorted by release date (newest first) by default. Get company IDs from the search tool (type: 'company') or company_details.",
+  CompanyFilmographySchema
+);
+
+export async function handleCompanyFilmography(
+  args: unknown,
+  client: TMDBClient
+): Promise<string> {
+  const { company_id, media_type, page, sort_by } = CompanyFilmographySchema.parse(args);
+
+  const defaultSort = media_type === "movie" ? "primary_release_date.desc" : "first_air_date.desc";
+
+  if (media_type === "movie") {
+    const result = await client.discoverMovies({
+      with_companies: String(company_id),
+      sort_by: sort_by ?? defaultSort,
+      page: page ?? 1,
+    });
+    return JSON.stringify(result, null, 2);
+  }
+
+  const result = await client.discoverTV({
+    with_companies: String(company_id),
+    sort_by: sort_by ?? defaultSort,
+    page: page ?? 1,
+  });
+  return JSON.stringify(result, null, 2);
+}

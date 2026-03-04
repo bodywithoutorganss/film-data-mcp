@@ -9,12 +9,14 @@ import {
   CollectionDetailsSchema,
   CompanyDetailsSchema,
   SearchKeywordsSchema,
+  CompanyFilmographySchema,
   handleGenres,
   handleWatchProviders,
   handleFindByExternalId,
   handleCollectionDetails,
   handleCompanyDetails,
   handleSearchKeywords,
+  handleCompanyFilmography,
 } from "../../src/tools/reference.js";
 
 describe("GenresSchema", () => {
@@ -338,5 +340,89 @@ describe("handleSearchKeywords", () => {
     });
     await handleSearchKeywords({ query: "war", page: 2 }, mockClient as any);
     expect(mockClient.searchKeywords).toHaveBeenCalledWith("war", 2);
+  });
+});
+
+describe("CompanyFilmographySchema", () => {
+  it("accepts company_id and media_type", () => {
+    const result = CompanyFilmographySchema.parse({ company_id: 13042, media_type: "movie" });
+    expect(result.company_id).toBe(13042);
+    expect(result.media_type).toBe("movie");
+  });
+
+  it("accepts TV media_type", () => {
+    expect(() => CompanyFilmographySchema.parse({ company_id: 1, media_type: "tv" })).not.toThrow();
+  });
+
+  it("accepts optional page and sort_by", () => {
+    const result = CompanyFilmographySchema.parse({
+      company_id: 13042, media_type: "movie", page: 2, sort_by: "vote_average.desc",
+    });
+    expect(result.page).toBe(2);
+    expect(result.sort_by).toBe("vote_average.desc");
+  });
+
+  it("rejects missing company_id", () => {
+    expect(() => CompanyFilmographySchema.parse({ media_type: "movie" })).toThrow();
+  });
+
+  it("rejects missing media_type", () => {
+    expect(() => CompanyFilmographySchema.parse({ company_id: 13042 })).toThrow();
+  });
+
+  it("rejects non-positive company_id", () => {
+    expect(() => CompanyFilmographySchema.parse({ company_id: 0, media_type: "movie" })).toThrow();
+  });
+});
+
+describe("handleCompanyFilmography", () => {
+  const mockClient = {
+    discoverMovies: vi.fn(),
+    discoverTV: vi.fn(),
+  };
+
+  it("calls discoverMovies with with_companies for movie type", async () => {
+    mockClient.discoverMovies.mockResolvedValue({
+      page: 1, results: [{ id: 489985, title: "Minding the Gap" }], total_pages: 1, total_results: 1,
+    });
+    const result = await handleCompanyFilmography(
+      { company_id: 13042, media_type: "movie" }, mockClient as any
+    );
+    expect(mockClient.discoverMovies).toHaveBeenCalledWith({
+      with_companies: "13042",
+      sort_by: "primary_release_date.desc",
+      page: 1,
+    });
+    const parsed = JSON.parse(result);
+    expect(parsed.results[0].title).toBe("Minding the Gap");
+  });
+
+  it("calls discoverTV for tv type", async () => {
+    mockClient.discoverTV.mockResolvedValue({
+      page: 1, results: [], total_pages: 0, total_results: 0,
+    });
+    await handleCompanyFilmography(
+      { company_id: 13042, media_type: "tv" }, mockClient as any
+    );
+    expect(mockClient.discoverTV).toHaveBeenCalledWith({
+      with_companies: "13042",
+      sort_by: "first_air_date.desc",
+      page: 1,
+    });
+  });
+
+  it("passes custom sort_by and page through", async () => {
+    mockClient.discoverMovies.mockResolvedValue({
+      page: 2, results: [], total_pages: 3, total_results: 25,
+    });
+    await handleCompanyFilmography(
+      { company_id: 420, media_type: "movie", page: 2, sort_by: "vote_average.desc" },
+      mockClient as any
+    );
+    expect(mockClient.discoverMovies).toHaveBeenCalledWith({
+      with_companies: "420",
+      sort_by: "vote_average.desc",
+      page: 2,
+    });
   });
 });
