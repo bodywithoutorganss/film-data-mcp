@@ -56,7 +56,7 @@ export const GetPersonAwardsSchema = z.object({
 
 export const getPersonAwardsTool = buildToolDef(
   "get_person_awards",
-  "Get award wins and nominations for a person. Accepts a TMDB person ID. Returns wins, nominations, and the films they were for (where available). Covers Academy Awards, Golden Globes, BAFTA, Cannes, and other major ceremonies.",
+  "Get award wins and nominations for a person. Accepts a TMDB person ID. Returns wins, nominations, and a completeness indicator showing total P166 claims vs. registered awards. Covers Academy Awards, Golden Globes, BAFTA, Cannes, and other major ceremonies.",
   GetPersonAwardsSchema
 );
 
@@ -92,7 +92,7 @@ export const GetFilmAwardsSchema = z.object({
 
 export const getFilmAwardsTool = buildToolDef(
   "get_film_awards",
-  "Get all awards a film has received. Accepts a TMDB movie ID. Returns structured award data with ceremony names and years.",
+  "Get all awards a film has received. Accepts a TMDB movie ID. Returns structured award data with ceremony names and years, crew P1411 nominations (from director/producer/writer profiles filtered to this film), and a completeness indicator showing total P166 claims vs. registered awards. Covers Academy Awards, Golden Globes, BAFTA, Cannes, and other major ceremonies.",
   GetFilmAwardsSchema
 );
 
