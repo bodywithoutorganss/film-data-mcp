@@ -1,11 +1,12 @@
 // ABOUTME: SPARQL client for Wikidata entity resolution and awards queries.
 // ABOUTME: Resolves TMDB/IMDb IDs to Wikidata entities, queries award and nomination data.
 
-import type { SparqlResponse, ResolvedEntity, WikidataAward, WikidataNomination } from "../types/wikidata.js";
+import type { SparqlResponse, ResolvedEntity, WikidataAward, WikidataNomination, AwardHistoryEntry } from "../types/wikidata.js";
 import { AWARD_CATEGORIES } from "../types/awards-registry.js";
 
 const SPARQL_ENDPOINT = "https://query.wikidata.org/sparql";
 const USER_AGENT = "film-data-mcp/1.0";
+const REGISTERED_QIDS = new Set(AWARD_CATEGORIES.map((c) => c.wikidataId));
 
 export class WikidataClient {
   private async executeSparql(query: string): Promise<SparqlResponse> {
@@ -78,16 +79,18 @@ export class WikidataClient {
     return this.parseResolvedEntity(data, "imdb_id");
   }
 
-  private registeredQids(): Set<string> {
-    return new Set(AWARD_CATEGORIES.map((c) => c.wikidataId));
-  }
-
   private lookupCeremony(awardQid: string): string {
     const cat = AWARD_CATEGORIES.find((c) => c.wikidataId === awardQid);
     return cat?.ceremony ?? "unknown";
   }
 
-  async getPersonWins(wikidataId: string): Promise<WikidataAward[]> {
+  private validateQid(qid: string): void {
+    if (!/^Q\d+$/.test(qid)) {
+      throw new Error(`Invalid Wikidata QID: ${qid}`);
+    }
+  }
+
+  private async queryAwards(wikidataId: string): Promise<WikidataAward[]> {
     const query = `
       SELECT ?award ?awardLabel ?date WHERE {
         wd:${wikidataId} p:P166 ?stmt .
@@ -97,7 +100,6 @@ export class WikidataClient {
       }
     `;
     const data = await this.executeSparql(query);
-    const knownQids = this.registeredQids();
     return data.results.bindings
       .map((b) => {
         const qid = this.extractEntityId(b.award.value);
@@ -108,10 +110,16 @@ export class WikidataClient {
           ceremony: this.lookupCeremony(qid),
         };
       })
-      .filter((a) => knownQids.has(a.wikidataId));
+      .filter((a) => REGISTERED_QIDS.has(a.wikidataId));
+  }
+
+  async getPersonWins(wikidataId: string): Promise<WikidataAward[]> {
+    this.validateQid(wikidataId);
+    return this.queryAwards(wikidataId);
   }
 
   async getPersonNominations(wikidataId: string): Promise<WikidataNomination[]> {
+    this.validateQid(wikidataId);
     const query = `
       SELECT ?award ?awardLabel ?date ?forWork ?forWorkLabel WHERE {
         wd:${wikidataId} p:P1411 ?stmt .
@@ -122,7 +130,6 @@ export class WikidataClient {
       }
     `;
     const data = await this.executeSparql(query);
-    const knownQids = this.registeredQids();
     return data.results.bindings
       .map((b) => {
         const qid = this.extractEntityId(b.award.value);
@@ -136,36 +143,16 @@ export class WikidataClient {
           ceremony: this.lookupCeremony(qid),
         };
       })
-      .filter((n) => knownQids.has(n.wikidataId));
+      .filter((n) => REGISTERED_QIDS.has(n.wikidataId));
   }
 
   async getFilmAwards(wikidataId: string): Promise<WikidataAward[]> {
-    const query = `
-      SELECT ?award ?awardLabel ?date WHERE {
-        wd:${wikidataId} p:P166 ?stmt .
-        ?stmt ps:P166 ?award .
-        OPTIONAL { ?stmt pq:P585 ?date }
-        SERVICE wikibase:label { bd:serviceParam wikibase:language "en" . }
-      }
-    `;
-    const data = await this.executeSparql(query);
-    const knownQids = this.registeredQids();
-    return data.results.bindings
-      .map((b) => {
-        const qid = this.extractEntityId(b.award.value);
-        return {
-          wikidataId: qid,
-          label: b.awardLabel?.value ?? "Unknown",
-          year: b.date ? new Date(b.date.value).getFullYear() : undefined,
-          ceremony: this.lookupCeremony(qid),
-        };
-      })
-      .filter((a) => knownQids.has(a.wikidataId));
+    this.validateQid(wikidataId);
+    return this.queryAwards(wikidataId);
   }
 
-  async getAwardHistory(
-    categoryQid: string
-  ): Promise<Array<{ recipientId: string; recipientLabel: string; year?: number; forWork?: { wikidataId: string; label: string } }>> {
+  async getAwardHistory(categoryQid: string): Promise<AwardHistoryEntry[]> {
+    this.validateQid(categoryQid);
     const query = `
       SELECT ?recipient ?recipientLabel ?date ?forWork ?forWorkLabel WHERE {
         ?recipient p:P166 ?stmt .

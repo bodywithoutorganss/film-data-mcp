@@ -35,6 +35,13 @@ export interface WikidataNomination {
   ceremony: string;
 }
 
+export interface AwardHistoryEntry {
+  recipientId: string;
+  recipientLabel: string;
+  year?: number;
+  forWork?: { wikidataId: string; label: string };
+}
+
 export interface PersonAwardsResult {
   entity: ResolvedEntity;
   wins: WikidataAward[];

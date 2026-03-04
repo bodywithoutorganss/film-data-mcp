@@ -3,7 +3,6 @@
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { WikidataClient } from "../../src/utils/wikidata-client.js";
-import type { WikidataAward, WikidataNomination } from "../../src/types/wikidata.js";
 
 // Mock fetch globally
 const mockFetch = vi.fn();
@@ -120,6 +119,10 @@ describe("WikidataClient", () => {
   });
 
   describe("error handling", () => {
+    it("rejects invalid QID input", async () => {
+      await expect(client.getPersonWins("invalid")).rejects.toThrow("Invalid Wikidata QID");
+    });
+
     it("throws on non-OK response", async () => {
       mockFetch.mockResolvedValueOnce({
         ok: false,
