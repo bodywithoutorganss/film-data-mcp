@@ -278,6 +278,40 @@ describe("awards tools", () => {
       expect(parsed.ceremonies).toHaveLength(0);
       expect(parsed.categories).toHaveLength(0);
     });
+
+    it("matches compound query across fields (academy cinematography)", async () => {
+      const result = await handleSearchAwards(
+        { query: "academy cinematography" },
+        mockTmdbClient as any,
+        mockWikidataClient as any
+      );
+      const parsed = JSON.parse(result);
+      expect(parsed.categories.length).toBeGreaterThan(0);
+      expect(parsed.categories.some((c: any) => c.id === "academy-best-cinematography")).toBe(true);
+      expect(parsed.ceremonies).toHaveLength(0);
+    });
+
+    it("matches compound query across fields (cannes director)", async () => {
+      const result = await handleSearchAwards(
+        { query: "cannes director" },
+        mockTmdbClient as any,
+        mockWikidataClient as any
+      );
+      const parsed = JSON.parse(result);
+      expect(parsed.categories.length).toBeGreaterThan(0);
+      expect(parsed.categories.some((c: any) => c.id === "cannes-best-director")).toBe(true);
+    });
+
+    it("returns empty when one token has no match", async () => {
+      const result = await handleSearchAwards(
+        { query: "academy xyznonexistent" },
+        mockTmdbClient as any,
+        mockWikidataClient as any
+      );
+      const parsed = JSON.parse(result);
+      expect(parsed.ceremonies).toHaveLength(0);
+      expect(parsed.categories).toHaveLength(0);
+    });
   });
 
   describe("Zod schemas", () => {

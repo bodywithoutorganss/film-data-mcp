@@ -30,6 +30,22 @@ function truncateCredits(result: any, limit: number): void {
   }
 }
 
+// Filters a watch providers container to a single region.
+// Works on any object with a `results` map keyed by country code.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function filterWatchProviders(container: any, region: string | undefined): void {
+  if (!region || !container?.results) return;
+
+  const upper = region.toUpperCase();
+  const regionData = container.results[upper];
+  if (regionData) {
+    container.results = { [upper]: regionData };
+  } else {
+    container.results = {};
+    container._note = `No watch provider data found for region "${upper}"`;
+  }
+}
+
 // --- Movie Details ---
 
 const movieAppendFields = ["credits", "videos", "images", "watch/providers", "keywords", "recommendations", "similar", "release_dates", "external_ids"] as const;
@@ -47,6 +63,11 @@ export const MovieDetailsSchema = z.object({
     .optional()
     .default(20)
     .describe("Max cast and crew entries when credits is appended. Default 20. Pass 0 for unlimited."),
+  region: z
+    .string()
+    .length(2)
+    .optional()
+    .describe("ISO 3166-1 country code (e.g., 'US', 'GB'). Filters watch/providers to a single region."),
 });
 
 export const movieDetailsTool = buildToolDef(
@@ -59,9 +80,10 @@ export async function handleMovieDetails(
   args: unknown,
   client: TMDBClient
 ): Promise<string> {
-  const { movie_id, append, credits_limit } = MovieDetailsSchema.parse(args);
+  const { movie_id, append, credits_limit, region } = MovieDetailsSchema.parse(args);
   const result = await client.getMovieDetails(movie_id, append as string[] | undefined);
   truncateCredits(result, credits_limit);
+  filterWatchProviders(result["watch/providers"], region);
   return JSON.stringify(result, null, 2);
 }
 
@@ -82,6 +104,11 @@ export const TVDetailsSchema = z.object({
     .optional()
     .default(20)
     .describe("Max cast and crew entries when credits is appended. Default 20. Pass 0 for unlimited."),
+  region: z
+    .string()
+    .length(2)
+    .optional()
+    .describe("ISO 3166-1 country code (e.g., 'US', 'GB'). Filters watch/providers to a single region."),
 });
 
 export const tvDetailsTool = buildToolDef(
@@ -94,9 +121,10 @@ export async function handleTVDetails(
   args: unknown,
   client: TMDBClient
 ): Promise<string> {
-  const { series_id, append, credits_limit } = TVDetailsSchema.parse(args);
+  const { series_id, append, credits_limit, region } = TVDetailsSchema.parse(args);
   const result = await client.getTVDetails(series_id, append as string[] | undefined);
   truncateCredits(result, credits_limit);
+  filterWatchProviders(result["watch/providers"], region);
   return JSON.stringify(result, null, 2);
 }
 

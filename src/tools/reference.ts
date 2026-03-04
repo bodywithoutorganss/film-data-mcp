@@ -4,6 +4,7 @@
 import { z } from "zod";
 import { TMDBClient } from "../utils/tmdb-client.js";
 import { buildToolDef } from "../utils/tool-helpers.js";
+import { filterWatchProviders } from "./details.js";
 
 // --- Genres ---
 
@@ -51,23 +52,14 @@ export async function handleWatchProviders(
   const parsed = WatchProvidersSchema.parse(args);
   const media_type = parsed.media_type;
   const id = parsed.id;
-  const region = parsed.region?.toUpperCase();
+  const region = parsed.region;
 
   if (id) {
     const result = media_type === "movie"
       ? await client.getMovieWatchProviders(id)
       : await client.getTVWatchProviders(id);
 
-    if (region) {
-      const regionData = (result as any).results?.[region];
-      if (regionData) {
-        (result as any).results = { [region]: regionData };
-      } else {
-        (result as any).results = {};
-        (result as any)._note = `No watch provider data found for region "${region}"`;
-      }
-    }
-
+    filterWatchProviders(result, region);
     return JSON.stringify(result, null, 2);
   }
 
