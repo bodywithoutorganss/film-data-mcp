@@ -86,6 +86,22 @@ Handlers validate via Zod internally and return `JSON.stringify(result, null, 2)
 - Live integration tests (`tests/integration/live-api.test.ts`) require `TMDB_ACCESS_TOKEN` env var
 - Test files mirror source structure: `tests/tools/`, `tests/types/`, `tests/utils/`
 
+### Response Size Considerations
+
+Some append combinations produce responses too large for LLM context windows:
+
+- `movie_details` + `credits`: ~250K chars for blockbusters (large cast/crew lists)
+- `person_details` + `combined_credits`: ~90K chars for prolific filmmakers
+- `watch_providers` per movie: ~130K chars (returns all ~40 regions, no region filter yet)
+
+Practical alternative: use `discover` with `with_crew`/`with_cast` filters instead of appending credits. Returns paginated, context-friendly results.
+
+### Wikidata Data Gaps
+
+- Awards data lags ~1-2 years behind real-world ceremonies. Recent winners may return empty results.
+- Award history queries may include duplicate entries (both film entity and person entity for the same year/award).
+- Some Wikidata entities lack labels, showing raw QIDs (e.g., `Q585668`) instead of human-readable names.
+
 ### TMDB ID Stability
 
 TMDB person IDs are not guaranteed stable — TMDB occasionally merges or renumbers entries (e.g., Roger Deakins moved from 5914 to 151). Live tests use hardcoded entity IDs for known-stable entries. If a live test fails with an unexpected name, verify the current TMDB ID via search before assuming a code bug. Movie and TV IDs are more stable but not immune.

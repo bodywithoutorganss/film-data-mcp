@@ -125,6 +125,15 @@ npm run format     # Prettier
 - "Get Christopher Nolan's credits with movie details"
 - "Find Korean dramas with high ratings"
 
+## LLM Context Tips
+
+Some tool responses can exceed LLM context windows. A few patterns to keep in mind:
+
+- **Credits for blockbusters** (`movie_details` with `credits` append) can produce 250K+ chars. Prefer `discover` with `with_crew` or `with_cast` filters to explore a person's filmography — it returns paginated, right-sized results.
+- **Watch providers per movie** returns availability for all ~40 regions. Large responses (~130K chars) may exceed context. A region filter is planned for a future release.
+- **Person combined credits** (`person_details` with `combined_credits`) can exceed 90K chars for prolific filmmakers. Again, `discover` with person ID filters is the more practical approach.
+- **Wikidata awards** have a ~1-2 year lag. Very recent award wins may not appear in `get_film_awards` or `get_person_awards` results.
+
 ## ID Stability
 
 TMDB person IDs are not guaranteed stable — TMDB occasionally merges or renumbers entries. Movie and TV IDs are more reliable but not immune. If you persist TMDB IDs (e.g., in a knowledge graph or database), consider storing IMDb IDs (`nm*`, `tt*`) as the canonical reference and resolving to TMDB at query time via `find_by_external_id`.
