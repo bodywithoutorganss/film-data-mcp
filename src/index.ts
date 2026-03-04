@@ -6,9 +6,10 @@
  * Film Data MCP Server
  * Provides access to The Movie Database (TMDB) API through Model Context Protocol
  *
- * 12 TMDB tools: search, movie_details, tv_details, person_details,
+ * 14 TMDB tools: search, movie_details, tv_details, person_details,
  * discover, trending, curated_lists, genres, watch_providers,
- * find_by_external_id, collection_details, company_details
+ * find_by_external_id, collection_details, company_details,
+ * search_keywords, company_filmography
  *
  * 4 Wikidata awards tools: get_person_awards, get_film_awards,
  * get_award_history, search_awards
@@ -38,6 +39,8 @@ import {
     findByExternalIdTool, handleFindByExternalId,
     collectionDetailsTool, handleCollectionDetails,
     companyDetailsTool, handleCompanyDetails,
+    searchKeywordsTool, handleSearchKeywords,
+    companyFilmographyTool, handleCompanyFilmography,
 } from "./tools/reference.js";
 import {
     getPersonAwardsTool, handleGetPersonAwards,
@@ -92,6 +95,8 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             findByExternalIdTool,
             collectionDetailsTool,
             companyDetailsTool,
+            searchKeywordsTool,
+            companyFilmographyTool,
             getPersonAwardsTool,
             getFilmAwardsTool,
             getAwardHistoryTool,
@@ -122,6 +127,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             find_by_external_id: handleFindByExternalId,
             collection_details: handleCollectionDetails,
             company_details: handleCompanyDetails,
+            search_keywords: handleSearchKeywords,
+            company_filmography: handleCompanyFilmography,
             get_person_awards: (args) => handleGetPersonAwards(args, tmdbClient, wikidataClient),
             get_film_awards: (args) => handleGetFilmAwards(args, tmdbClient, wikidataClient),
             get_award_history: (args) => handleGetAwardHistory(args, tmdbClient, wikidataClient),
