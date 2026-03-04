@@ -340,4 +340,38 @@ describe("handlePersonDetails", () => {
     expect(result.combined_credits.crew).toHaveLength(10);
     expect(result._truncated.combined_credits).toEqual({ total_cast: 50, total_crew: 40 });
   });
+
+  it("slices movie_credits to credits_limit", async () => {
+    const cast = Array.from({ length: 30 }, (_, i) => ({ id: i, title: `Movie ${i}` }));
+    const crew = Array.from({ length: 25 }, (_, i) => ({ id: i, title: `Movie ${i}` }));
+    mockClient.getPersonDetails.mockResolvedValue({
+      id: 5914, name: "Roger Deakins",
+      movie_credits: { cast, crew },
+    });
+
+    const result = JSON.parse(
+      await handlePersonDetails({ person_id: 5914, append: ["movie_credits"], credits_limit: 10 }, mockClient as any)
+    );
+
+    expect(result.movie_credits.cast).toHaveLength(10);
+    expect(result.movie_credits.crew).toHaveLength(10);
+    expect(result._truncated.movie_credits).toEqual({ total_cast: 30, total_crew: 25 });
+  });
+
+  it("slices tv_credits to credits_limit", async () => {
+    const cast = Array.from({ length: 35 }, (_, i) => ({ id: i, title: `Show ${i}` }));
+    const crew = Array.from({ length: 20 }, (_, i) => ({ id: i, title: `Show ${i}` }));
+    mockClient.getPersonDetails.mockResolvedValue({
+      id: 5914, name: "Roger Deakins",
+      tv_credits: { cast, crew },
+    });
+
+    const result = JSON.parse(
+      await handlePersonDetails({ person_id: 5914, append: ["tv_credits"], credits_limit: 10 }, mockClient as any)
+    );
+
+    expect(result.tv_credits.cast).toHaveLength(10);
+    expect(result.tv_credits.crew).toHaveLength(10);
+    expect(result._truncated.tv_credits).toEqual({ total_cast: 35, total_crew: 20 });
+  });
 });
