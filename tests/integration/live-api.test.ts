@@ -5,6 +5,8 @@ import { describe, it, expect } from "vitest";
 import { TMDBClient } from "../../src/utils/tmdb-client.js";
 import { WikidataClient } from "../../src/utils/wikidata-client.js";
 import { handleGetPersonAwards, handleGetFilmAwards } from "../../src/tools/awards.js";
+import { handleGetFestivalPremieres } from "../../src/tools/premieres.js";
+import { handleGetCredits } from "../../src/tools/credits.js";
 
 const TMDB_TOKEN = process.env.TMDB_ACCESS_TOKEN;
 const LIVE_TIMEOUT = { timeout: 15000 };
@@ -79,6 +81,38 @@ describe.skipIf(!TMDB_TOKEN)("live TMDB API", () => {
     const parsed = JSON.parse(result);
     expect(parsed.results.length).toBeGreaterThan(0);
     expect(parsed.total_results).toBeGreaterThan(0);
+  });
+
+  it("gets festival premieres for Parasite (known Cannes debut)", LIVE_TIMEOUT, async () => {
+    const result = JSON.parse(await handleGetFestivalPremieres({ movie_id: PARASITE_ID }, client));
+    expect(result.title).toBe("Parasite");
+    expect(result.premieres.length).toBeGreaterThan(0);
+    // Parasite premiered at Cannes
+    const cannes = result.premieres.find((p: any) => p.note.toLowerCase().includes("cannes"));
+    expect(cannes).toBeTruthy();
+  });
+
+  it("gets movie credits for Parasite", LIVE_TIMEOUT, async () => {
+    const result = JSON.parse(await handleGetCredits({ movie_id: PARASITE_ID }, client));
+    expect(result.cast.length).toBeGreaterThan(0);
+    expect(result.crew.length).toBeGreaterThan(0);
+    expect(result.pagination.total_cast).toBeGreaterThan(0);
+  });
+
+  it("filters credits by department", LIVE_TIMEOUT, async () => {
+    const result = JSON.parse(
+      await handleGetCredits({ movie_id: PARASITE_ID, type: "crew", department: "Directing" }, client)
+    );
+    expect(result.crew.length).toBeGreaterThan(0);
+    for (const c of result.crew) {
+      expect(c.department.toLowerCase()).toBe("directing");
+    }
+  });
+
+  it("gets TV aggregate credits for Breaking Bad", LIVE_TIMEOUT, async () => {
+    const result = JSON.parse(await handleGetCredits({ series_id: BREAKING_BAD_ID }, client));
+    expect(result.cast.length).toBeGreaterThan(0);
+    expect(result.cast[0]).toHaveProperty("episode_count");
   });
 });
 

@@ -46,6 +46,18 @@ export interface TMDBMovieDetails extends TMDBMovie {
         name: string;
         english_name: string;
     }>;
+    // append_to_response fields (present when requested via getMovieDetails append param)
+    release_dates?: {
+        results: Array<{
+            iso_3166_1: string;
+            release_dates: Array<{
+                type: number;
+                release_date: string;
+                note?: string;
+                certification?: string;
+            }>;
+        }>;
+    };
 }
 
 export interface TMDBTVShow {

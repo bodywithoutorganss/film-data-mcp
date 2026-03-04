@@ -43,12 +43,14 @@ Film research is scattered across TMDB, IMDb, Wikipedia, JustWatch, and festival
 - Plan: `docs/plans/2026-03-04-m7-awards-intelligence.md`
 
 ### M8: Discovery & Polish
-**Criteria:** Festival premiere extraction (`release_dates` append, type 1 = Premiere). Dedicated `credits` tool with pagination and role filtering. Awards registry gaps (Critics Choice, Gotham, Emmy Outstanding Limited Series, TIFF Platform Prize). Fellowships/labs/grants data.
-**Status:** Not started. Estimate: 6-8 tasks.
+**Criteria:** Festival premiere extraction (`get_festival_premieres` tool). Dedicated `get_credits` tool with department/job filtering and offset/limit pagination. Tool count 18 → 20.
+**Status:** Complete — v0.7.0 tagged. 277 tests across 15 files (297 including skipped live tests).
+- Design: `docs/plans/2026-03-04-m8-discovery-polish-design.md`
+- Plan: `docs/plans/2026-03-04-m8-implementation.md`
 
 ## Current Status
 
-v0.6.0 released. M7 complete. 18 tools total (14 TMDB + 4 awards), 244 tests. Next up: M8 (Discovery & Polish).
+v0.7.0 released. M8 complete. 20 tools total (16 TMDB + 4 awards), 277 tests across 15 files. All milestones complete.
 
 ## Time Tracking
 
@@ -61,7 +63,7 @@ v0.6.0 released. M7 complete. 18 tools total (14 TMDB + 4 awards), 244 tests. Ne
 | M5: Usability Fixes | 1 session | 1 session | 1 session | Complete |
 | M6: Discovery Tools | 1 session | 2 sessions (design + plan, implementation) | — | Complete |
 | M7: Awards Intelligence | 1 session | 1 session (design + plan + implementation) | — | Complete |
-| M8: Discovery & Polish | TBD | — | — | Not started |
+| M8: Discovery & Polish | 1 session | 1 session (design + plan + implementation) | — | Complete |
 
 ## Key Decisions
 

@@ -6,10 +6,10 @@
  * Film Data MCP Server
  * Provides access to The Movie Database (TMDB) API through Model Context Protocol
  *
- * 14 TMDB tools: search, movie_details, tv_details, person_details,
+ * 16 TMDB tools: search, movie_details, tv_details, person_details,
  * discover, trending, curated_lists, genres, watch_providers,
  * find_by_external_id, collection_details, company_details,
- * search_keywords, company_filmography
+ * search_keywords, company_filmography, get_festival_premieres, get_credits
  *
  * 4 Wikidata awards tools: get_person_awards, get_film_awards,
  * get_award_history, search_awards
@@ -48,6 +48,8 @@ import {
     getAwardHistoryTool, handleGetAwardHistory,
     searchAwardsTool, handleSearchAwards,
 } from "./tools/awards.js";
+import { festivalPremieresTool, handleGetFestivalPremieres } from "./tools/premieres.js";
+import { creditsTool, handleGetCredits } from "./tools/credits.js";
 
 // Load environment variables
 config();
@@ -68,7 +70,7 @@ const wikidataClient = new WikidataClient();
 const server = new Server(
     {
         name: "film-data-mcp",
-        version: "0.1.0",
+        version: "0.7.0",
     },
     {
         capabilities: {
@@ -97,6 +99,8 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             companyDetailsTool,
             searchKeywordsTool,
             companyFilmographyTool,
+            festivalPremieresTool,
+            creditsTool,
             getPersonAwardsTool,
             getFilmAwardsTool,
             getAwardHistoryTool,
@@ -129,6 +133,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             company_details: handleCompanyDetails,
             search_keywords: handleSearchKeywords,
             company_filmography: handleCompanyFilmography,
+            get_festival_premieres: handleGetFestivalPremieres,
+            get_credits: handleGetCredits,
             get_person_awards: (args) => handleGetPersonAwards(args, tmdbClient, wikidataClient),
             get_film_awards: (args) => handleGetFilmAwards(args, tmdbClient, wikidataClient),
             get_award_history: (args) => handleGetAwardHistory(args, tmdbClient, wikidataClient),
