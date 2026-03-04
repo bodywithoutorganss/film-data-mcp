@@ -21,6 +21,7 @@ const mockWikidataClient = {
   getPersonNominations: vi.fn(),
   getFilmAwards: vi.fn(),
   getAwardHistory: vi.fn(),
+  countAllP166Claims: vi.fn(),
 };
 
 const mockTmdbClient = {
@@ -143,6 +144,14 @@ describe("awards tools", () => {
       await expect(
         handleGetFilmAwards({ movie_id: 99999 }, mockTmdbClient as any, mockWikidataClient as any)
       ).rejects.toThrow("Could not resolve TMDB movie 99999 to a Wikidata entity");
+    });
+  });
+
+  describe("countAllP166Claims", () => {
+    it("is callable on WikidataClient", async () => {
+      const { WikidataClient } = await import("../../src/utils/wikidata-client.js");
+      const client = new WikidataClient();
+      expect(typeof client.countAllP166Claims).toBe("function");
     });
   });
 

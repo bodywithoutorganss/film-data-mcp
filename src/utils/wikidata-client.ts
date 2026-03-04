@@ -170,6 +170,19 @@ export class WikidataClient {
     return this.queryAwards(wikidataId);
   }
 
+  async countAllP166Claims(wikidataId: string): Promise<number> {
+    this.validateQid(wikidataId);
+    const query = `
+      SELECT (COUNT(?award) AS ?count) WHERE {
+        wd:${wikidataId} p:P166 ?stmt .
+        ?stmt ps:P166 ?award .
+      }
+    `;
+    const data = await this.executeSparql(query);
+    const binding = data.results.bindings[0];
+    return binding?.count ? parseInt(binding.count.value, 10) : 0;
+  }
+
   async getAwardHistory(categoryQid: string): Promise<AwardHistoryEntry[]> {
     this.validateQid(categoryQid);
     const query = `
