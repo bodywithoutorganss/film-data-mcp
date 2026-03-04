@@ -18,7 +18,7 @@ export const genresTool = buildToolDef(
 );
 
 export async function handleGenres(
-  args: z.infer<typeof GenresSchema>,
+  args: unknown,
   client: TMDBClient
 ): Promise<string> {
   const { media_type } = GenresSchema.parse(args);
@@ -40,7 +40,7 @@ export const watchProvidersTool = buildToolDef(
 );
 
 export async function handleWatchProviders(
-  args: z.infer<typeof WatchProvidersSchema>,
+  args: unknown,
   client: TMDBClient
 ): Promise<string> {
   const { media_type, id } = WatchProvidersSchema.parse(args);
@@ -72,7 +72,7 @@ export const findByExternalIdTool = buildToolDef(
 );
 
 export async function handleFindByExternalId(
-  args: z.infer<typeof FindByExternalIdSchema>,
+  args: unknown,
   client: TMDBClient
 ): Promise<string> {
   const { external_id, source } = FindByExternalIdSchema.parse(args);
@@ -93,7 +93,7 @@ export const collectionDetailsTool = buildToolDef(
 );
 
 export async function handleCollectionDetails(
-  args: z.infer<typeof CollectionDetailsSchema>,
+  args: unknown,
   client: TMDBClient
 ): Promise<string> {
   const { collection_id } = CollectionDetailsSchema.parse(args);
@@ -115,7 +115,7 @@ export const companyDetailsTool = buildToolDef(
 );
 
 export async function handleCompanyDetails(
-  args: z.infer<typeof CompanyDetailsSchema>,
+  args: unknown,
   client: TMDBClient
 ): Promise<string> {
   const { id, type } = CompanyDetailsSchema.parse(args);

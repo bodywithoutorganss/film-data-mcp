@@ -24,7 +24,7 @@ export const movieDetailsTool = buildToolDef(
 );
 
 export async function handleMovieDetails(
-  args: z.infer<typeof MovieDetailsSchema>,
+  args: unknown,
   client: TMDBClient
 ): Promise<string> {
   const { movie_id, append } = MovieDetailsSchema.parse(args);
@@ -51,7 +51,7 @@ export const tvDetailsTool = buildToolDef(
 );
 
 export async function handleTVDetails(
-  args: z.infer<typeof TVDetailsSchema>,
+  args: unknown,
   client: TMDBClient
 ): Promise<string> {
   const { series_id, append } = TVDetailsSchema.parse(args);
@@ -78,7 +78,7 @@ export const personDetailsTool = buildToolDef(
 );
 
 export async function handlePersonDetails(
-  args: z.infer<typeof PersonDetailsSchema>,
+  args: unknown,
   client: TMDBClient
 ): Promise<string> {
   const { person_id, append } = PersonDetailsSchema.parse(args);

@@ -61,7 +61,7 @@ export const getPersonAwardsTool = buildToolDef(
 );
 
 export async function handleGetPersonAwards(
-  args: z.infer<typeof GetPersonAwardsSchema>,
+  args: unknown,
   tmdbClient: TMDBClient,
   wikidataClient: WikidataClient
 ): Promise<string> {
@@ -87,7 +87,7 @@ export const getFilmAwardsTool = buildToolDef(
 );
 
 export async function handleGetFilmAwards(
-  args: z.infer<typeof GetFilmAwardsSchema>,
+  args: unknown,
   tmdbClient: TMDBClient,
   wikidataClient: WikidataClient
 ): Promise<string> {
@@ -110,7 +110,7 @@ export const getAwardHistoryTool = buildToolDef(
 );
 
 export async function handleGetAwardHistory(
-  args: z.infer<typeof GetAwardHistorySchema>,
+  args: unknown,
   _tmdbClient: TMDBClient,
   wikidataClient: WikidataClient
 ): Promise<string> {
@@ -135,7 +135,7 @@ export const searchAwardsTool = buildToolDef(
 );
 
 export async function handleSearchAwards(
-  args: z.infer<typeof SearchAwardsSchema>,
+  args: unknown,
   _tmdbClient: TMDBClient,
   _wikidataClient: WikidataClient
 ): Promise<string> {

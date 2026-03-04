@@ -20,7 +20,7 @@ export const trendingTool = buildToolDef(
 );
 
 export async function handleTrending(
-  args: z.infer<typeof TrendingSchema>,
+  args: unknown,
   client: TMDBClient
 ): Promise<string> {
   const { media_type, time_window, page } = TrendingSchema.parse(args);
@@ -54,7 +54,7 @@ export const curatedListsTool = buildToolDef(
 );
 
 export async function handleCuratedLists(
-  args: z.infer<typeof CuratedListsSchema>,
+  args: unknown,
   client: TMDBClient
 ): Promise<string> {
   const { list_type, media_type, page, region } = CuratedListsSchema.parse(args);

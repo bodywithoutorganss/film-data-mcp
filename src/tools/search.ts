@@ -21,7 +21,7 @@ export const searchTool = buildToolDef(
 );
 
 export async function handleSearch(
-  args: z.infer<typeof SearchSchema>,
+  args: unknown,
   client: TMDBClient
 ): Promise<string> {
   const { query, type, page } = SearchSchema.parse(args);

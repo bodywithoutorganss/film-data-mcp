@@ -3,6 +3,7 @@
 
 import { z } from "zod";
 import { TMDBClient } from "../utils/tmdb-client.js";
+import { DiscoverMovieParams, DiscoverTVParams } from "../types/tmdb-extended.js";
 import { buildToolDef } from "../utils/tool-helpers.js";
 
 export const DiscoverSchema = z.object({
@@ -87,7 +88,7 @@ const PARAM_MAP: Record<string, string> = {
 };
 
 export async function handleDiscover(
-  args: z.infer<typeof DiscoverSchema>,
+  args: unknown,
   client: TMDBClient
 ): Promise<string> {
   const { media_type, ...filters } = DiscoverSchema.parse(args);
@@ -102,8 +103,8 @@ export async function handleDiscover(
   }
 
   const result = media_type === "movie"
-    ? await client.discoverMovies(tmdbFilters as any)
-    : await client.discoverTV(tmdbFilters as any);
+    ? await client.discoverMovies(tmdbFilters as DiscoverMovieParams)
+    : await client.discoverTV(tmdbFilters as DiscoverTVParams);
 
   return JSON.stringify(result, null, 2);
 }

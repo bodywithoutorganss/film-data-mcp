@@ -109,7 +109,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         const { name, arguments: args } = request.params;
 
         // Each handler validates args internally via Zod
-        const handlers: Record<string, (args: any, client: TMDBClient) => Promise<string>> = {
+        const handlers: Record<string, (args: unknown, client: TMDBClient) => Promise<string>> = {
             search: handleSearch,
             movie_details: handleMovieDetails,
             tv_details: handleTVDetails,
