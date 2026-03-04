@@ -25,7 +25,7 @@ src/
     details.ts           - Movie, TV, and person details with append_to_response
     discover.ts          - Movie/TV discovery with 30+ filters
     browse.ts            - Trending and curated lists (popular, top rated, etc.)
-    reference.ts         - Genres, watch providers, external ID lookup, collections, companies
+    reference.ts         - Genres, watch providers, external ID lookup, collections, companies, keywords, filmography
     awards.ts            - Wikidata SPARQL awards tools (person, film, history, search)
   types/
     tmdb.ts              - TMDB response types
@@ -38,7 +38,7 @@ src/
     tool-helpers.ts      - buildToolDef() — Zod schema to MCP tool definition
 ```
 
-## Tools (16 total: 12 TMDB, 4 awards)
+## Tools (18 total: 14 TMDB, 4 awards)
 
 | Tool | File | Description |
 |------|------|-------------|
@@ -54,12 +54,12 @@ src/
 | find_by_external_id | reference.ts | IMDb/TVDB/social media → TMDB lookup |
 | collection_details | reference.ts | Movie franchise/collection details |
 | company_details | reference.ts | Production company or TV network details |
+| search_keywords | reference.ts | Search for TMDB keyword IDs by name (for discover filters) |
+| company_filmography | reference.ts | Browse a production company's movie/TV catalog |
 | get_person_awards | awards.ts | Award wins and nominations for a person (by TMDB ID) |
 | get_film_awards | awards.ts | All awards a film has received (by TMDB movie ID) |
 | get_award_history | awards.ts | All winners of a specific award category across years |
 | search_awards | awards.ts | Search the awards registry by ceremony, category, or domain |
-
-**Planned (M6):** `search_keywords` and `company_filmography` → 18 tools total. See ROADMAP.md.
 
 ## Tool Pattern
 
@@ -83,7 +83,7 @@ Handlers validate via Zod internally and return `JSON.stringify(result, null, 2)
 
 ## Testing
 
-- `npm test` — unit tests (no network), 221 tests across 13 files
+- `npm test` — unit tests (no network), 236 tests across 13 files
 - `npm run test:integration` — integration tests (hits live Wikidata SPARQL endpoint)
 - Live integration tests (`tests/integration/live-api.test.ts`) require `TMDB_ACCESS_TOKEN` env var
 - Test files mirror source structure: `tests/tools/`, `tests/types/`, `tests/utils/`

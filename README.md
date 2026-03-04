@@ -18,7 +18,7 @@ npx film-data-mcp
 
 ## Features
 
-### 12 TMDB Tools
+### 14 TMDB Tools
 
 | Tool | Description |
 |------|-------------|
@@ -34,6 +34,8 @@ npx film-data-mcp
 | **find_by_external_id** | Look up TMDB entries by IMDb, TVDB, or social media ID |
 | **collection_details** | Movie franchise/collection info (e.g., Star Wars, Marvel) |
 | **company_details** | Production company or TV network details (e.g., A24, HBO) |
+| **search_keywords** | Search for TMDB keyword IDs by name, for use with discover's keyword filters |
+| **company_filmography** | Browse a production company's movie or TV catalog, sorted by release date |
 
 ### 4 Awards Tools
 
@@ -111,7 +113,7 @@ Add to your Claude Desktop configuration:
 
 ```bash
 npm run watch      # Watch mode
-npm test           # Unit tests (221 tests, no network)
+npm test           # Unit tests (236 tests, no network)
 npm run inspector  # MCP Inspector for debugging
 npm run format     # Prettier
 ```
