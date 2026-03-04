@@ -38,7 +38,9 @@ Film research is scattered across TMDB, IMDb, Wikipedia, JustWatch, and festival
 
 ### M7: Awards Intelligence
 **Criteria:** Awards completeness indicator (distinguish "entity found, 0 P166 claims" from "entity not found"). P1411 nomination cross-referencing to supplement empty P166 wins with nomination data from crew profiles.
-**Status:** Not started. Estimate: 6-8 tasks.
+**Status:** Complete — v0.6.0 tagged. 244 tests across 13 files (260 including skipped live tests).
+- Design: `docs/plans/2026-03-04-m7-awards-intelligence-design.md`
+- Plan: `docs/plans/2026-03-04-m7-awards-intelligence.md`
 
 ### M8: Discovery & Polish
 **Criteria:** Festival premiere extraction (`release_dates` append, type 1 = Premiere). Dedicated `credits` tool with pagination and role filtering. Awards registry gaps (Critics Choice, Gotham, Emmy Outstanding Limited Series, TIFF Platform Prize). Fellowships/labs/grants data.
@@ -46,7 +48,7 @@ Film research is scattered across TMDB, IMDb, Wikipedia, JustWatch, and festival
 
 ## Current Status
 
-v0.5.0 released. M6 complete. 18 tools total (14 TMDB + 4 awards), 236 tests. Next up: M7 (Awards Intelligence).
+v0.6.0 released. M7 complete. 18 tools total (14 TMDB + 4 awards), 244 tests. Next up: M8 (Discovery & Polish).
 
 ## Time Tracking
 
@@ -58,7 +60,7 @@ v0.5.0 released. M6 complete. 18 tools total (14 TMDB + 4 awards), 236 tests. Ne
 | M4: Tests + Audit | — | 3 sessions | — | Complete |
 | M5: Usability Fixes | 1 session | 1 session | 1 session | Complete |
 | M6: Discovery Tools | 1 session | 2 sessions (design + plan, implementation) | — | Complete |
-| M7: Awards Intelligence | TBD | — | — | Not started |
+| M7: Awards Intelligence | 1 session | 1 session (design + plan + implementation) | — | Complete |
 | M8: Discovery & Polish | TBD | — | — | Not started |
 
 ## Key Decisions
