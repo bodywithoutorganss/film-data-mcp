@@ -133,6 +133,7 @@ describe("awards tools", () => {
         { wikidataId: "Q102427", label: "Academy Award for Best Picture", year: 2020, ceremony: "academy-awards" },
         { wikidataId: "Q179808", label: "Palme d'Or", year: 2019, ceremony: "cannes" },
       ]);
+      mockWikidataClient.countAllP166Claims.mockResolvedValue(2);
 
       const result = await handleGetFilmAwards(
         { movie_id: 496243 },
@@ -142,6 +143,12 @@ describe("awards tools", () => {
       const parsed = JSON.parse(result);
       expect(parsed.entity.label).toBe("Parasite");
       expect(parsed.awards).toHaveLength(2);
+      expect(parsed.crewNominations).toEqual([]);
+      expect(parsed.completeness).toEqual({
+        entityFound: true,
+        p166ClaimCount: 2,
+        registeredAwardCount: 2,
+      });
     });
 
     it("falls back to IMDb ID when TMDB movie ID not found", async () => {
@@ -151,6 +158,7 @@ describe("awards tools", () => {
         wikidataId: "Q61448040", label: "Parasite", resolvedVia: "imdb_id",
       });
       mockWikidataClient.getFilmAwards.mockResolvedValue([]);
+      mockWikidataClient.countAllP166Claims.mockResolvedValue(0);
 
       const result = await handleGetFilmAwards(
         { movie_id: 496243 },
@@ -159,6 +167,48 @@ describe("awards tools", () => {
       );
       const parsed = JSON.parse(result);
       expect(parsed.entity.resolvedVia).toBe("imdb_id");
+    });
+
+    it("includes completeness indicator with p166 claim count", async () => {
+      mockWikidataClient.resolveMovieByTmdbId.mockResolvedValue({
+        wikidataId: "Q61448040", label: "Parasite", resolvedVia: "tmdb_id",
+      });
+      mockWikidataClient.getFilmAwards.mockResolvedValue([
+        { wikidataId: "Q102427", label: "Academy Award for Best Picture", year: 2020, ceremony: "academy-awards" },
+      ]);
+      mockWikidataClient.countAllP166Claims.mockResolvedValue(12);
+
+      const result = await handleGetFilmAwards(
+        { movie_id: 496243 },
+        mockTmdbClient as any,
+        mockWikidataClient as any
+      );
+      const parsed = JSON.parse(result);
+      expect(parsed.completeness).toEqual({
+        entityFound: true,
+        p166ClaimCount: 12,
+        registeredAwardCount: 1,
+      });
+    });
+
+    it("shows zero p166 claims for entity with no Wikidata awards", async () => {
+      mockWikidataClient.resolveMovieByTmdbId.mockResolvedValue({
+        wikidataId: "Q56167580", label: "Minding the Gap", resolvedVia: "tmdb_id",
+      });
+      mockWikidataClient.getFilmAwards.mockResolvedValue([]);
+      mockWikidataClient.countAllP166Claims.mockResolvedValue(0);
+
+      const result = await handleGetFilmAwards(
+        { movie_id: 489985 },
+        mockTmdbClient as any,
+        mockWikidataClient as any
+      );
+      const parsed = JSON.parse(result);
+      expect(parsed.completeness).toEqual({
+        entityFound: true,
+        p166ClaimCount: 0,
+        registeredAwardCount: 0,
+      });
     });
 
     it("throws when movie cannot be resolved", async () => {
