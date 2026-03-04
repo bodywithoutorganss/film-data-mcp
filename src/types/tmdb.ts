@@ -24,6 +24,7 @@ export interface TMDBMovie {
 }
 
 export interface TMDBMovieDetails extends TMDBMovie {
+    imdb_id: string | null;
     budget: number;
     revenue: number;
     runtime: number | null;
