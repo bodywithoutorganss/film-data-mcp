@@ -31,11 +31,16 @@ export async function handleGenres(
 export const WatchProvidersSchema = z.object({
   media_type: z.enum(["movie", "tv"]).describe("Movie or TV"),
   id: z.number().int().positive().optional().describe("TMDB movie or TV ID. Omit to list all available providers"),
+  region: z
+    .string()
+    .length(2)
+    .optional()
+    .describe("ISO 3166-1 country code (e.g., 'US', 'GB'). Filters results to a single region. Recommended to reduce response size."),
 });
 
 export const watchProvidersTool = buildToolDef(
   "watch_providers",
-  "Get streaming/rent/buy availability for a movie or TV show by region, or list all available watch providers. Powered by JustWatch data.",
+  "Get streaming/rent/buy availability for a movie or TV show by region, or list all available watch providers. Powered by JustWatch data. Use the region parameter (e.g., 'US') to get results for a single country — recommended to avoid large responses.",
   WatchProvidersSchema
 );
 
@@ -43,12 +48,23 @@ export async function handleWatchProviders(
   args: unknown,
   client: TMDBClient
 ): Promise<string> {
-  const { media_type, id } = WatchProvidersSchema.parse(args);
+  const { media_type, id, region } = WatchProvidersSchema.parse(args);
 
   if (id) {
     const result = media_type === "movie"
       ? await client.getMovieWatchProviders(id)
       : await client.getTVWatchProviders(id);
+
+    if (region) {
+      const regionData = (result as any).results?.[region];
+      if (regionData) {
+        (result as any).results = { [region]: regionData };
+      } else {
+        (result as any).results = {};
+        (result as any)._note = `No watch provider data found for region "${region}"`;
+      }
+    }
+
     return JSON.stringify(result, null, 2);
   }
 

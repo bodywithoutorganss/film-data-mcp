@@ -57,6 +57,17 @@ describe("WatchProvidersSchema", () => {
   it("rejects non-positive ID", () => {
     expect(() => WatchProvidersSchema.parse({ media_type: "movie", id: 0 })).toThrow();
   });
+
+  it("accepts region parameter", () => {
+    const result = WatchProvidersSchema.parse({ media_type: "movie", id: 550, region: "US" });
+    expect(result.region).toBe("US");
+  });
+
+  it("rejects region that is not 2 characters", () => {
+    expect(() =>
+      WatchProvidersSchema.parse({ media_type: "movie", id: 550, region: "USA" })
+    ).toThrow();
+  });
 });
 
 describe("FindByExternalIdSchema", () => {
@@ -167,6 +178,51 @@ describe("handleWatchProviders", () => {
   it("calls getWatchProviderList when no id", async () => {
     mockClient.getWatchProviderList.mockResolvedValue({ results: [] });
     await handleWatchProviders({ media_type: "movie" }, mockClient as any);
+    expect(mockClient.getWatchProviderList).toHaveBeenCalledWith("movie");
+  });
+
+  it("filters to single region when region is set", async () => {
+    mockClient.getMovieWatchProviders.mockResolvedValue({
+      id: 550,
+      results: {
+        US: { link: "https://...", flatrate: [{ provider_name: "Netflix" }] },
+        GB: { link: "https://...", flatrate: [{ provider_name: "Prime" }] },
+      },
+    });
+
+    const result = JSON.parse(
+      await handleWatchProviders({ media_type: "movie", id: 550, region: "US" }, mockClient as any)
+    );
+
+    expect(result.id).toBe(550);
+    expect(result.results).toHaveProperty("US");
+    expect(result.results).not.toHaveProperty("GB");
+  });
+
+  it("returns empty results with note when region not found", async () => {
+    mockClient.getMovieWatchProviders.mockResolvedValue({
+      id: 550,
+      results: {
+        US: { link: "https://...", flatrate: [] },
+      },
+    });
+
+    const result = JSON.parse(
+      await handleWatchProviders({ media_type: "movie", id: 550, region: "JP" }, mockClient as any)
+    );
+
+    expect(result.results).toEqual({});
+    expect(result._note).toContain("JP");
+  });
+
+  it("ignores region when id is omitted", async () => {
+    mockClient.getWatchProviderList.mockResolvedValue({ results: [{ provider_name: "Netflix" }] });
+
+    const result = JSON.parse(
+      await handleWatchProviders({ media_type: "movie", region: "US" }, mockClient as any)
+    );
+
+    expect(result.results).toHaveLength(1);
     expect(mockClient.getWatchProviderList).toHaveBeenCalledWith("movie");
   });
 });
