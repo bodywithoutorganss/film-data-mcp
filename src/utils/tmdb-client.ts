@@ -138,6 +138,20 @@ export class TMDBClient {
     }
 
     /**
+     * Get full credits for a movie (cast + crew, no truncation)
+     */
+    async getMovieCredits(movieId: number): Promise<any> {
+        return this.get<any>(`/movie/${movieId}/credits`);
+    }
+
+    /**
+     * Get aggregate credits for a TV series (all seasons combined)
+     */
+    async getTVAggregateCredits(tvId: number): Promise<any> {
+        return this.get<any>(`/tv/${tvId}/aggregate_credits`);
+    }
+
+    /**
      * Get TV show details by ID with optional sub-requests
      */
     async getTVDetails(tvId: number, appendToResponse?: string[]): Promise<TMDBTVShowDetails> {
