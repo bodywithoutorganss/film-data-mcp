@@ -72,7 +72,7 @@ export const MovieDetailsSchema = z.object({
 
 export const movieDetailsTool = buildToolDef(
   "movie_details",
-  "Get full movie details from TMDB. Optionally bundle credits, videos, images, watch providers, and more in a single call using the append parameter. Credits are limited to top 20 cast + crew by default (use credits_limit to adjust, 0 for unlimited).",
+  "Get full movie details from TMDB. Optionally bundle credits, videos, images, watch providers, and more in a single call using the append parameter. Credits are limited to top 20 cast + crew by default (use credits_limit to adjust, 0 for unlimited). For full crew browsing with department/job filtering, use get_credits. For festival premiere dates, use get_festival_premieres.",
   MovieDetailsSchema
 );
 
@@ -113,7 +113,7 @@ export const TVDetailsSchema = z.object({
 
 export const tvDetailsTool = buildToolDef(
   "tv_details",
-  "Get full TV series details from TMDB. Optionally bundle credits, videos, images, watch providers, and more in a single call using the append parameter. Credits are limited to top 20 cast + crew by default (use credits_limit to adjust, 0 for unlimited).",
+  "Get full TV series details from TMDB. Optionally bundle credits, videos, images, watch providers, and more in a single call using the append parameter. Credits are limited to top 20 cast + crew by default (use credits_limit to adjust, 0 for unlimited). For full crew browsing with department/job filtering, use get_credits.",
   TVDetailsSchema
 );
 
