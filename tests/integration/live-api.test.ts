@@ -4,6 +4,7 @@
 import { describe, it, expect } from "vitest";
 import { TMDBClient } from "../../src/utils/tmdb-client.js";
 import { WikidataClient } from "../../src/utils/wikidata-client.js";
+import { handleGetPersonAwards, handleGetFilmAwards } from "../../src/tools/awards.js";
 
 const TMDB_TOKEN = process.env.TMDB_ACCESS_TOKEN;
 const LIVE_TIMEOUT = { timeout: 15000 };
@@ -83,6 +84,7 @@ describe.skipIf(!TMDB_TOKEN)("live TMDB API", () => {
 
 describe.skipIf(!TMDB_TOKEN)("live Wikidata SPARQL", () => {
   const wikidataClient = new WikidataClient();
+  const tmdbClient = TMDB_TOKEN ? new TMDBClient(TMDB_TOKEN) : (null as unknown as TMDBClient);
 
   it("resolves Roger Deakins by TMDB person ID", LIVE_TIMEOUT, async () => {
     const entity = await wikidataClient.resolvePersonByTmdbId("151");
@@ -113,5 +115,26 @@ describe.skipIf(!TMDB_TOKEN)("live Wikidata SPARQL", () => {
     expect(awards.length).toBeGreaterThan(0);
     const bestPicture = awards.find((a) => a.label && a.label.match(/Best Picture/i));
     expect(bestPicture).toBeDefined();
+  });
+
+  it("get_person_awards includes completeness indicator", { timeout: 30000 }, async () => {
+    const result = JSON.parse(
+      await handleGetPersonAwards({ person_id: 151 }, tmdbClient, wikidataClient)
+    );
+    expect(result.completeness).toBeDefined();
+    expect(result.completeness.entityFound).toBe(true);
+    expect(typeof result.completeness.p166ClaimCount).toBe("number");
+    expect(result.completeness.registeredAwardCount).toBe(result.wins.length);
+  });
+
+  it("get_film_awards includes completeness and crew nominations", { timeout: 30000 }, async () => {
+    // Parasite (496243) — well-known film with awards data
+    const result = JSON.parse(
+      await handleGetFilmAwards({ movie_id: 496243 }, tmdbClient, wikidataClient)
+    );
+    expect(result.completeness).toBeDefined();
+    expect(result.completeness.entityFound).toBe(true);
+    expect(typeof result.completeness.p166ClaimCount).toBe("number");
+    expect(Array.isArray(result.crewNominations)).toBe(true);
   });
 });
