@@ -21,6 +21,9 @@
     "ai"
   ],
   "author": "Teja Chava",
+  "contributors": [
+    "Dayton Thompson"
+  ],
   "homepage": "https://github.com/bodywithoutorganss/film-data-mcp#readme",
   "bugs": {
     "url": "https://github.com/bodywithoutorganss/film-data-mcp/issues"

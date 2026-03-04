@@ -1,5 +1,5 @@
-// ABOUTME: Vitest configuration for unit and integration tests.
-// ABOUTME: Integration tests (live SPARQL) are excluded by default, run with npm run test:integration.
+// ABOUTME: Vitest configuration for unit tests.
+// ABOUTME: Integration tests (live SPARQL) are excluded; run with npm run test:integration.
 
 import { defineConfig } from "vitest/config";
 

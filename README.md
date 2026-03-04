@@ -1,12 +1,8 @@
-# TMDB MCP Server
+# film-data-mcp
 
-[![npm version](https://img.shields.io/npm/v/tmdb-mcp-server.svg)](https://www.npmjs.com/package/tmdb-mcp-server)
-[![npm downloads](https://img.shields.io/npm/dm/tmdb-mcp-server.svg)](https://www.npmjs.com/package/tmdb-mcp-server)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-A [Model Context Protocol (MCP)](https://modelcontextprotocol.io) server that provides access to [The Movie Database (TMDB)](https://www.themoviedb.org/) API. This server enables Claude and other MCP clients to search for movies, TV shows, and people, as well as get detailed information and recommendations.
-
-🌟 **Now available on the [Official MCP Registry](https://registry.modelcontextprotocol.io)**
+A [Model Context Protocol (MCP)](https://modelcontextprotocol.io) server for film data — TMDB crew/cast + Wikidata awards. Forked from [tcehjaava/tmdb-mcp-server](https://github.com/tcehjaava/tmdb-mcp-server).
 
 ## Quick Start
 
@@ -14,10 +10,10 @@ Get started in seconds with npm:
 
 ```bash
 # Install globally
-npm install -g tmdb-mcp-server
+npm install -g film-data-mcp
 
 # Or use with npx (no installation needed)
-npx tmdb-mcp-server
+npx film-data-mcp
 ```
 
 **Get your free TMDB API token**: https://www.themoviedb.org/settings/api
@@ -52,7 +48,7 @@ npx tmdb-mcp-server
 Install from npm registry:
 
 ```bash
-npm install -g tmdb-mcp-server
+npm install -g film-data-mcp
 ```
 
 That's it! No build step required.
@@ -67,8 +63,8 @@ That's it! No build step required.
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/tcehjaava/tmdb-mcp-server.git
-cd tmdb-mcp-server
+git clone https://github.com/bodywithoutorganss/film-data-mcp.git
+cd film-data-mcp
 ```
 
 2. Install dependencies:
@@ -103,7 +99,7 @@ Add the server to your Claude Desktop configuration:
   "mcpServers": {
     "tmdb": {
       "command": "npx",
-      "args": ["-y", "tmdb-mcp-server"],
+      "args": ["-y", "film-data-mcp"],
       "env": {
         "TMDB_ACCESS_TOKEN": "your_tmdb_access_token_here"
       }
@@ -119,7 +115,7 @@ Add the server to your Claude Desktop configuration:
   "mcpServers": {
     "tmdb": {
       "command": "node",
-      "args": ["/absolute/path/to/tmdb-mcp-server/build/index.js"],
+      "args": ["/absolute/path/to/film-data-mcp/build/index.js"],
       "env": {
         "TMDB_ACCESS_TOKEN": "your_tmdb_access_token_here"
       }
