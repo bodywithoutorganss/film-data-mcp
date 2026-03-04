@@ -32,7 +32,7 @@ Film research is scattered across TMDB, IMDb, Wikipedia, JustWatch, and festival
 
 ### M6: TMDB Discovery Tools
 **Criteria:** `search_keywords` (wraps `GET /3/search/keyword`) and `company_filmography` (ergonomic `discover` wrapper with `with_companies`). Tool count 16 → 18. Cross-referencing tool descriptions updated.
-**Status:** Designed and planned. Implementation plan ready (6 TDD tasks). Will tag v0.5.0.
+**Status:** Complete — v0.5.0 tagged. 236 tests across 13 files.
 - Design: `docs/plans/2026-03-04-m8-discovery-tools-design.md`
 - Plan: `docs/plans/2026-03-04-m8-discovery-tools.md`
 
@@ -46,7 +46,7 @@ Film research is scattered across TMDB, IMDb, Wikipedia, JustWatch, and festival
 
 ## Current Status
 
-v0.4.0 released. M6 designed and planned, ready for implementation. 18 tools total after M6 (12 TMDB + 4 awards + 2 discovery).
+v0.5.0 released. M6 complete. 18 tools total (14 TMDB + 4 awards), 236 tests. Next up: M7 (Awards Intelligence).
 
 ## Time Tracking
 
@@ -57,7 +57,7 @@ v0.4.0 released. M6 designed and planned, ready for implementation. 18 tools tot
 | M3: Awards Tools | — | 2 sessions | — | Complete |
 | M4: Tests + Audit | — | 3 sessions | — | Complete |
 | M5: Usability Fixes | 1 session | 1 session | 1 session | Complete |
-| M6: Discovery Tools | 1 session | 1 session (design + plan) | — | Planned |
+| M6: Discovery Tools | 1 session | 2 sessions (design + plan, implementation) | — | Complete |
 | M7: Awards Intelligence | TBD | — | — | Not started |
 | M8: Discovery & Polish | TBD | — | — | Not started |
 
