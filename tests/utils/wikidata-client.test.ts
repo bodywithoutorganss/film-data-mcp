@@ -123,6 +123,14 @@ describe("WikidataClient", () => {
       await expect(client.getPersonWins("invalid")).rejects.toThrow("Invalid Wikidata QID");
     });
 
+    it("rejects invalid TMDB ID", async () => {
+      await expect(client.resolvePersonByTmdbId('abc"injection')).rejects.toThrow("Invalid TMDB ID");
+    });
+
+    it("rejects invalid IMDb ID", async () => {
+      await expect(client.resolveByImdbId("invalid")).rejects.toThrow("Invalid IMDb ID");
+    });
+
     it("throws on non-OK response", async () => {
       mockFetch.mockResolvedValueOnce({
         ok: false,
@@ -133,6 +141,14 @@ describe("WikidataClient", () => {
       await expect(client.resolvePersonByTmdbId("488")).rejects.toThrow(
         "Wikidata SPARQL error: 429 Too Many Requests"
       );
+    });
+
+    it("throws on malformed JSON response", async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => { throw new SyntaxError("Unexpected token"); },
+      });
+      await expect(client.resolvePersonByTmdbId("488")).rejects.toThrow("Unexpected token");
     });
   });
 

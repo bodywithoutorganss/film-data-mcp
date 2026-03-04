@@ -23,7 +23,6 @@ export interface WikidataAward {
   wikidataId: string;
   label: string;
   year?: number;
-  forWork?: WikidataEntity;
   ceremony: string;
 }
 
@@ -39,7 +38,7 @@ export interface AwardHistoryEntry {
   recipientId: string;
   recipientLabel: string;
   year?: number;
-  forWork?: { wikidataId: string; label: string };
+  forWork?: WikidataEntity;
 }
 
 export interface PersonAwardsResult {

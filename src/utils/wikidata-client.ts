@@ -44,6 +44,7 @@ export class WikidataClient {
   }
 
   async resolvePersonByTmdbId(tmdbId: string): Promise<ResolvedEntity | null> {
+    this.validateTmdbId(tmdbId);
     const query = `
       SELECT ?entity ?entityLabel WHERE {
         ?entity wdt:P4985 "${tmdbId}" .
@@ -56,6 +57,7 @@ export class WikidataClient {
   }
 
   async resolveMovieByTmdbId(tmdbId: string): Promise<ResolvedEntity | null> {
+    this.validateTmdbId(tmdbId);
     const query = `
       SELECT ?entity ?entityLabel WHERE {
         ?entity wdt:P4947 "${tmdbId}" .
@@ -68,6 +70,7 @@ export class WikidataClient {
   }
 
   async resolveByImdbId(imdbId: string): Promise<ResolvedEntity | null> {
+    this.validateImdbId(imdbId);
     const query = `
       SELECT ?entity ?entityLabel WHERE {
         ?entity wdt:P345 "${imdbId}" .
@@ -82,6 +85,18 @@ export class WikidataClient {
   private lookupCeremony(awardQid: string): string {
     const cat = AWARD_CATEGORIES.find((c) => c.wikidataId === awardQid);
     return cat?.ceremony ?? "unknown";
+  }
+
+  private validateTmdbId(id: string): void {
+    if (!/^\d+$/.test(id)) {
+      throw new Error(`Invalid TMDB ID: ${id}`);
+    }
+  }
+
+  private validateImdbId(id: string): void {
+    if (!/^(tt|nm|co)\d+$/.test(id)) {
+      throw new Error(`Invalid IMDb ID: ${id}`);
+    }
   }
 
   private validateQid(qid: string): void {
