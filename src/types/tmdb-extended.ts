@@ -38,6 +38,13 @@ export interface WatchProviderResult {
   results: Record<string, WatchProviderRegionResult>;
 }
 
+// --- Keywords ---
+
+export interface Keyword {
+  id: number;
+  name: string;
+}
+
 // --- Collections ---
 
 export interface CollectionPart {

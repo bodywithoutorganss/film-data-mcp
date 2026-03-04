@@ -62,6 +62,13 @@ describe.skipIf(!TMDB_TOKEN)("live TMDB API", () => {
     expect(drama).toBeDefined();
     expect(drama!.name).toBe("Drama");
   });
+
+  it("searches keywords for 'masculinity'", LIVE_TIMEOUT, async () => {
+    const result = await client.searchKeywords("masculinity");
+    expect(result.results.length).toBeGreaterThan(0);
+    expect(result.results[0]).toHaveProperty("id");
+    expect(result.results[0]).toHaveProperty("name");
+  });
 });
 
 describe.skipIf(!TMDB_TOKEN)("live Wikidata SPARQL", () => {

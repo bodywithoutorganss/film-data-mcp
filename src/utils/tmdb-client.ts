@@ -20,6 +20,7 @@ import type {
     DiscoverTVParams,
     PaginatedResult,
     Genre,
+    Keyword,
     FindResult,
     CollectionDetails,
     CompanyDetails,
@@ -278,6 +279,16 @@ export class TMDBClient {
      */
     async searchByType(mediaType: "movie" | "tv" | "person" | "company", query: string, page: number = 1): Promise<PaginatedResult<TMDBMovie | TMDBTVShow | TMDBPerson>> {
         return this.get<PaginatedResult<TMDBMovie | TMDBTVShow | TMDBPerson>>(`/search/${mediaType}`, {
+            query,
+            page: String(page),
+        });
+    }
+
+    /**
+     * Search for keywords by name
+     */
+    async searchKeywords(query: string, page: number = 1): Promise<PaginatedResult<Keyword>> {
+        return this.get<PaginatedResult<Keyword>>("/search/keyword", {
             query,
             page: String(page),
         });
