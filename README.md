@@ -100,14 +100,6 @@ Add to your Claude Desktop configuration:
 }
 ```
 
-### Remote Deployment (HTTP Mode)
-
-```bash
-MCP_TRANSPORT=http PORT=3000 node build/index.js
-```
-
-See [TRANSPORT.md](TRANSPORT.md) for deployment instructions (Railway, etc.).
-
 ## Development
 
 ```bash

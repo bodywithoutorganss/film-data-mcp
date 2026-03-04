@@ -6,11 +6,7 @@
 npm install
 npm run build
 
-# Run with stdio transport (default)
 TMDB_ACCESS_TOKEN=<your-token> node build/index.js
-
-# Run with HTTP transport
-TMDB_ACCESS_TOKEN=<your-token> MCP_TRANSPORT=http PORT=3000 node build/index.js
 
 # Run tests
 npm test
