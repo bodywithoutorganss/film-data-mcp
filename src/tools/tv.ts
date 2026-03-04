@@ -1,3 +1,6 @@
+// ABOUTME: MCP tools for TMDB TV show search, discovery, details, and credits.
+// ABOUTME: Each tool exports a Zod schema, tool definition, and handler function.
+
 /**
  * TV show-related MCP tools
  */

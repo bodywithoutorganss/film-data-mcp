@@ -1,3 +1,6 @@
+// ABOUTME: MCP tools for TMDB person search and detail lookup.
+// ABOUTME: Each tool exports a Zod schema, tool definition, and handler function.
+
 /**
  * People-related MCP tools
  */

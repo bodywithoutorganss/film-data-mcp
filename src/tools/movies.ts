@@ -1,3 +1,6 @@
+// ABOUTME: MCP tools for TMDB movie search, discovery, details, and credits.
+// ABOUTME: Each tool exports a Zod schema, tool definition, and handler function.
+
 /**
  * Movie-related MCP tools
  */

@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+// ABOUTME: Entry point for the film-data-mcp server.
+// ABOUTME: Registers TMDB and Wikidata tools, handles stdio and HTTP transports.
 
 /**
  * TMDB MCP Server

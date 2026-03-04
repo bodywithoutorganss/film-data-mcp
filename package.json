@@ -1,33 +1,35 @@
 {
-  "name": "tmdb-mcp-server",
+  "name": "film-data-mcp",
   "version": "0.1.1",
-  "mcpName": "io.github.tcehjaava/tmdb-mcp-server",
-  "description": "MCP server for The Movie Database (TMDB) API",
+  "mcpName": "io.github.bodywithoutorganss/film-data-mcp",
+  "description": "MCP server for film data — TMDB crew/cast + Wikidata awards",
   "license": "MIT",
   "type": "module",
   "repository": {
     "type": "git",
-    "url": "https://github.com/tcehjaava/tmdb-mcp-server"
+    "url": "https://github.com/bodywithoutorganss/film-data-mcp"
   },
   "keywords": [
     "mcp",
     "model-context-protocol",
     "tmdb",
+    "wikidata",
     "movies",
     "tv-shows",
+    "awards",
     "claude",
     "ai"
   ],
   "author": "Teja Chava",
-  "homepage": "https://github.com/tcehjaava/tmdb-mcp-server#readme",
+  "homepage": "https://github.com/bodywithoutorganss/film-data-mcp#readme",
   "bugs": {
-    "url": "https://github.com/tcehjaava/tmdb-mcp-server/issues"
+    "url": "https://github.com/bodywithoutorganss/film-data-mcp/issues"
   },
   "engines": {
     "node": ">=18.0.0"
   },
   "bin": {
-    "tmdb-mcp-server": "./build/index.js"
+    "film-data-mcp": "./build/index.js"
   },
   "files": [
     "build",

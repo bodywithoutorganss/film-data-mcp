@@ -1,3 +1,6 @@
+// ABOUTME: TypeScript types for TMDB API responses.
+// ABOUTME: Covers movies, TV shows, people, credits, and trending items.
+
 /**
  * TMDB API Response Types
  * Based on The Movie Database API v3

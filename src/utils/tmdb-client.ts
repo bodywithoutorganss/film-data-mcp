@@ -1,3 +1,6 @@
+// ABOUTME: HTTP client for the TMDB (The Movie Database) API.
+// ABOUTME: Provides typed methods for movie, TV, and person endpoints.
+
 /**
  * TMDB API Client
  * Handles all requests to The Movie Database API
