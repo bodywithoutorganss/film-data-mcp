@@ -11,6 +11,7 @@ import {
   findCategoriesByCeremony,
   type Ceremony,
   type AwardCategory,
+  type AwardDomain,
 } from "../../src/types/awards-registry.js";
 
 describe("awards registry", () => {
@@ -70,5 +71,43 @@ describe("awards registry", () => {
         `${cat.id} references unknown ceremony ${cat.ceremony}`
       ).toBe(true);
     }
+  });
+
+  it("has no duplicate ids or wikidataIds in categories", () => {
+    const ids = AWARD_CATEGORIES.map((c) => c.id);
+    const wikidataIds = AWARD_CATEGORIES.map((c) => c.wikidataId);
+
+    const duplicateIds = ids.filter((id, i) => ids.indexOf(id) !== i);
+    const duplicateWikidataIds = wikidataIds.filter(
+      (qid, i) => wikidataIds.indexOf(qid) !== i
+    );
+
+    expect(
+      duplicateIds,
+      `Duplicate category ids: ${duplicateIds.join(", ")}`
+    ).toEqual([]);
+    expect(
+      duplicateWikidataIds,
+      `Duplicate category wikidataIds: ${duplicateWikidataIds.join(", ")}`
+    ).toEqual([]);
+  });
+
+  it("has no duplicate ids or wikidataIds in ceremonies", () => {
+    const ids = CEREMONIES.map((c) => c.id);
+    const wikidataIds = CEREMONIES.map((c) => c.wikidataId);
+
+    const duplicateIds = ids.filter((id, i) => ids.indexOf(id) !== i);
+    const duplicateWikidataIds = wikidataIds.filter(
+      (qid, i) => wikidataIds.indexOf(qid) !== i
+    );
+
+    expect(
+      duplicateIds,
+      `Duplicate ceremony ids: ${duplicateIds.join(", ")}`
+    ).toEqual([]);
+    expect(
+      duplicateWikidataIds,
+      `Duplicate ceremony wikidataIds: ${duplicateWikidataIds.join(", ")}`
+    ).toEqual([]);
   });
 });

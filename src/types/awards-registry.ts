@@ -8,12 +8,26 @@ export interface Ceremony {
   type: "ceremony" | "festival" | "fellowship" | "lab" | "grant";
 }
 
+export type AwardDomain =
+  | "picture"
+  | "director"
+  | "screenplay"
+  | "cinematography"
+  | "editing"
+  | "acting"
+  | "supporting-acting"
+  | "score"
+  | "documentary"
+  | "international"
+  | "animated"
+  | "short";
+
 export interface AwardCategory {
   id: string;
   ceremony: string;
   label: string;
   wikidataId: string;
-  domain: string;
+  domain: AwardDomain;
 }
 
 // --- Ceremonies ---
@@ -181,7 +195,7 @@ export function findCategory(id: string): AwardCategory | undefined {
   return AWARD_CATEGORIES.find((c) => c.id === id);
 }
 
-export function findCategoriesByDomain(domain: string): AwardCategory[] {
+export function findCategoriesByDomain(domain: AwardDomain): AwardCategory[] {
   return AWARD_CATEGORIES.filter((c) => c.domain === domain);
 }
 
