@@ -27,6 +27,28 @@ export async function handleGenres(
   return JSON.stringify(result, null, 2);
 }
 
+// --- Search Keywords ---
+
+export const SearchKeywordsSchema = z.object({
+  query: z.string().min(1).describe("Keyword name to search for (e.g., 'masculinity', 'war veteran')"),
+  page: z.number().int().positive().optional().describe("Page number (default 1)"),
+});
+
+export const searchKeywordsTool = buildToolDef(
+  "search_keywords",
+  "Search for TMDB keyword IDs by name. Use the returned IDs with the discover tool's with_keywords filter to find films by theme.",
+  SearchKeywordsSchema
+);
+
+export async function handleSearchKeywords(
+  args: unknown,
+  client: TMDBClient
+): Promise<string> {
+  const { query, page } = SearchKeywordsSchema.parse(args);
+  const result = await client.searchKeywords(query, page);
+  return JSON.stringify(result, null, 2);
+}
+
 // --- Watch Providers ---
 
 export const WatchProvidersSchema = z.object({

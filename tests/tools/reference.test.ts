@@ -8,11 +8,13 @@ import {
   FindByExternalIdSchema,
   CollectionDetailsSchema,
   CompanyDetailsSchema,
+  SearchKeywordsSchema,
   handleGenres,
   handleWatchProviders,
   handleFindByExternalId,
   handleCollectionDetails,
   handleCompanyDetails,
+  handleSearchKeywords,
 } from "../../src/tools/reference.js";
 
 describe("GenresSchema", () => {
@@ -291,5 +293,50 @@ describe("handleCompanyDetails", () => {
     const result = await handleCompanyDetails({ id: 49, type: "network" }, mockClient as any);
     expect(mockClient.getNetwork).toHaveBeenCalledWith(49);
     expect(JSON.parse(result).name).toBe("HBO");
+  });
+});
+
+describe("SearchKeywordsSchema", () => {
+  it("accepts query string", () => {
+    const result = SearchKeywordsSchema.parse({ query: "masculinity" });
+    expect(result.query).toBe("masculinity");
+  });
+
+  it("accepts optional page", () => {
+    const result = SearchKeywordsSchema.parse({ query: "war", page: 2 });
+    expect(result.page).toBe(2);
+  });
+
+  it("rejects missing query", () => {
+    expect(() => SearchKeywordsSchema.parse({})).toThrow();
+  });
+
+  it("rejects empty query", () => {
+    expect(() => SearchKeywordsSchema.parse({ query: "" })).toThrow();
+  });
+});
+
+describe("handleSearchKeywords", () => {
+  const mockClient = { searchKeywords: vi.fn() };
+
+  it("calls searchKeywords with query and default page", async () => {
+    mockClient.searchKeywords.mockResolvedValue({
+      page: 1,
+      results: [{ id: 194226, name: "masculinity" }],
+      total_pages: 1,
+      total_results: 1,
+    });
+    const result = await handleSearchKeywords({ query: "masculinity" }, mockClient as any);
+    expect(mockClient.searchKeywords).toHaveBeenCalledWith("masculinity", undefined);
+    const parsed = JSON.parse(result);
+    expect(parsed.results[0].id).toBe(194226);
+  });
+
+  it("passes page parameter through", async () => {
+    mockClient.searchKeywords.mockResolvedValue({
+      page: 2, results: [], total_pages: 3, total_results: 25,
+    });
+    await handleSearchKeywords({ query: "war", page: 2 }, mockClient as any);
+    expect(mockClient.searchKeywords).toHaveBeenCalledWith("war", 2);
   });
 });
