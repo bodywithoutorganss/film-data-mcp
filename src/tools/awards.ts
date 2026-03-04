@@ -163,6 +163,10 @@ export async function handleSearchAwards(
   const { query } = SearchAwardsSchema.parse(args);
   const tokens = query.toLowerCase().split(/\s+/).filter(Boolean);
 
+  if (tokens.length === 0) {
+    return JSON.stringify({ ceremonies: [], categories: [] }, null, 2);
+  }
+
   const matchesAll = (fields: string[]) =>
     tokens.every((token) => fields.some((f) => f.includes(token)));
 

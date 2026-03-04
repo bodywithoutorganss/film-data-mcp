@@ -30,20 +30,19 @@ function truncateCredits(result: any, limit: number): void {
   }
 }
 
-// Filters appended watch/providers data to a single region.
+// Filters a watch providers container to a single region.
+// Works on any object with a `results` map keyed by country code.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function filterWatchProviders(result: any, region: string | undefined): void {
-  if (!region) return;
-  const providers = result["watch/providers"];
-  if (!providers?.results) return;
+export function filterWatchProviders(container: any, region: string | undefined): void {
+  if (!region || !container?.results) return;
 
   const upper = region.toUpperCase();
-  const regionData = providers.results[upper];
+  const regionData = container.results[upper];
   if (regionData) {
-    providers.results = { [upper]: regionData };
+    container.results = { [upper]: regionData };
   } else {
-    providers.results = {};
-    providers._note = `No watch provider data found for region "${upper}"`;
+    container.results = {};
+    container._note = `No watch provider data found for region "${upper}"`;
   }
 }
 
@@ -84,7 +83,7 @@ export async function handleMovieDetails(
   const { movie_id, append, credits_limit, region } = MovieDetailsSchema.parse(args);
   const result = await client.getMovieDetails(movie_id, append as string[] | undefined);
   truncateCredits(result, credits_limit);
-  filterWatchProviders(result, region);
+  filterWatchProviders(result["watch/providers"], region);
   return JSON.stringify(result, null, 2);
 }
 
@@ -125,7 +124,7 @@ export async function handleTVDetails(
   const { series_id, append, credits_limit, region } = TVDetailsSchema.parse(args);
   const result = await client.getTVDetails(series_id, append as string[] | undefined);
   truncateCredits(result, credits_limit);
-  filterWatchProviders(result, region);
+  filterWatchProviders(result["watch/providers"], region);
   return JSON.stringify(result, null, 2);
 }
 
