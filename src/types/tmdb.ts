@@ -170,8 +170,6 @@ export interface TMDBTrendingItem {
     first_air_date?: string;
     // Person-specific fields
     known_for_department?: string;
-    // Additional dynamic fields
-    [key: string]: any;
 }
 
 /**

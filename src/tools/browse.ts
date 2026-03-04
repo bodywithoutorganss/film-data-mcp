@@ -3,6 +3,7 @@
 
 import { z } from "zod";
 import { TMDBClient } from "../utils/tmdb-client.js";
+import { buildToolDef } from "../utils/tool-helpers.js";
 
 // --- Trending ---
 
@@ -12,22 +13,14 @@ export const TrendingSchema = z.object({
   page: z.number().int().positive().optional().describe("Page number"),
 });
 
-export const trendingTool = {
-  name: "trending",
-  description: "Get trending movies, TV shows, or people. Choose a time window of day or week.",
-  inputSchema: {
-    type: "object" as const,
-    properties: {
-      media_type: { type: "string", enum: ["all", "movie", "tv", "person"], description: "Type of trending content" },
-      time_window: { type: "string", enum: ["day", "week"], description: "Time window" },
-      page: { type: "number", description: "Page number" },
-    },
-    required: ["media_type", "time_window"],
-  },
-};
+export const trendingTool = buildToolDef(
+  "trending",
+  "Get trending movies, TV shows, or people. Choose a time window of day or week.",
+  TrendingSchema
+);
 
 export async function handleTrending(
-  args: z.infer<typeof TrendingSchema>,
+  args: unknown,
   client: TMDBClient
 ): Promise<string> {
   const { media_type, time_window, page } = TrendingSchema.parse(args);
@@ -37,14 +30,16 @@ export async function handleTrending(
 
 // --- Curated Lists ---
 
-export const CuratedListsSchema = z.object({
+const CuratedListsBaseSchema = z.object({
   list_type: z
     .enum(["now_playing", "upcoming", "popular", "top_rated", "airing_today"])
     .describe("Type of curated list"),
   media_type: z.enum(["movie", "tv"]).describe("Movie or TV lists"),
   page: z.number().int().positive().optional().describe("Page number"),
   region: z.string().optional().describe("ISO 3166-1 region code (for now_playing and upcoming)"),
-}).refine(
+});
+
+export const CuratedListsSchema = CuratedListsBaseSchema.refine(
   (data) => !(data.list_type === "airing_today" && data.media_type === "movie"),
   { message: "airing_today is only available for TV" }
 ).refine(
@@ -52,28 +47,14 @@ export const CuratedListsSchema = z.object({
   { message: "now_playing and upcoming are only available for movies" }
 );
 
-export const curatedListsTool = {
-  name: "curated_lists",
-  description:
-    "Browse curated content lists: now playing (movies in theaters), upcoming (movies), popular, top rated, or airing today (TV). Specify movie or TV media type.",
-  inputSchema: {
-    type: "object" as const,
-    properties: {
-      list_type: {
-        type: "string",
-        enum: ["now_playing", "upcoming", "popular", "top_rated", "airing_today"],
-        description: "Type of curated list",
-      },
-      media_type: { type: "string", enum: ["movie", "tv"], description: "Movie or TV" },
-      page: { type: "number", description: "Page number" },
-      region: { type: "string", description: "ISO 3166-1 region code" },
-    },
-    required: ["list_type", "media_type"],
-  },
-};
+export const curatedListsTool = buildToolDef(
+  "curated_lists",
+  "Browse curated content lists: now playing (movies in theaters), upcoming (movies), popular, top rated, or airing today (TV). Specify movie or TV media type.",
+  CuratedListsBaseSchema
+);
 
 export async function handleCuratedLists(
-  args: z.infer<typeof CuratedListsSchema>,
+  args: unknown,
   client: TMDBClient
 ): Promise<string> {
   const { list_type, media_type, page, region } = CuratedListsSchema.parse(args);

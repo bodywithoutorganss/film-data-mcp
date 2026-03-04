@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // ABOUTME: Entry point for the film-data-mcp server.
-// ABOUTME: Registers TMDB and Wikidata tools, handles stdio and HTTP transports.
+// ABOUTME: Registers TMDB and Wikidata tools, connects via stdio transport.
 
 /**
  * Film Data MCP Server
@@ -12,18 +12,11 @@
  *
  * 4 Wikidata awards tools: get_person_awards, get_film_awards,
  * get_award_history, search_awards
- *
- * Supports two transport modes:
- * - stdio: For local Claude Desktop integration (default)
- * - http: For remote deployment via Streamable HTTP (Railway, etc.)
  */
 
 import { config } from "dotenv";
-import { randomUUID } from "crypto";
-import express from "express";
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import { CallToolRequestSchema, ListToolsRequestSchema } from "@modelcontextprotocol/sdk/types.js";
 
 import { TMDBClient } from "./utils/tmdb-client.js";
@@ -116,7 +109,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         const { name, arguments: args } = request.params;
 
         // Each handler validates args internally via Zod
-        const handlers: Record<string, (args: any, client: TMDBClient) => Promise<string>> = {
+        const handlers: Record<string, (args: unknown, client: TMDBClient) => Promise<string>> = {
             search: handleSearch,
             movie_details: handleMovieDetails,
             tv_details: handleTVDetails,
@@ -160,99 +153,16 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 });
 
 /**
- * Start server with stdio transport
- * Used for local Claude Desktop integration
- */
-async function startStdioServer() {
-    const transport = new StdioServerTransport();
-    await server.connect(transport);
-    console.error("Film Data MCP running on stdio");
-    console.error("Ready for Claude Desktop connection");
-}
-
-/**
- * Start server with Streamable HTTP transport
- * Used for remote deployment (Railway, etc.)
- */
-async function startHttpServer() {
-    const app = express();
-    const port = process.env.PORT || 3000;
-
-    // Parse JSON bodies
-    app.use(express.json());
-
-    // Health check endpoint
-    app.get("/health", (_req, res) => {
-        res.json({
-            status: "ok",
-            server: "film-data-mcp",
-            version: "0.1.0",
-            transport: "streamable-http",
-        });
-    });
-
-    // MCP Streamable HTTP endpoint
-    app.all("/mcp", async (req, res) => {
-        console.error(
-            `[HTTP] ${req.method} ${req.path} - Session: ${req.headers["mcp-session-id"] || "new"}`
-        );
-
-        // Create a new transport for each request to prevent request ID collisions
-        const transport = new StreamableHTTPServerTransport({
-            sessionIdGenerator: () => randomUUID(),
-            enableJsonResponse: true,
-        });
-
-        try {
-            await transport.handleRequest(req, res, req.body);
-        } catch (error) {
-            console.error("[HTTP] Error handling request:", error);
-            if (!res.headersSent) {
-                res.status(500).json({
-                    error: "Internal server error",
-                    message: error instanceof Error ? error.message : "Unknown error",
-                });
-            }
-        }
-    });
-
-    // 404 handler
-    app.use((_req, res) => {
-        res.status(404).json({
-            error: "Not found",
-            message: "Endpoint not found. Use /mcp for MCP protocol or /health for status check",
-        });
-    });
-
-    // Start HTTP server
-    app.listen(port, () => {
-        console.error(`Film Data MCP running on HTTP`);
-        console.error(`Port: ${port}`);
-        console.error(`MCP endpoint: http://localhost:${port}/mcp`);
-        console.error(`Health check: http://localhost:${port}/health`);
-        console.error("Ready for remote MCP connections");
-    });
-}
-
-/**
- * Main entry point
- * Chooses transport based on MCP_TRANSPORT environment variable
+ * Start server and connect via stdio transport
  */
 async function main() {
-    const transportMode = process.env.MCP_TRANSPORT || "stdio";
-
     console.error("=".repeat(50));
     console.error("Film Data MCP");
     console.error("=".repeat(50));
-    console.error(`Transport mode: ${transportMode}`);
-    console.error(`Node environment: ${process.env.NODE_ENV || "production"}`);
-    console.error("=".repeat(50));
 
-    if (transportMode === "http") {
-        await startHttpServer();
-    } else {
-        await startStdioServer();
-    }
+    const transport = new StdioServerTransport();
+    await server.connect(transport);
+    console.error("Ready for Claude Code connection (stdio)");
 }
 
 main().catch((error) => {

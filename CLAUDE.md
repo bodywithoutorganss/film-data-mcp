@@ -6,11 +6,7 @@
 npm install
 npm run build
 
-# Run with stdio transport (default)
 TMDB_ACCESS_TOKEN=<your-token> node build/index.js
-
-# Run with HTTP transport
-TMDB_ACCESS_TOKEN=<your-token> MCP_TRANSPORT=http PORT=3000 node build/index.js
 
 # Run tests
 npm test
@@ -30,6 +26,7 @@ src/
     discover.ts          - Movie/TV discovery with 30+ filters
     browse.ts            - Trending and curated lists (popular, top rated, etc.)
     reference.ts         - Genres, watch providers, external ID lookup, collections, companies
+    awards.ts            - Wikidata SPARQL awards tools (person, film, history, search)
   types/
     tmdb.ts              - TMDB response types
     tmdb-extended.ts     - Extended types for append_to_response and new endpoints
@@ -38,9 +35,10 @@ src/
   utils/
     tmdb-client.ts       - TMDB API client (fetch-based, append_to_response bundling)
     wikidata-client.ts   - Wikidata SPARQL client + entity resolution
+    tool-helpers.ts      - buildToolDef() — Zod schema to MCP tool definition
 ```
 
-## Tools (12 TMDB, 4 awards planned)
+## Tools (12 TMDB, 4 awards)
 
 | Tool | File | Description |
 |------|------|-------------|
@@ -56,12 +54,16 @@ src/
 | find_by_external_id | reference.ts | IMDb/TVDB/social media → TMDB lookup |
 | collection_details | reference.ts | Movie franchise/collection details |
 | company_details | reference.ts | Production company or TV network details |
+| get_person_awards | awards.ts | Award wins and nominations for a person (by TMDB ID) |
+| get_film_awards | awards.ts | All awards a film has received (by TMDB movie ID) |
+| get_award_history | awards.ts | All winners of a specific award category across years |
+| search_awards | awards.ts | Search the awards registry by ceremony, category, or domain |
 
 ## Tool Pattern
 
 Every tool file exports three things per tool:
 1. A Zod schema: `{ToolName}Schema`
-2. A tool definition object: `{toolName}Tool` (name, description, inputSchema)
+2. A tool definition via `buildToolDef(name, description, schema)` — generates MCP-compatible JSON Schema from Zod using `toJSONSchema()`
 3. A handler: `handle{ToolName}(args, client): Promise<string>`
 
 Handlers validate via Zod internally and return `JSON.stringify(result, null, 2)`. All tool output is `text` content. The dispatch map in `index.ts` routes by tool name.
@@ -79,6 +81,6 @@ Handlers validate via Zod internally and return `JSON.stringify(result, null, 2)
 
 ## Testing
 
-- `npm test` — unit tests (no network), 112 tests across 9 files
+- `npm test` — unit tests (no network), 175 tests across 13 files
 - `npm run test:integration` — integration tests (hits live Wikidata SPARQL endpoint)
 - Test files mirror source structure: `tests/tools/`, `tests/types/`, `tests/utils/`

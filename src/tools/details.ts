@@ -3,6 +3,7 @@
 
 import { z } from "zod";
 import { TMDBClient } from "../utils/tmdb-client.js";
+import { buildToolDef } from "../utils/tool-helpers.js";
 
 // --- Movie Details ---
 
@@ -16,29 +17,14 @@ export const MovieDetailsSchema = z.object({
     .describe("Additional data to include: credits, videos, images, watch/providers, keywords, recommendations, similar, release_dates, external_ids"),
 });
 
-export const movieDetailsTool = {
-  name: "movie_details",
-  description:
-    "Get full movie details from TMDB. Optionally bundle credits, videos, images, watch providers, and more in a single call using the append parameter.",
-  inputSchema: {
-    type: "object" as const,
-    properties: {
-      movie_id: { type: "number", description: "TMDB movie ID" },
-      append: {
-        type: "array",
-        items: {
-          type: "string",
-          enum: [...movieAppendFields],
-        },
-        description: "Additional data to include in the response",
-      },
-    },
-    required: ["movie_id"],
-  },
-};
+export const movieDetailsTool = buildToolDef(
+  "movie_details",
+  "Get full movie details from TMDB. Optionally bundle credits, videos, images, watch providers, and more in a single call using the append parameter.",
+  MovieDetailsSchema
+);
 
 export async function handleMovieDetails(
-  args: z.infer<typeof MovieDetailsSchema>,
+  args: unknown,
   client: TMDBClient
 ): Promise<string> {
   const { movie_id, append } = MovieDetailsSchema.parse(args);
@@ -58,29 +44,14 @@ export const TVDetailsSchema = z.object({
     .describe("Additional data to include: credits, aggregate_credits, videos, images, watch/providers, keywords, recommendations, similar, content_ratings, external_ids"),
 });
 
-export const tvDetailsTool = {
-  name: "tv_details",
-  description:
-    "Get full TV series details from TMDB. Optionally bundle credits, videos, images, watch providers, and more in a single call using the append parameter.",
-  inputSchema: {
-    type: "object" as const,
-    properties: {
-      series_id: { type: "number", description: "TMDB TV series ID" },
-      append: {
-        type: "array",
-        items: {
-          type: "string",
-          enum: [...tvAppendFields],
-        },
-        description: "Additional data to include in the response",
-      },
-    },
-    required: ["series_id"],
-  },
-};
+export const tvDetailsTool = buildToolDef(
+  "tv_details",
+  "Get full TV series details from TMDB. Optionally bundle credits, videos, images, watch providers, and more in a single call using the append parameter.",
+  TVDetailsSchema
+);
 
 export async function handleTVDetails(
-  args: z.infer<typeof TVDetailsSchema>,
+  args: unknown,
   client: TMDBClient
 ): Promise<string> {
   const { series_id, append } = TVDetailsSchema.parse(args);
@@ -100,29 +71,14 @@ export const PersonDetailsSchema = z.object({
     .describe("Additional data to include: combined_credits, movie_credits, tv_credits, images, external_ids"),
 });
 
-export const personDetailsTool = {
-  name: "person_details",
-  description:
-    "Get full person details from TMDB including biography, filmography, and external IDs. Use the append parameter to bundle credits and images in a single call.",
-  inputSchema: {
-    type: "object" as const,
-    properties: {
-      person_id: { type: "number", description: "TMDB person ID" },
-      append: {
-        type: "array",
-        items: {
-          type: "string",
-          enum: [...personAppendFields],
-        },
-        description: "Additional data to include in the response",
-      },
-    },
-    required: ["person_id"],
-  },
-};
+export const personDetailsTool = buildToolDef(
+  "person_details",
+  "Get full person details from TMDB including biography, filmography, and external IDs. Use the append parameter to bundle credits and images in a single call.",
+  PersonDetailsSchema
+);
 
 export async function handlePersonDetails(
-  args: z.infer<typeof PersonDetailsSchema>,
+  args: unknown,
   client: TMDBClient
 ): Promise<string> {
   const { person_id, append } = PersonDetailsSchema.parse(args);

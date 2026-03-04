@@ -3,6 +3,7 @@
 
 import { z } from "zod";
 import { TMDBClient } from "../utils/tmdb-client.js";
+import { buildToolDef } from "../utils/tool-helpers.js";
 
 export const SearchSchema = z.object({
   query: z.string().min(1).describe("Search query text"),
@@ -13,27 +14,14 @@ export const SearchSchema = z.object({
   page: z.number().int().positive().optional().describe("Page number (default 1)"),
 });
 
-export const searchTool = {
-  name: "search",
-  description:
-    "Search TMDB for movies, TV shows, people, and companies. Use without a type for multi-search across all categories, or specify a type to narrow results.",
-  inputSchema: {
-    type: "object" as const,
-    properties: {
-      query: { type: "string", description: "Search query text" },
-      type: {
-        type: "string",
-        enum: ["movie", "tv", "person", "company"],
-        description: "Restrict to a specific type. Omit for multi-search",
-      },
-      page: { type: "number", description: "Page number (default 1)" },
-    },
-    required: ["query"],
-  },
-};
+export const searchTool = buildToolDef(
+  "search",
+  "Search TMDB for movies, TV shows, people, and companies. Use without a type for multi-search across all categories, or specify a type to narrow results.",
+  SearchSchema
+);
 
 export async function handleSearch(
-  args: z.infer<typeof SearchSchema>,
+  args: unknown,
   client: TMDBClient
 ): Promise<string> {
   const { query, type, page } = SearchSchema.parse(args);

@@ -35,9 +35,16 @@ npx film-data-mcp
 | **collection_details** | Movie franchise/collection info (e.g., Star Wars, Marvel) |
 | **company_details** | Production company or TV network details (e.g., A24, HBO) |
 
-### 4 Awards Tools (coming soon)
+### 4 Awards Tools
 
 Wikidata SPARQL-powered awards data covering 21 ceremonies/festivals (Oscars, Cannes, BAFTA, etc.) with 91 verified award categories.
+
+| Tool | Description |
+|------|-------------|
+| **get_person_awards** | Award wins and nominations for a person (by TMDB person ID) |
+| **get_film_awards** | All awards a film has received (by TMDB movie ID) |
+| **get_award_history** | All winners of a specific award category across years |
+| **search_awards** | Search the awards registry by ceremony, category, or domain |
 
 ## Installation
 
@@ -100,19 +107,11 @@ Add to your Claude Desktop configuration:
 }
 ```
 
-### Remote Deployment (HTTP Mode)
-
-```bash
-MCP_TRANSPORT=http PORT=3000 node build/index.js
-```
-
-See [TRANSPORT.md](TRANSPORT.md) for deployment instructions (Railway, etc.).
-
 ## Development
 
 ```bash
 npm run watch      # Watch mode
-npm test           # Unit tests (112 tests, no network)
+npm test           # Unit tests (175 tests, no network)
 npm run inspector  # MCP Inspector for debugging
 npm run format     # Prettier
 ```
