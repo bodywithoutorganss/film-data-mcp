@@ -48,6 +48,10 @@ describe("WatchProvidersSchema", () => {
   it("rejects missing media_type", () => {
     expect(() => WatchProvidersSchema.parse({ id: 550 })).toThrow();
   });
+
+  it("rejects non-positive ID", () => {
+    expect(() => WatchProvidersSchema.parse({ media_type: "movie", id: 0 })).toThrow();
+  });
 });
 
 describe("FindByExternalIdSchema", () => {
@@ -60,7 +64,7 @@ describe("FindByExternalIdSchema", () => {
   });
 
   it("accepts other sources", () => {
-    for (const source of ["tvdb_id", "facebook_id", "instagram_id", "twitter_id"]) {
+    for (const source of ["tvdb_id", "tvrage_id", "freebase_mid", "freebase_id", "facebook_id", "instagram_id", "twitter_id"]) {
       expect(() =>
         FindByExternalIdSchema.parse({ external_id: "123", source })
       ).not.toThrow();
