@@ -48,7 +48,10 @@ export async function handleWatchProviders(
   args: unknown,
   client: TMDBClient
 ): Promise<string> {
-  const { media_type, id, region } = WatchProvidersSchema.parse(args);
+  const parsed = WatchProvidersSchema.parse(args);
+  const media_type = parsed.media_type;
+  const id = parsed.id;
+  const region = parsed.region?.toUpperCase();
 
   if (id) {
     const result = media_type === "movie"

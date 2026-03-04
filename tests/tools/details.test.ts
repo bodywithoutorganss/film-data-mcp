@@ -185,7 +185,7 @@ describe("handleMovieDetails", () => {
 
     expect(result.credits.cast).toHaveLength(10);
     expect(result.credits.crew).toHaveLength(10);
-    expect(result._truncated).toEqual({ total_cast: 50, total_crew: 40 });
+    expect(result._truncated.credits).toEqual({ total_cast: 50, total_crew: 40 });
   });
 
   it("does not slice when credits_limit is 0", async () => {
@@ -216,6 +216,29 @@ describe("handleMovieDetails", () => {
 
     expect(result.credits.cast).toHaveLength(5);
     expect(result._truncated).toBeUndefined();
+  });
+
+  it("records _truncated per credit key when multiple keys present", async () => {
+    const combinedCast = Array.from({ length: 30 }, (_, i) => ({ id: i, title: `Movie ${i}` }));
+    const combinedCrew = Array.from({ length: 25 }, (_, i) => ({ id: i, title: `Movie ${i}` }));
+    const movieCast = Array.from({ length: 40 }, (_, i) => ({ id: i, title: `Movie ${i}` }));
+    const movieCrew = Array.from({ length: 10 }, (_, i) => ({ id: i, title: `Movie ${i}` }));
+    mockClient.getMovieDetails.mockResolvedValue({
+      id: 550, title: "Fight Club",
+      combined_credits: { cast: combinedCast, crew: combinedCrew },
+      movie_credits: { cast: movieCast, crew: movieCrew },
+    });
+
+    const result = JSON.parse(
+      await handleMovieDetails({ movie_id: 550, append: ["credits"], credits_limit: 10 }, mockClient as any)
+    );
+
+    expect(result.combined_credits.cast).toHaveLength(10);
+    expect(result.combined_credits.crew).toHaveLength(10);
+    expect(result.movie_credits.cast).toHaveLength(10);
+    expect(result.movie_credits.crew).toHaveLength(10);
+    expect(result._truncated.combined_credits).toEqual({ total_cast: 30, total_crew: 25 });
+    expect(result._truncated.movie_credits).toEqual({ total_cast: 40, total_crew: 10 });
   });
 
   it("skips slicing when credits not in append", async () => {
@@ -270,7 +293,7 @@ describe("handleTVDetails", () => {
 
     expect(result.aggregate_credits.cast).toHaveLength(10);
     expect(result.aggregate_credits.crew).toHaveLength(10);
-    expect(result._truncated).toEqual({ total_cast: 50, total_crew: 40 });
+    expect(result._truncated.aggregate_credits).toEqual({ total_cast: 50, total_crew: 40 });
   });
 });
 
@@ -315,6 +338,6 @@ describe("handlePersonDetails", () => {
 
     expect(result.combined_credits.cast).toHaveLength(10);
     expect(result.combined_credits.crew).toHaveLength(10);
-    expect(result._truncated).toEqual({ total_cast: 50, total_crew: 40 });
+    expect(result._truncated.combined_credits).toEqual({ total_cast: 50, total_crew: 40 });
   });
 });

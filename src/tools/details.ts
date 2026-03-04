@@ -11,7 +11,6 @@ function truncateCredits(result: any, limit: number): void {
   if (limit === 0) return;
 
   const creditKeys = ["credits", "aggregate_credits", "combined_credits", "movie_credits", "tv_credits"];
-  let applied = false;
 
   for (const key of creditKeys) {
     const credits = result[key];
@@ -26,10 +25,8 @@ function truncateCredits(result: any, limit: number): void {
     if (credits.cast) credits.cast = credits.cast.slice(0, limit);
     if (credits.crew) credits.crew = credits.crew.slice(0, limit);
 
-    if (!applied) {
-      result._truncated = { total_cast: totalCast, total_crew: totalCrew };
-      applied = true;
-    }
+    if (!result._truncated) result._truncated = {};
+    result._truncated[key] = { total_cast: totalCast, total_crew: totalCrew };
   }
 }
 

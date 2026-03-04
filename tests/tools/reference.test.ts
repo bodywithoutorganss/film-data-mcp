@@ -63,6 +63,11 @@ describe("WatchProvidersSchema", () => {
     expect(result.region).toBe("US");
   });
 
+  it("accepts lowercase region", () => {
+    const result = WatchProvidersSchema.parse({ media_type: "movie", id: 550, region: "us" });
+    expect(result.region).toBe("us");
+  });
+
   it("rejects region that is not 2 characters", () => {
     expect(() =>
       WatchProvidersSchema.parse({ media_type: "movie", id: 550, region: "USA" })
@@ -197,6 +202,22 @@ describe("handleWatchProviders", () => {
     expect(result.id).toBe(550);
     expect(result.results).toHaveProperty("US");
     expect(result.results).not.toHaveProperty("GB");
+  });
+
+  it("matches region case-insensitively after normalization", async () => {
+    mockClient.getMovieWatchProviders.mockResolvedValue({
+      id: 550,
+      results: {
+        US: { link: "https://...", flatrate: [{ provider_name: "Netflix" }] },
+      },
+    });
+
+    const result = JSON.parse(
+      await handleWatchProviders({ media_type: "movie", id: 550, region: "us" }, mockClient as any)
+    );
+
+    expect(result.results).toHaveProperty("US");
+    expect(result.results.US.flatrate[0].provider_name).toBe("Netflix");
   });
 
   it("returns empty results with note when region not found", async () => {
