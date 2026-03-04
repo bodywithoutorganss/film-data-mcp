@@ -10,6 +10,9 @@
  * discover, trending, curated_lists, genres, watch_providers,
  * find_by_external_id, collection_details, company_details
  *
+ * 4 Wikidata awards tools: get_person_awards, get_film_awards,
+ * get_award_history, search_awards
+ *
  * Supports two transport modes:
  * - stdio: For local Claude Desktop integration (default)
  * - http: For remote deployment via Streamable HTTP (Railway, etc.)
@@ -24,6 +27,7 @@ import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/
 import { CallToolRequestSchema, ListToolsRequestSchema } from "@modelcontextprotocol/sdk/types.js";
 
 import { TMDBClient } from "./utils/tmdb-client.js";
+import { WikidataClient } from "./utils/wikidata-client.js";
 import { searchTool, handleSearch } from "./tools/search.js";
 import {
     movieDetailsTool, handleMovieDetails,
@@ -42,6 +46,12 @@ import {
     collectionDetailsTool, handleCollectionDetails,
     companyDetailsTool, handleCompanyDetails,
 } from "./tools/reference.js";
+import {
+    getPersonAwardsTool, handleGetPersonAwards,
+    getFilmAwardsTool, handleGetFilmAwards,
+    getAwardHistoryTool, handleGetAwardHistory,
+    searchAwardsTool, handleSearchAwards,
+} from "./tools/awards.js";
 
 // Load environment variables
 config();
@@ -54,6 +64,7 @@ if (!tmdbToken) {
 }
 
 const tmdbClient = new TMDBClient(tmdbToken);
+const wikidataClient = new WikidataClient();
 
 /**
  * Create MCP server with tools capability
@@ -88,6 +99,10 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             findByExternalIdTool,
             collectionDetailsTool,
             companyDetailsTool,
+            getPersonAwardsTool,
+            getFilmAwardsTool,
+            getAwardHistoryTool,
+            searchAwardsTool,
         ],
     };
 });
@@ -114,6 +129,10 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             find_by_external_id: handleFindByExternalId,
             collection_details: handleCollectionDetails,
             company_details: handleCompanyDetails,
+            get_person_awards: (args) => handleGetPersonAwards(args, tmdbClient, wikidataClient),
+            get_film_awards: (args) => handleGetFilmAwards(args, tmdbClient, wikidataClient),
+            get_award_history: (args) => handleGetAwardHistory(args, tmdbClient, wikidataClient),
+            search_awards: (args) => handleSearchAwards(args, tmdbClient, wikidataClient),
         };
 
         const handler = handlers[name];
