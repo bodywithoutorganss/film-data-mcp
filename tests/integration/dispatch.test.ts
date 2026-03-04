@@ -1,4 +1,4 @@
-// ABOUTME: Verifies that index.ts dispatch map routes all 16 tool names to correct handlers.
+// ABOUTME: Verifies that index.ts dispatch map routes all 20 tool names to correct handlers.
 // ABOUTME: Reconstructs the dispatch pattern without starting the MCP server.
 
 import { describe, it, expect } from "vitest";
@@ -9,11 +9,14 @@ import { handleTrending, handleCuratedLists } from "../../src/tools/browse.js";
 import {
   handleGenres, handleWatchProviders, handleFindByExternalId,
   handleCollectionDetails, handleCompanyDetails,
+  handleSearchKeywords, handleCompanyFilmography,
 } from "../../src/tools/reference.js";
 import {
   handleGetPersonAwards, handleGetFilmAwards,
   handleGetAwardHistory, handleSearchAwards,
 } from "../../src/tools/awards.js";
+import { handleGetFestivalPremieres, festivalPremieresTool } from "../../src/tools/premieres.js";
+import { handleGetCredits, creditsTool } from "../../src/tools/credits.js";
 import { searchTool } from "../../src/tools/search.js";
 import { movieDetailsTool, tvDetailsTool, personDetailsTool } from "../../src/tools/details.js";
 import { discoverTool } from "../../src/tools/discover.js";
@@ -21,6 +24,7 @@ import { trendingTool, curatedListsTool } from "../../src/tools/browse.js";
 import {
   genresTool, watchProvidersTool, findByExternalIdTool,
   collectionDetailsTool, companyDetailsTool,
+  searchKeywordsTool, companyFilmographyTool,
 } from "../../src/tools/reference.js";
 import {
   getPersonAwardsTool, getFilmAwardsTool,
@@ -45,14 +49,18 @@ describe("dispatch map", () => {
     find_by_external_id: handleFindByExternalId,
     collection_details: handleCollectionDetails,
     company_details: handleCompanyDetails,
+    search_keywords: handleSearchKeywords,
+    company_filmography: handleCompanyFilmography,
+    get_festival_premieres: handleGetFestivalPremieres,
+    get_credits: handleGetCredits,
     get_person_awards: (args: any) => handleGetPersonAwards(args, mockTmdbClient, mockWikidataClient),
     get_film_awards: (args: any) => handleGetFilmAwards(args, mockTmdbClient, mockWikidataClient),
     get_award_history: (args: any) => handleGetAwardHistory(args, mockTmdbClient, mockWikidataClient),
     search_awards: (args: any) => handleSearchAwards(args, mockTmdbClient, mockWikidataClient),
   };
 
-  it("has exactly 16 tool entries", () => {
-    expect(Object.keys(handlers)).toHaveLength(16);
+  it("has exactly 20 tool entries", () => {
+    expect(Object.keys(handlers)).toHaveLength(20);
   });
 
   it("all tool definition names have a matching handler", () => {
@@ -60,7 +68,9 @@ describe("dispatch map", () => {
       searchTool, movieDetailsTool, tvDetailsTool, personDetailsTool,
       discoverTool, trendingTool, curatedListsTool, genresTool,
       watchProvidersTool, findByExternalIdTool, collectionDetailsTool,
-      companyDetailsTool, getPersonAwardsTool, getFilmAwardsTool,
+      companyDetailsTool, searchKeywordsTool, companyFilmographyTool,
+      festivalPremieresTool, creditsTool,
+      getPersonAwardsTool, getFilmAwardsTool,
       getAwardHistoryTool, searchAwardsTool,
     ];
 
@@ -74,7 +84,9 @@ describe("dispatch map", () => {
       "search", "movie_details", "tv_details", "person_details",
       "discover", "trending", "curated_lists", "genres",
       "watch_providers", "find_by_external_id", "collection_details",
-      "company_details", "get_person_awards", "get_film_awards",
+      "company_details", "search_keywords", "company_filmography",
+      "get_festival_premieres", "get_credits",
+      "get_person_awards", "get_film_awards",
       "get_award_history", "search_awards",
     ]);
 
