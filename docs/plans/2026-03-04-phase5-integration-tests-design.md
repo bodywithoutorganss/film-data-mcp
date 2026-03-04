@@ -68,9 +68,9 @@ New file: `tests/integration/live-api.test.ts`
 
 Entire suite skipped unless `TMDB_ACCESS_TOKEN` env var is set. All tests get `{ timeout: 15000 }`.
 
-### Known entities (stable TMDB data)
+### Known entities (TMDB data — person IDs may drift over time)
 
-- Roger Deakins: person ID 5914
+- Roger Deakins: person ID 151 (was 5914, remapped by TMDB)
 - Parasite (2019): movie ID 496243
 - Breaking Bad: TV ID 1396
 
@@ -79,7 +79,7 @@ Entire suite skipped unless `TMDB_ACCESS_TOKEN` env var is set. All tests get `{
 - Search "Parasite" → results include movie 496243
 - Movie details 496243 → title "Parasite", has imdb_id
 - Movie details with `append: ["credits"]` → response includes credits key
-- Person details 5914 → name "Roger Deakins"
+- Person details 151 → name "Roger Deakins"
 - TV details 1396 → name "Breaking Bad"
 - Discover movies with genre filter → returns non-empty results
 - Trending day → returns non-empty results
@@ -87,7 +87,7 @@ Entire suite skipped unless `TMDB_ACCESS_TOKEN` env var is set. All tests get `{
 
 ### Wikidata tests (~4-5)
 
-- Resolve TMDB person ID 5914 → Wikidata entity found
+- Resolve TMDB person ID 151 → Wikidata entity found
 - Resolve TMDB movie ID 496243 → Wikidata entity found
 - Person awards for Deakins → includes at least one Oscar win
 - Film awards for Parasite → includes Best Picture

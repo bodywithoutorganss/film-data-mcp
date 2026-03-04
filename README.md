@@ -125,6 +125,10 @@ npm run format     # Prettier
 - "Get Christopher Nolan's credits with movie details"
 - "Find Korean dramas with high ratings"
 
+## ID Stability
+
+TMDB person IDs are not guaranteed stable — TMDB occasionally merges or renumbers entries. Movie and TV IDs are more reliable but not immune. If you persist TMDB IDs (e.g., in a knowledge graph or database), consider storing IMDb IDs (`nm*`, `tt*`) as the canonical reference and resolving to TMDB at query time via `find_by_external_id`.
+
 ## API Rate Limits
 
 TMDB API free tier: 50 requests per second. Consider caching for production use.

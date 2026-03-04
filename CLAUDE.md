@@ -83,4 +83,9 @@ Handlers validate via Zod internally and return `JSON.stringify(result, null, 2)
 
 - `npm test` — unit tests (no network), 175 tests across 13 files
 - `npm run test:integration` — integration tests (hits live Wikidata SPARQL endpoint)
+- Live integration tests (`tests/integration/live-api.test.ts`) require `TMDB_ACCESS_TOKEN` env var
 - Test files mirror source structure: `tests/tools/`, `tests/types/`, `tests/utils/`
+
+### TMDB ID Stability
+
+TMDB person IDs are not guaranteed stable — TMDB occasionally merges or renumbers entries (e.g., Roger Deakins moved from 5914 to 151). Live tests use hardcoded entity IDs for known-stable entries. If a live test fails with an unexpected name, verify the current TMDB ID via search before assuming a code bug. Movie and TV IDs are more stable but not immune.
