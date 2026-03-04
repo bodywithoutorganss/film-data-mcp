@@ -3,6 +3,7 @@
 
 import { z } from "zod";
 import { TMDBClient } from "../utils/tmdb-client.js";
+import { buildToolDef } from "../utils/tool-helpers.js";
 
 export const DiscoverSchema = z.object({
   media_type: z.enum(["movie", "tv"]).describe("Discover movies or TV shows"),
@@ -66,50 +67,11 @@ export const DiscoverSchema = z.object({
   with_type: z.string().optional().describe("TV type: 0=Documentary, 1=News, 2=Miniseries, 3=Reality, 4=Scripted, 5=TalkShow, 6=Video"),
 });
 
-export const discoverTool = {
-  name: "discover",
-  description:
-    "Discover movies or TV shows with 30+ filters. Combine genres, release dates, vote averages, cast/crew, companies, keywords, watch providers, certifications, and more. Use the genres tool first to get genre IDs for filtering.",
-  inputSchema: {
-    type: "object" as const,
-    properties: {
-      media_type: { type: "string", enum: ["movie", "tv"], description: "Discover movies or TV shows" },
-      sort_by: { type: "string", description: "Sort order, e.g. 'popularity.desc'" },
-      page: { type: "number", description: "Page number" },
-      with_genres: { type: "string", description: "Genre IDs (comma=AND, pipe=OR)" },
-      without_genres: { type: "string", description: "Exclude genre IDs" },
-      primary_release_year: { type: "number", description: "Exact release year (movies)" },
-      primary_release_date_gte: { type: "string", description: "Release date >= YYYY-MM-DD" },
-      primary_release_date_lte: { type: "string", description: "Release date <= YYYY-MM-DD" },
-      first_air_date_year: { type: "number", description: "Premiere year (TV)" },
-      first_air_date_gte: { type: "string", description: "Air date >= YYYY-MM-DD" },
-      first_air_date_lte: { type: "string", description: "Air date <= YYYY-MM-DD" },
-      vote_average_gte: { type: "number", description: "Min vote average (0-10)" },
-      vote_average_lte: { type: "number", description: "Max vote average (0-10)" },
-      vote_count_gte: { type: "number", description: "Min vote count" },
-      with_cast: { type: "string", description: "Person IDs in cast" },
-      with_crew: { type: "string", description: "Person IDs in crew" },
-      with_people: { type: "string", description: "Person IDs in cast or crew" },
-      with_companies: { type: "string", description: "Company IDs" },
-      with_keywords: { type: "string", description: "Keyword IDs" },
-      with_runtime_gte: { type: "number", description: "Min runtime (minutes)" },
-      with_runtime_lte: { type: "number", description: "Max runtime (minutes)" },
-      with_original_language: { type: "string", description: "ISO 639-1 language" },
-      with_watch_providers: { type: "string", description: "Provider IDs (needs watch_region)" },
-      watch_region: { type: "string", description: "Region for watch providers" },
-      with_watch_monetization_types: { type: "string", description: "flatrate|free|ads|rent|buy" },
-      certification: { type: "string", description: "Certification (needs certification_country)" },
-      certification_country: { type: "string", description: "Country for certification" },
-      with_release_type: { type: "number", description: "Release type: 1=Premiere, 2=Limited, 3=Theatrical, 4=Digital, 5=Physical, 6=TV" },
-      with_networks: { type: "string", description: "Network IDs (TV only)" },
-      with_status: { type: "string", description: "TV status code" },
-      with_type: { type: "string", description: "TV type code" },
-      include_adult: { type: "boolean", description: "Include adult content" },
-      language: { type: "string", description: "Language code" },
-    },
-    required: ["media_type"],
-  },
-};
+export const discoverTool = buildToolDef(
+  "discover",
+  "Discover movies or TV shows with 30+ filters. Combine genres, release dates, vote averages, cast/crew, companies, keywords, watch providers, certifications, and more. Use the genres tool first to get genre IDs for filtering.",
+  DiscoverSchema
+);
 
 // Maps schema param names (underscores) to TMDB query param names (dots)
 const PARAM_MAP: Record<string, string> = {
