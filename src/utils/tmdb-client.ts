@@ -11,6 +11,7 @@ import type {
     TMDBMovieDetails,
     TMDBTVShow,
     TMDBTVShowDetails,
+    TMDBPerson,
     TMDBSearchResponse,
     TMDBError,
 } from "../types/tmdb.js";
@@ -322,8 +323,8 @@ export class TMDBClient {
     /**
      * Get popular items by media type
      */
-    async getPopular(mediaType: "movie" | "tv", page: number = 1): Promise<PaginatedResult<any>> {
-        return this.get<PaginatedResult<any>>(`/${mediaType}/popular`, {
+    async getPopular(mediaType: "movie" | "tv", page: number = 1): Promise<PaginatedResult<TMDBMovie | TMDBTVShow>> {
+        return this.get<PaginatedResult<TMDBMovie | TMDBTVShow>>(`/${mediaType}/popular`, {
             page: String(page),
         });
     }
@@ -331,8 +332,8 @@ export class TMDBClient {
     /**
      * Get top-rated items by media type
      */
-    async getTopRated(mediaType: "movie" | "tv", page: number = 1): Promise<PaginatedResult<any>> {
-        return this.get<PaginatedResult<any>>(`/${mediaType}/top_rated`, {
+    async getTopRated(mediaType: "movie" | "tv", page: number = 1): Promise<PaginatedResult<TMDBMovie | TMDBTVShow>> {
+        return this.get<PaginatedResult<TMDBMovie | TMDBTVShow>>(`/${mediaType}/top_rated`, {
             page: String(page),
         });
     }
@@ -349,8 +350,8 @@ export class TMDBClient {
     /**
      * Multi-search across movies, TV, and people
      */
-    async searchMulti(query: string, page: number = 1): Promise<PaginatedResult<any>> {
-        return this.get<PaginatedResult<any>>("/search/multi", {
+    async searchMulti(query: string, page: number = 1): Promise<PaginatedResult<TMDBMovie | TMDBTVShow | TMDBPerson>> {
+        return this.get<PaginatedResult<TMDBMovie | TMDBTVShow | TMDBPerson>>("/search/multi", {
             query,
             page: String(page),
         });
@@ -359,8 +360,8 @@ export class TMDBClient {
     /**
      * Search by specific media type
      */
-    async searchByType(mediaType: "movie" | "tv" | "person", query: string, page: number = 1): Promise<PaginatedResult<any>> {
-        return this.get<PaginatedResult<any>>(`/search/${mediaType}`, {
+    async searchByType(mediaType: "movie" | "tv" | "person" | "company", query: string, page: number = 1): Promise<PaginatedResult<TMDBMovie | TMDBTVShow | TMDBPerson>> {
+        return this.get<PaginatedResult<TMDBMovie | TMDBTVShow | TMDBPerson>>(`/search/${mediaType}`, {
             query,
             page: String(page),
         });

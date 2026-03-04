@@ -44,7 +44,13 @@ export const CuratedListsSchema = z.object({
   media_type: z.enum(["movie", "tv"]).describe("Movie or TV lists"),
   page: z.number().int().positive().optional().describe("Page number"),
   region: z.string().optional().describe("ISO 3166-1 region code (for now_playing and upcoming)"),
-});
+}).refine(
+  (data) => !(data.list_type === "airing_today" && data.media_type === "movie"),
+  { message: "airing_today is only available for TV" }
+).refine(
+  (data) => !(["now_playing", "upcoming"].includes(data.list_type) && data.media_type === "tv"),
+  { message: "now_playing and upcoming are only available for movies" }
+);
 
 export const curatedListsTool = {
   name: "curated_lists",

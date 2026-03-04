@@ -70,4 +70,22 @@ describe("CuratedListsSchema", () => {
   it("rejects missing media_type", () => {
     expect(() => CuratedListsSchema.parse({ list_type: "popular" })).toThrow();
   });
+
+  it("rejects airing_today for movies", () => {
+    expect(() =>
+      CuratedListsSchema.parse({ list_type: "airing_today", media_type: "movie" })
+    ).toThrow();
+  });
+
+  it("rejects now_playing for TV", () => {
+    expect(() =>
+      CuratedListsSchema.parse({ list_type: "now_playing", media_type: "tv" })
+    ).toThrow();
+  });
+
+  it("rejects upcoming for TV", () => {
+    expect(() =>
+      CuratedListsSchema.parse({ list_type: "upcoming", media_type: "tv" })
+    ).toThrow();
+  });
 });
