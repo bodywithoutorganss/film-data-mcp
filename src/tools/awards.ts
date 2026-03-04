@@ -4,7 +4,7 @@
 import { z } from "zod";
 import type { TMDBClient } from "../utils/tmdb-client.js";
 import type { WikidataClient } from "../utils/wikidata-client.js";
-import type { ResolvedEntity } from "../types/wikidata.js";
+import type { ResolvedEntity, CrewNominationEntry } from "../types/wikidata.js";
 import {
   findCategory,
   CEREMONIES,
@@ -96,6 +96,52 @@ export const getFilmAwardsTool = buildToolDef(
   GetFilmAwardsSchema
 );
 
+const AWARD_RELEVANT_JOBS = new Set([
+  "Director", "Producer", "Executive Producer", "Writer", "Screenplay",
+]);
+
+const MAX_CREW_LOOKUPS = 5;
+
+async function getFilmCrewNominations(
+  movieId: number,
+  filmWikidataId: string,
+  tmdbClient: TMDBClient,
+  wikidataClient: WikidataClient
+): Promise<CrewNominationEntry[]> {
+  const details = await tmdbClient.getMovieDetails(movieId, ["credits"]);
+  const credits = (details as any).credits;
+  if (!credits?.crew) return [];
+
+  const relevantCrew = credits.crew
+    .filter((c: any) => AWARD_RELEVANT_JOBS.has(c.job))
+    .slice(0, MAX_CREW_LOOKUPS);
+
+  const results = await Promise.all(
+    relevantCrew.map(async (member: any) => {
+      let entity: ResolvedEntity | null = null;
+      try {
+        entity = await resolvePerson(member.id, tmdbClient, wikidataClient);
+      } catch {
+        return null;
+      }
+
+      const nominations = await wikidataClient.getPersonNominations(entity.wikidataId);
+      const filmNominations = nominations.filter(
+        (n) => n.forWork?.wikidataId === filmWikidataId
+      );
+
+      if (filmNominations.length === 0) return null;
+
+      return {
+        person: { name: member.name, role: member.job },
+        nominations: filmNominations,
+      };
+    })
+  );
+
+  return results.filter((r): r is NonNullable<typeof r> => r !== null);
+}
+
 export async function handleGetFilmAwards(
   args: unknown,
   tmdbClient: TMDBClient,
@@ -103,14 +149,15 @@ export async function handleGetFilmAwards(
 ): Promise<string> {
   const { movie_id } = GetFilmAwardsSchema.parse(args);
   const entity = await resolveMovie(movie_id, tmdbClient, wikidataClient);
-  const [awards, p166ClaimCount] = await Promise.all([
+  const [awards, p166ClaimCount, crewNominations] = await Promise.all([
     wikidataClient.getFilmAwards(entity.wikidataId),
     wikidataClient.countAllP166Claims(entity.wikidataId),
+    getFilmCrewNominations(movie_id, entity.wikidataId, tmdbClient, wikidataClient),
   ]);
   return JSON.stringify({
     entity,
     awards,
-    crewNominations: [],
+    crewNominations,
     completeness: {
       entityFound: true,
       p166ClaimCount,

@@ -134,6 +134,7 @@ describe("awards tools", () => {
         { wikidataId: "Q179808", label: "Palme d'Or", year: 2019, ceremony: "cannes" },
       ]);
       mockWikidataClient.countAllP166Claims.mockResolvedValue(2);
+      mockTmdbClient.getMovieDetails.mockResolvedValue({});
 
       const result = await handleGetFilmAwards(
         { movie_id: 496243 },
@@ -177,6 +178,7 @@ describe("awards tools", () => {
         { wikidataId: "Q102427", label: "Academy Award for Best Picture", year: 2020, ceremony: "academy-awards" },
       ]);
       mockWikidataClient.countAllP166Claims.mockResolvedValue(12);
+      mockTmdbClient.getMovieDetails.mockResolvedValue({});
 
       const result = await handleGetFilmAwards(
         { movie_id: 496243 },
@@ -197,6 +199,7 @@ describe("awards tools", () => {
       });
       mockWikidataClient.getFilmAwards.mockResolvedValue([]);
       mockWikidataClient.countAllP166Claims.mockResolvedValue(0);
+      mockTmdbClient.getMovieDetails.mockResolvedValue({});
 
       const result = await handleGetFilmAwards(
         { movie_id: 489985 },
@@ -219,6 +222,142 @@ describe("awards tools", () => {
       await expect(
         handleGetFilmAwards({ movie_id: 99999 }, mockTmdbClient as any, mockWikidataClient as any)
       ).rejects.toThrow("Could not resolve TMDB movie 99999 to a Wikidata entity");
+    });
+  });
+
+  describe("crew nomination cross-referencing", () => {
+    it("fetches crew nominations filtered to the target film", async () => {
+      mockWikidataClient.resolveMovieByTmdbId.mockResolvedValue({
+        wikidataId: "Q56167580", label: "Minding the Gap", resolvedVia: "tmdb_id",
+      });
+      mockWikidataClient.getFilmAwards.mockResolvedValue([]);
+      mockWikidataClient.countAllP166Claims.mockResolvedValue(0);
+
+      // TMDB credits
+      mockTmdbClient.getMovieDetails.mockResolvedValue({
+        credits: {
+          cast: [],
+          crew: [
+            { id: 1757073, name: "Bing Liu", job: "Director", department: "Directing" },
+            { id: 9999, name: "Diane Quon", job: "Producer", department: "Production" },
+          ],
+        },
+      });
+
+      // Bing Liu resolves, Diane Quon doesn't
+      mockWikidataClient.resolvePersonByTmdbId
+        .mockResolvedValueOnce({ wikidataId: "Q56168000", label: "Bing Liu", resolvedVia: "tmdb_id" })
+        .mockResolvedValueOnce(null);
+      mockTmdbClient.getPersonDetails.mockResolvedValue({ imdb_id: null });
+
+      // Bing Liu's nominations: one for MTG, one for another film
+      mockWikidataClient.getPersonNominations.mockResolvedValue([
+        {
+          wikidataId: "Q112107", label: "Academy Award for Best Documentary Feature", year: 2019,
+          ceremony: "academy-awards",
+          forWork: { wikidataId: "Q56167580", label: "Minding the Gap" },
+        },
+        {
+          wikidataId: "Q999999", label: "Some Other Award", year: 2022,
+          ceremony: "academy-awards",
+          forWork: { wikidataId: "Q999999", label: "Some Other Film" },
+        },
+      ]);
+
+      const result = await handleGetFilmAwards(
+        { movie_id: 489985 },
+        mockTmdbClient as any,
+        mockWikidataClient as any
+      );
+      const parsed = JSON.parse(result);
+
+      expect(parsed.crewNominations).toHaveLength(1);
+      expect(parsed.crewNominations[0].person).toEqual({ name: "Bing Liu", role: "Director" });
+      expect(parsed.crewNominations[0].nominations).toHaveLength(1);
+      expect(parsed.crewNominations[0].nominations[0].label).toBe("Academy Award for Best Documentary Feature");
+    });
+
+    it("returns empty crewNominations when no credits available", async () => {
+      mockWikidataClient.resolveMovieByTmdbId.mockResolvedValue({
+        wikidataId: "Q56167580", label: "Minding the Gap", resolvedVia: "tmdb_id",
+      });
+      mockWikidataClient.getFilmAwards.mockResolvedValue([]);
+      mockWikidataClient.countAllP166Claims.mockResolvedValue(0);
+      mockTmdbClient.getMovieDetails.mockResolvedValue({});
+
+      const result = await handleGetFilmAwards(
+        { movie_id: 489985 },
+        mockTmdbClient as any,
+        mockWikidataClient as any
+      );
+      const parsed = JSON.parse(result);
+      expect(parsed.crewNominations).toEqual([]);
+    });
+
+    it("skips crew without forWork qualifier on nominations", async () => {
+      mockWikidataClient.resolveMovieByTmdbId.mockResolvedValue({
+        wikidataId: "Q56167580", label: "Minding the Gap", resolvedVia: "tmdb_id",
+      });
+      mockWikidataClient.getFilmAwards.mockResolvedValue([]);
+      mockWikidataClient.countAllP166Claims.mockResolvedValue(0);
+      mockTmdbClient.getMovieDetails.mockResolvedValue({
+        credits: {
+          cast: [],
+          crew: [{ id: 100, name: "Jane Doe", job: "Director", department: "Directing" }],
+        },
+      });
+      mockWikidataClient.resolvePersonByTmdbId.mockResolvedValue({
+        wikidataId: "Q100", label: "Jane Doe", resolvedVia: "tmdb_id",
+      });
+      mockWikidataClient.getPersonNominations.mockResolvedValue([
+        {
+          wikidataId: "Q131520", label: "Some Award", year: 2020,
+          ceremony: "academy-awards",
+          // no forWork — can't confirm it's for this film
+        },
+      ]);
+
+      const result = await handleGetFilmAwards(
+        { movie_id: 489985 },
+        mockTmdbClient as any,
+        mockWikidataClient as any
+      );
+      const parsed = JSON.parse(result);
+      // Person entry should not appear (0 matched nominations = filtered out)
+      const janeEntry = parsed.crewNominations.find((c: any) => c.person.name === "Jane Doe");
+      expect(janeEntry).toBeUndefined();
+    });
+
+    it("caps crew lookup at 5 people", async () => {
+      mockWikidataClient.resolveMovieByTmdbId.mockResolvedValue({
+        wikidataId: "Q100", label: "Big Film", resolvedVia: "tmdb_id",
+      });
+      mockWikidataClient.getFilmAwards.mockResolvedValue([]);
+      mockWikidataClient.countAllP166Claims.mockResolvedValue(0);
+
+      const bigCrew = Array.from({ length: 10 }, (_, i) => ({
+        id: i + 1, name: `Person ${i}`, job: "Producer", department: "Production",
+      }));
+      mockTmdbClient.getMovieDetails.mockResolvedValue({
+        credits: { cast: [], crew: bigCrew },
+      });
+      // All resolve successfully
+      for (let i = 0; i < 10; i++) {
+        mockWikidataClient.resolvePersonByTmdbId.mockResolvedValueOnce({
+          wikidataId: `Q${i + 1}`, label: `Person ${i}`, resolvedVia: "tmdb_id",
+        });
+      }
+      mockWikidataClient.getPersonNominations.mockResolvedValue([]);
+
+      const result = await handleGetFilmAwards(
+        { movie_id: 1 },
+        mockTmdbClient as any,
+        mockWikidataClient as any
+      );
+      JSON.parse(result); // should not throw
+
+      // resolvePersonByTmdbId should have been called at most 5 times (cap)
+      expect(mockWikidataClient.resolvePersonByTmdbId).toHaveBeenCalledTimes(5);
     });
   });
 
