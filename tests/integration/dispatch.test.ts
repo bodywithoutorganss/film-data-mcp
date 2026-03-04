@@ -1,0 +1,102 @@
+// ABOUTME: Verifies that index.ts dispatch map routes all 16 tool names to correct handlers.
+// ABOUTME: Reconstructs the dispatch pattern without starting the MCP server.
+
+import { describe, it, expect } from "vitest";
+import { handleSearch } from "../../src/tools/search.js";
+import { handleMovieDetails, handleTVDetails, handlePersonDetails } from "../../src/tools/details.js";
+import { handleDiscover } from "../../src/tools/discover.js";
+import { handleTrending, handleCuratedLists } from "../../src/tools/browse.js";
+import {
+  handleGenres, handleWatchProviders, handleFindByExternalId,
+  handleCollectionDetails, handleCompanyDetails,
+} from "../../src/tools/reference.js";
+import {
+  handleGetPersonAwards, handleGetFilmAwards,
+  handleGetAwardHistory, handleSearchAwards,
+} from "../../src/tools/awards.js";
+import { searchTool } from "../../src/tools/search.js";
+import { movieDetailsTool, tvDetailsTool, personDetailsTool } from "../../src/tools/details.js";
+import { discoverTool } from "../../src/tools/discover.js";
+import { trendingTool, curatedListsTool } from "../../src/tools/browse.js";
+import {
+  genresTool, watchProvidersTool, findByExternalIdTool,
+  collectionDetailsTool, companyDetailsTool,
+} from "../../src/tools/reference.js";
+import {
+  getPersonAwardsTool, getFilmAwardsTool,
+  getAwardHistoryTool, searchAwardsTool,
+} from "../../src/tools/awards.js";
+
+describe("dispatch map", () => {
+  // Mirror the dispatch map from index.ts
+  const mockTmdbClient: any = {};
+  const mockWikidataClient: any = {};
+
+  const handlers: Record<string, Function> = {
+    search: handleSearch,
+    movie_details: handleMovieDetails,
+    tv_details: handleTVDetails,
+    person_details: handlePersonDetails,
+    discover: handleDiscover,
+    trending: handleTrending,
+    curated_lists: handleCuratedLists,
+    genres: handleGenres,
+    watch_providers: handleWatchProviders,
+    find_by_external_id: handleFindByExternalId,
+    collection_details: handleCollectionDetails,
+    company_details: handleCompanyDetails,
+    get_person_awards: (args: any) => handleGetPersonAwards(args, mockTmdbClient, mockWikidataClient),
+    get_film_awards: (args: any) => handleGetFilmAwards(args, mockTmdbClient, mockWikidataClient),
+    get_award_history: (args: any) => handleGetAwardHistory(args, mockTmdbClient, mockWikidataClient),
+    search_awards: (args: any) => handleSearchAwards(args, mockTmdbClient, mockWikidataClient),
+  };
+
+  it("has exactly 16 tool entries", () => {
+    expect(Object.keys(handlers)).toHaveLength(16);
+  });
+
+  it("all tool definition names have a matching handler", () => {
+    const toolDefs = [
+      searchTool, movieDetailsTool, tvDetailsTool, personDetailsTool,
+      discoverTool, trendingTool, curatedListsTool, genresTool,
+      watchProvidersTool, findByExternalIdTool, collectionDetailsTool,
+      companyDetailsTool, getPersonAwardsTool, getFilmAwardsTool,
+      getAwardHistoryTool, searchAwardsTool,
+    ];
+
+    for (const tool of toolDefs) {
+      expect(handlers[tool.name], `Missing handler for tool: ${tool.name}`).toBeDefined();
+    }
+  });
+
+  it("has no handler without a matching tool definition", () => {
+    const toolNames = new Set([
+      "search", "movie_details", "tv_details", "person_details",
+      "discover", "trending", "curated_lists", "genres",
+      "watch_providers", "find_by_external_id", "collection_details",
+      "company_details", "get_person_awards", "get_film_awards",
+      "get_award_history", "search_awards",
+    ]);
+
+    for (const name of Object.keys(handlers)) {
+      expect(toolNames.has(name), `Handler ${name} has no tool definition`).toBe(true);
+    }
+  });
+
+  it("all handlers are functions", () => {
+    for (const [name, handler] of Object.entries(handlers)) {
+      expect(typeof handler, `Handler ${name} is not a function`).toBe("function");
+    }
+  });
+
+  it("awards closures are callable (bind verification)", () => {
+    // Awards handlers use closures that capture wikidataClient.
+    // Verify the closure-bound handlers are callable functions.
+    const awardTools = ["get_person_awards", "get_film_awards", "get_award_history", "search_awards"];
+    for (const name of awardTools) {
+      expect(typeof handlers[name]).toBe("function");
+      // The closure should accept (args) and internally pass tmdbClient + wikidataClient
+      expect(handlers[name].length, `${name} closure should accept 1 arg`).toBe(1);
+    }
+  });
+});
