@@ -143,7 +143,7 @@ export const CompanyDetailsSchema = z.object({
 
 export const companyDetailsTool = buildToolDef(
   "company_details",
-  "Get details about a production company (e.g., A24, Lucasfilm) or TV network (e.g., HBO, Netflix). Returns name, headquarters, logo, and parent company.",
+  "Get details about a production company (e.g., A24, Lucasfilm) or TV network (e.g., HBO, Netflix). Returns name, headquarters, logo, and parent company. Use company_filmography to browse their catalog.",
   CompanyDetailsSchema
 );
 

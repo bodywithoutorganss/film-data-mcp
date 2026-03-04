@@ -70,7 +70,7 @@ export const DiscoverSchema = z.object({
 
 export const discoverTool = buildToolDef(
   "discover",
-  "Discover movies or TV shows with 30+ filters. Combine genres, release dates, vote averages, cast/crew, companies, keywords, watch providers, certifications, and more. Use the genres tool first to get genre IDs for filtering.",
+  "Discover movies or TV shows with 30+ filters. Combine genres, release dates, vote averages, cast/crew, companies, keywords, watch providers, certifications, and more. Use the genres tool for genre IDs and search_keywords for keyword IDs.",
   DiscoverSchema
 );
 
