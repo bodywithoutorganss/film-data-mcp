@@ -83,7 +83,7 @@ export async function handleMovieDetails(
   const { movie_id, append, credits_limit, region } = MovieDetailsSchema.parse(args);
   const result = await client.getMovieDetails(movie_id, append as string[] | undefined);
   truncateCredits(result, credits_limit);
-  filterWatchProviders(result["watch/providers"], region);
+  filterWatchProviders((result as any)["watch/providers"], region);
   return JSON.stringify(result, null, 2);
 }
 
@@ -124,7 +124,7 @@ export async function handleTVDetails(
   const { series_id, append, credits_limit, region } = TVDetailsSchema.parse(args);
   const result = await client.getTVDetails(series_id, append as string[] | undefined);
   truncateCredits(result, credits_limit);
-  filterWatchProviders(result["watch/providers"], region);
+  filterWatchProviders((result as any)["watch/providers"], region);
   return JSON.stringify(result, null, 2);
 }
 
