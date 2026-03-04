@@ -39,6 +39,25 @@ describe("MovieDetailsSchema", () => {
       MovieDetailsSchema.parse({ movie_id: 550, append: ["invalid_field"] })
     ).toThrow();
   });
+
+  it("defaults credits_limit to 20", () => {
+    const result = MovieDetailsSchema.parse({ movie_id: 550 });
+    expect(result.credits_limit).toBe(20);
+  });
+
+  it("accepts custom credits_limit", () => {
+    const result = MovieDetailsSchema.parse({ movie_id: 550, credits_limit: 5 });
+    expect(result.credits_limit).toBe(5);
+  });
+
+  it("accepts credits_limit 0 for unlimited", () => {
+    const result = MovieDetailsSchema.parse({ movie_id: 550, credits_limit: 0 });
+    expect(result.credits_limit).toBe(0);
+  });
+
+  it("rejects negative credits_limit", () => {
+    expect(() => MovieDetailsSchema.parse({ movie_id: 550, credits_limit: -1 })).toThrow();
+  });
 });
 
 describe("TVDetailsSchema", () => {
@@ -58,6 +77,25 @@ describe("TVDetailsSchema", () => {
   it("rejects missing series_id", () => {
     expect(() => TVDetailsSchema.parse({})).toThrow();
   });
+
+  it("defaults credits_limit to 20", () => {
+    const result = TVDetailsSchema.parse({ series_id: 1396 });
+    expect(result.credits_limit).toBe(20);
+  });
+
+  it("accepts custom credits_limit", () => {
+    const result = TVDetailsSchema.parse({ series_id: 1396, credits_limit: 5 });
+    expect(result.credits_limit).toBe(5);
+  });
+
+  it("accepts credits_limit 0 for unlimited", () => {
+    const result = TVDetailsSchema.parse({ series_id: 1396, credits_limit: 0 });
+    expect(result.credits_limit).toBe(0);
+  });
+
+  it("rejects negative credits_limit", () => {
+    expect(() => TVDetailsSchema.parse({ series_id: 1396, credits_limit: -1 })).toThrow();
+  });
 });
 
 describe("PersonDetailsSchema", () => {
@@ -76,6 +114,25 @@ describe("PersonDetailsSchema", () => {
 
   it("rejects missing person_id", () => {
     expect(() => PersonDetailsSchema.parse({})).toThrow();
+  });
+
+  it("defaults credits_limit to 20", () => {
+    const result = PersonDetailsSchema.parse({ person_id: 287 });
+    expect(result.credits_limit).toBe(20);
+  });
+
+  it("accepts custom credits_limit", () => {
+    const result = PersonDetailsSchema.parse({ person_id: 287, credits_limit: 5 });
+    expect(result.credits_limit).toBe(5);
+  });
+
+  it("accepts credits_limit 0 for unlimited", () => {
+    const result = PersonDetailsSchema.parse({ person_id: 287, credits_limit: 0 });
+    expect(result.credits_limit).toBe(0);
+  });
+
+  it("rejects negative credits_limit", () => {
+    expect(() => PersonDetailsSchema.parse({ person_id: 287, credits_limit: -1 })).toThrow();
   });
 });
 
