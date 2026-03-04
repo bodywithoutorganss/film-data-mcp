@@ -10,6 +10,7 @@ import {
   CEREMONIES,
   AWARD_CATEGORIES,
 } from "../types/awards-registry.js";
+import { buildToolDef } from "../utils/tool-helpers.js";
 
 // --- Entity resolution helpers ---
 
@@ -53,18 +54,11 @@ export const GetPersonAwardsSchema = z.object({
   person_id: z.number().int().positive().describe("TMDB person ID"),
 });
 
-export const getPersonAwardsTool = {
-  name: "get_person_awards",
-  description:
-    "Get award wins and nominations for a person. Accepts a TMDB person ID. Returns wins, nominations, and the films they were for (where available). Covers Academy Awards, Golden Globes, BAFTA, Cannes, and other major ceremonies.",
-  inputSchema: {
-    type: "object" as const,
-    properties: {
-      person_id: { type: "number", description: "TMDB person ID" },
-    },
-    required: ["person_id"],
-  },
-};
+export const getPersonAwardsTool = buildToolDef(
+  "get_person_awards",
+  "Get award wins and nominations for a person. Accepts a TMDB person ID. Returns wins, nominations, and the films they were for (where available). Covers Academy Awards, Golden Globes, BAFTA, Cannes, and other major ceremonies.",
+  GetPersonAwardsSchema
+);
 
 export async function handleGetPersonAwards(
   args: z.infer<typeof GetPersonAwardsSchema>,
@@ -86,18 +80,11 @@ export const GetFilmAwardsSchema = z.object({
   movie_id: z.number().int().positive().describe("TMDB movie ID"),
 });
 
-export const getFilmAwardsTool = {
-  name: "get_film_awards",
-  description:
-    "Get all awards a film has received. Accepts a TMDB movie ID. Returns structured award data with ceremony names and years.",
-  inputSchema: {
-    type: "object" as const,
-    properties: {
-      movie_id: { type: "number", description: "TMDB movie ID" },
-    },
-    required: ["movie_id"],
-  },
-};
+export const getFilmAwardsTool = buildToolDef(
+  "get_film_awards",
+  "Get all awards a film has received. Accepts a TMDB movie ID. Returns structured award data with ceremony names and years.",
+  GetFilmAwardsSchema
+);
 
 export async function handleGetFilmAwards(
   args: z.infer<typeof GetFilmAwardsSchema>,
@@ -116,18 +103,11 @@ export const GetAwardHistorySchema = z.object({
   category: z.string().describe("Award category ID from the registry (e.g., 'academy-best-cinematography')"),
 });
 
-export const getAwardHistoryTool = {
-  name: "get_award_history",
-  description:
-    "Get all winners of a specific award category across all years. Use registry IDs like 'academy-best-cinematography' or 'cannes-palme-dor'. Returns recipients, years, and films.",
-  inputSchema: {
-    type: "object" as const,
-    properties: {
-      category: { type: "string", description: "Award category ID (e.g., 'academy-best-cinematography')" },
-    },
-    required: ["category"],
-  },
-};
+export const getAwardHistoryTool = buildToolDef(
+  "get_award_history",
+  "Get all winners of a specific award category across all years. Use registry IDs like 'academy-best-cinematography' or 'cannes-palme-dor'. Returns recipients, years, and films.",
+  GetAwardHistorySchema
+);
 
 export async function handleGetAwardHistory(
   args: z.infer<typeof GetAwardHistorySchema>,
@@ -148,18 +128,11 @@ export const SearchAwardsSchema = z.object({
   query: z.string().min(1).describe("Search query — ceremony name, category, domain, or keyword (e.g., 'cannes', 'cinematography', 'academy-awards')"),
 });
 
-export const searchAwardsTool = {
-  name: "search_awards",
-  description:
-    "Search the awards registry by ceremony, category, or domain. Returns matching ceremonies and award categories. Use this to discover available award category IDs for get_award_history.",
-  inputSchema: {
-    type: "object" as const,
-    properties: {
-      query: { type: "string", description: "Search query" },
-    },
-    required: ["query"],
-  },
-};
+export const searchAwardsTool = buildToolDef(
+  "search_awards",
+  "Search the awards registry by ceremony, category, or domain. Returns matching ceremonies and award categories. Use this to discover available award category IDs for get_award_history.",
+  SearchAwardsSchema
+);
 
 export async function handleSearchAwards(
   args: z.infer<typeof SearchAwardsSchema>,
