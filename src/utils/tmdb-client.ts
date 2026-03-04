@@ -14,6 +14,18 @@ import type {
     TMDBSearchResponse,
     TMDBError,
 } from "../types/tmdb.js";
+import type {
+    DiscoverMovieParams,
+    DiscoverTVParams,
+    PaginatedResult,
+    Genre,
+    FindResult,
+    CollectionDetails,
+    CompanyDetails,
+    NetworkDetails,
+    WatchProviderResult,
+    WatchProvider,
+} from "../types/tmdb-extended.js";
 
 export class TMDBClient {
     private readonly baseURL = "https://api.themoviedb.org/3";
@@ -68,8 +80,12 @@ export class TMDBClient {
     /**
      * Get movie details by ID
      */
-    async getMovieDetails(movieId: number): Promise<TMDBMovieDetails> {
-        return this.get<TMDBMovieDetails>(`/movie/${movieId}`);
+    async getMovieDetails(movieId: number, appendToResponse?: string[]): Promise<TMDBMovieDetails> {
+        const params: Record<string, string> = {};
+        if (appendToResponse?.length) {
+            params.append_to_response = appendToResponse.join(",");
+        }
+        return this.get<TMDBMovieDetails>(`/movie/${movieId}`, params);
     }
 
     /**
@@ -92,36 +108,14 @@ export class TMDBClient {
     /**
      * Discover movies with advanced filters
      */
-    async discoverMovies(params: {
-        with_genres?: string;
-        with_original_language?: string;
-        "primary_release_date.gte"?: string;
-        "primary_release_date.lte"?: string;
-        "vote_average.gte"?: number;
-        "vote_average.lte"?: number;
-        "vote_count.gte"?: number;
-        sort_by?: string;
-        page?: number;
-    }): Promise<TMDBSearchResponse<TMDBMovie>> {
+    async discoverMovies(params: DiscoverMovieParams): Promise<PaginatedResult<TMDBMovie>> {
         const queryParams: Record<string, string> = {};
-
-        if (params.with_genres) queryParams.with_genres = params.with_genres;
-        if (params.with_original_language)
-            queryParams.with_original_language = params.with_original_language;
-        if (params["primary_release_date.gte"])
-            queryParams["primary_release_date.gte"] = params["primary_release_date.gte"];
-        if (params["primary_release_date.lte"])
-            queryParams["primary_release_date.lte"] = params["primary_release_date.lte"];
-        if (params["vote_average.gte"])
-            queryParams["vote_average.gte"] = String(params["vote_average.gte"]);
-        if (params["vote_average.lte"])
-            queryParams["vote_average.lte"] = String(params["vote_average.lte"]);
-        if (params["vote_count.gte"])
-            queryParams["vote_count.gte"] = String(params["vote_count.gte"]);
-        if (params.sort_by) queryParams.sort_by = params.sort_by;
-        if (params.page) queryParams.page = String(params.page);
-
-        return this.get<TMDBSearchResponse<TMDBMovie>>("/discover/movie", queryParams);
+        for (const [key, value] of Object.entries(params)) {
+            if (value !== undefined) {
+                queryParams[key] = String(value);
+            }
+        }
+        return this.get<PaginatedResult<TMDBMovie>>("/discover/movie", queryParams);
     }
 
     /**
@@ -169,8 +163,12 @@ export class TMDBClient {
     /**
      * Get person details by ID
      */
-    async getPersonDetails(personId: number): Promise<any> {
-        return this.get<any>(`/person/${personId}`);
+    async getPersonDetails(personId: number, appendToResponse?: string[]): Promise<any> {
+        const params: Record<string, string> = {};
+        if (appendToResponse?.length) {
+            params.append_to_response = appendToResponse.join(",");
+        }
+        return this.get<any>(`/person/${personId}`, params);
     }
 
     /**
@@ -219,5 +217,152 @@ export class TMDBClient {
      */
     async getTVShowCredits(tvId: number): Promise<any> {
         return this.get<any>(`/tv/${tvId}/credits`);
+    }
+
+    /**
+     * Get TV show details by ID with optional sub-requests
+     */
+    async getTVDetails(tvId: number, appendToResponse?: string[]): Promise<TMDBTVShowDetails> {
+        const params: Record<string, string> = {};
+        if (appendToResponse?.length) {
+            params.append_to_response = appendToResponse.join(",");
+        }
+        return this.get<TMDBTVShowDetails>(`/tv/${tvId}`, params);
+    }
+
+    /**
+     * Discover TV shows with advanced filters
+     */
+    async discoverTV(params: DiscoverTVParams): Promise<PaginatedResult<TMDBTVShow>> {
+        const queryParams: Record<string, string> = {};
+        for (const [key, value] of Object.entries(params)) {
+            if (value !== undefined) {
+                queryParams[key] = String(value);
+            }
+        }
+        return this.get<PaginatedResult<TMDBTVShow>>("/discover/tv", queryParams);
+    }
+
+    /**
+     * Get genre list for movies or TV
+     */
+    async getGenres(mediaType: "movie" | "tv"): Promise<{ genres: Genre[] }> {
+        return this.get<{ genres: Genre[] }>(`/genre/${mediaType}/list`);
+    }
+
+    /**
+     * Find TMDB entries by external ID (IMDb, TVDB, etc.)
+     */
+    async findByExternalId(externalId: string, source: string): Promise<FindResult> {
+        return this.get<FindResult>(`/find/${externalId}`, {
+            external_source: source,
+        });
+    }
+
+    /**
+     * Get collection details by ID
+     */
+    async getCollection(collectionId: number): Promise<CollectionDetails> {
+        return this.get<CollectionDetails>(`/collection/${collectionId}`);
+    }
+
+    /**
+     * Get production company details by ID
+     */
+    async getCompany(companyId: number): Promise<CompanyDetails> {
+        return this.get<CompanyDetails>(`/company/${companyId}`);
+    }
+
+    /**
+     * Get TV network details by ID
+     */
+    async getNetwork(networkId: number): Promise<NetworkDetails> {
+        return this.get<NetworkDetails>(`/network/${networkId}`);
+    }
+
+    /**
+     * Get watch providers for a movie
+     */
+    async getMovieWatchProviders(movieId: number): Promise<WatchProviderResult> {
+        return this.get<WatchProviderResult>(`/movie/${movieId}/watch/providers`);
+    }
+
+    /**
+     * Get watch providers for a TV show
+     */
+    async getTVWatchProviders(tvId: number): Promise<WatchProviderResult> {
+        return this.get<WatchProviderResult>(`/tv/${tvId}/watch/providers`);
+    }
+
+    /**
+     * Get available watch providers for a media type
+     */
+    async getWatchProviderList(mediaType: "movie" | "tv"): Promise<{ results: WatchProvider[] }> {
+        return this.get<{ results: WatchProvider[] }>(`/watch/providers/${mediaType}`);
+    }
+
+    /**
+     * Get movies currently in theaters
+     */
+    async getNowPlaying(page: number = 1): Promise<PaginatedResult<TMDBMovie>> {
+        return this.get<PaginatedResult<TMDBMovie>>("/movie/now_playing", {
+            page: String(page),
+        });
+    }
+
+    /**
+     * Get upcoming movies
+     */
+    async getUpcoming(page: number = 1): Promise<PaginatedResult<TMDBMovie>> {
+        return this.get<PaginatedResult<TMDBMovie>>("/movie/upcoming", {
+            page: String(page),
+        });
+    }
+
+    /**
+     * Get popular items by media type
+     */
+    async getPopular(mediaType: "movie" | "tv", page: number = 1): Promise<PaginatedResult<any>> {
+        return this.get<PaginatedResult<any>>(`/${mediaType}/popular`, {
+            page: String(page),
+        });
+    }
+
+    /**
+     * Get top-rated items by media type
+     */
+    async getTopRated(mediaType: "movie" | "tv", page: number = 1): Promise<PaginatedResult<any>> {
+        return this.get<PaginatedResult<any>>(`/${mediaType}/top_rated`, {
+            page: String(page),
+        });
+    }
+
+    /**
+     * Get TV shows airing today
+     */
+    async getAiringToday(page: number = 1): Promise<PaginatedResult<TMDBTVShow>> {
+        return this.get<PaginatedResult<TMDBTVShow>>("/tv/airing_today", {
+            page: String(page),
+        });
+    }
+
+    /**
+     * Multi-search across movies, TV, and people
+     */
+    async searchMulti(query: string, page: number = 1): Promise<PaginatedResult<any>> {
+        return this.get<PaginatedResult<any>>("/search/multi", {
+            query,
+            page: String(page),
+        });
+    }
+
+    /**
+     * Search by specific media type
+     */
+    async searchByType(mediaType: "movie" | "tv" | "person", query: string, page: number = 1): Promise<PaginatedResult<any>> {
+        return this.get<PaginatedResult<any>>(`/search/${mediaType}`, {
+            query,
+            page: String(page),
+        });
     }
 }
