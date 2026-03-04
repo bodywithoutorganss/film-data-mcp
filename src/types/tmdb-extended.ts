@@ -1,5 +1,5 @@
 // ABOUTME: Extended TMDB response types for redesigned tool surface.
-// ABOUTME: Covers discover, genres, watch providers, collections, companies, networks, and find results.
+// ABOUTME: Covers discover, genres, watch providers, collections, companies, networks, keywords, and find results.
 
 // --- Shared ---
 

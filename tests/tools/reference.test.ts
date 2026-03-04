@@ -1,5 +1,5 @@
-// ABOUTME: Tests for reference/utility tools — genres, watch providers, find, collections, companies.
-// ABOUTME: Validates Zod schemas for all five reference tools.
+// ABOUTME: Tests for reference/utility tools — genres, watch providers, find, collections, companies, keywords, filmography.
+// ABOUTME: Validates Zod schemas and handlers for all reference tools.
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import {
@@ -321,6 +321,10 @@ describe("SearchKeywordsSchema", () => {
 describe("handleSearchKeywords", () => {
   const mockClient = { searchKeywords: vi.fn() };
 
+  beforeEach(() => {
+    vi.resetAllMocks();
+  });
+
   it("calls searchKeywords with query and default page", async () => {
     mockClient.searchKeywords.mockResolvedValue({
       page: 1,
@@ -380,6 +384,10 @@ describe("handleCompanyFilmography", () => {
     discoverMovies: vi.fn(),
     discoverTV: vi.fn(),
   };
+
+  beforeEach(() => {
+    vi.resetAllMocks();
+  });
 
   it("calls discoverMovies with with_companies for movie type", async () => {
     mockClient.discoverMovies.mockResolvedValue({
