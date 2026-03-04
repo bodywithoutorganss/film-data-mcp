@@ -38,7 +38,7 @@ src/
     tool-helpers.ts      - buildToolDef() — Zod schema to MCP tool definition
 ```
 
-## Tools (12 TMDB, 4 awards)
+## Tools (16 total: 12 TMDB, 4 awards)
 
 | Tool | File | Description |
 |------|------|-------------|
@@ -58,6 +58,8 @@ src/
 | get_film_awards | awards.ts | All awards a film has received (by TMDB movie ID) |
 | get_award_history | awards.ts | All winners of a specific award category across years |
 | search_awards | awards.ts | Search the awards registry by ceremony, category, or domain |
+
+**Planned (M6):** `search_keywords` and `company_filmography` → 18 tools total. See ROADMAP.md.
 
 ## Tool Pattern
 
@@ -81,7 +83,7 @@ Handlers validate via Zod internally and return `JSON.stringify(result, null, 2)
 
 ## Testing
 
-- `npm test` — unit tests (no network), 175 tests across 13 files
+- `npm test` — unit tests (no network), 221 tests across 13 files
 - `npm run test:integration` — integration tests (hits live Wikidata SPARQL endpoint)
 - Live integration tests (`tests/integration/live-api.test.ts`) require `TMDB_ACCESS_TOKEN` env var
 - Test files mirror source structure: `tests/tools/`, `tests/types/`, `tests/utils/`

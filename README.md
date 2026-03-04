@@ -111,7 +111,7 @@ Add to your Claude Desktop configuration:
 
 ```bash
 npm run watch      # Watch mode
-npm test           # Unit tests (175 tests, no network)
+npm test           # Unit tests (221 tests, no network)
 npm run inspector  # MCP Inspector for debugging
 npm run format     # Prettier
 ```
