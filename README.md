@@ -6,8 +6,6 @@ A [Model Context Protocol (MCP)](https://modelcontextprotocol.io) server for fil
 
 ## Quick Start
 
-Get started in seconds with npm:
-
 ```bash
 # Install globally
 npm install -g film-data-mcp
@@ -20,66 +18,44 @@ npx film-data-mcp
 
 ## Features
 
-### 🎬 Movie Tools
-- **search_movies** - Search for movies by title
-- **get_movie_details** - Get detailed information about a specific movie (budget, revenue, runtime, genres, etc.)
-- **discover_movies** - Discover movies with advanced filters (genre, language, year range, rating, sorting)
-- **get_recommendations** - Get movie recommendations based on a specific movie
-- **get_movie_credits** - Get cast and crew information for a movie
+### 12 TMDB Tools
 
-### 📺 TV Show Tools
-- **search_tv_shows** - Search for TV shows by name
-- **get_tv_details** - Get detailed information about a specific TV show (seasons, episodes, networks, etc.)
-- **discover_tv_shows** - Discover TV shows with advanced filters (genre, language, year, rating, sorting)
-- **get_tv_recommendations** - Get TV show recommendations based on a specific show
-- **get_tv_credits** - Get cast and crew information for a TV show
+| Tool | Description |
+|------|-------------|
+| **search** | Search movies, TV shows, people, or companies by query |
+| **movie_details** | Movie info — optionally append credits, videos, reviews, similar titles |
+| **tv_details** | TV show info — optionally append credits, videos, reviews, similar titles |
+| **person_details** | Person bio — optionally append combined credits, images |
+| **discover** | Advanced movie/TV filtering with 30+ parameters (genre, year, rating, cast, crew, keywords, etc.) |
+| **trending** | Daily or weekly trending movies, TV shows, or people |
+| **curated_lists** | Popular, top rated, now playing, airing today, upcoming |
+| **genres** | Get genre ID/name lists for movies or TV |
+| **watch_providers** | Streaming/rent/buy availability by region, or list all providers (powered by JustWatch) |
+| **find_by_external_id** | Look up TMDB entries by IMDb, TVDB, or social media ID |
+| **collection_details** | Movie franchise/collection info (e.g., Star Wars, Marvel) |
+| **company_details** | Production company or TV network details (e.g., A24, HBO) |
 
-### 👥 People Tools
-- **search_people** - Search for actors, directors, and other entertainment industry professionals
-- **get_person_details** - Get detailed biographical information about a person
+### 4 Awards Tools (coming soon)
 
-### 🔥 Trending
-- **get_trending** - Get daily or weekly trending movies, TV shows, or people
+Wikidata SPARQL-powered awards data covering 21 ceremonies/festivals (Oscars, Cannes, BAFTA, etc.) with 91 verified award categories.
 
 ## Installation
 
 ### Option 1: npm (Recommended)
 
-Install from npm registry:
-
 ```bash
 npm install -g film-data-mcp
 ```
 
-That's it! No build step required.
+### Option 2: From Source
 
-### Option 2: From Source (For Development)
+**Prerequisites:** Node.js v18+, a [TMDB API access token](https://www.themoviedb.org/settings/api)
 
-**Prerequisites:**
-- Node.js (v18 or higher)
-- A TMDB API access token (get one free at [TMDB](https://www.themoviedb.org/settings/api))
-
-**Steps:**
-
-1. Clone the repository:
 ```bash
 git clone https://github.com/bodywithoutorganss/film-data-mcp.git
 cd film-data-mcp
-```
-
-2. Install dependencies:
-```bash
 npm install
-```
-
-3. Create a `.env` file with your TMDB access token:
-```bash
-cp .env.example .env
-# Edit .env and add your TMDB_ACCESS_TOKEN
-```
-
-4. Build the server:
-```bash
+cp .env.example .env   # Add your TMDB_ACCESS_TOKEN
 npm run build
 ```
 
@@ -87,17 +63,17 @@ npm run build
 
 ### With Claude Desktop
 
-Add the server to your Claude Desktop configuration:
+Add to your Claude Desktop configuration:
 
 **MacOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
 **Windows**: `%APPDATA%/Claude/claude_desktop_config.json`
 
-#### If installed via npm:
+#### Via npm:
 
 ```json
 {
   "mcpServers": {
-    "tmdb": {
+    "film-data": {
       "command": "npx",
       "args": ["-y", "film-data-mcp"],
       "env": {
@@ -108,12 +84,12 @@ Add the server to your Claude Desktop configuration:
 }
 ```
 
-#### If installed from source:
+#### From source:
 
 ```json
 {
   "mcpServers": {
-    "tmdb": {
+    "film-data": {
       "command": "node",
       "args": ["/absolute/path/to/film-data-mcp/build/index.js"],
       "env": {
@@ -124,77 +100,49 @@ Add the server to your Claude Desktop configuration:
 }
 ```
 
-### With Other MCP Clients
-
-The server runs on stdio by default, making it compatible with any MCP client that supports stdio transport.
-
 ### Remote Deployment (HTTP Mode)
-
-The server also supports Streamable HTTP transport for remote deployment:
 
 ```bash
 MCP_TRANSPORT=http PORT=3000 node build/index.js
 ```
 
-See [TRANSPORT.md](TRANSPORT.md) for detailed deployment instructions for platforms like Railway.
+See [TRANSPORT.md](TRANSPORT.md) for deployment instructions (Railway, etc.).
 
 ## Development
 
-### Local Development
-
-Run the server in watch mode for development:
 ```bash
-npm run watch
-```
-
-### Debugging
-
-Use the MCP Inspector for debugging:
-```bash
-npm run inspector
-```
-
-The Inspector provides a web interface for testing and debugging MCP tools.
-
-### Code Formatting
-
-Format code with Prettier:
-```bash
-npm run format
+npm run watch      # Watch mode
+npm test           # Unit tests (112 tests, no network)
+npm run inspector  # MCP Inspector for debugging
+npm run format     # Prettier
 ```
 
 ## Example Queries
 
-Here are some example queries you can try with Claude:
-
 - "Find Japanese sci-fi movies from 2020 onwards with a rating above 7"
-- "What are the top trending movies this week?"
-- "Get me recommendations based on The Matrix"
-- "Search for Christopher Nolan movies"
-- "Show me details about the TV show Breaking Bad"
+- "What's trending this week?"
+- "Where can I stream Parasite?"
+- "Show me A24's filmography"
+- "Get Christopher Nolan's credits with movie details"
 - "Find Korean dramas with high ratings"
 
 ## API Rate Limits
 
-TMDB API has rate limits on their free tier:
-- 50 requests per second
-- Consider implementing caching for production use
+TMDB API free tier: 50 requests per second. Consider caching for production use.
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+Contributions welcome! Please open an issue first for major changes. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+MIT — see [LICENSE](LICENSE).
 
 ## Acknowledgments
 
 - Built with the [Model Context Protocol SDK](https://github.com/modelcontextprotocol)
-- Data provided by [The Movie Database (TMDB)](https://www.themoviedb.org/)
-- This product uses the TMDB API but is not endorsed or certified by TMDB
+- Film data from [The Movie Database (TMDB)](https://www.themoviedb.org/) — not endorsed or certified by TMDB
+- Awards data from [Wikidata](https://www.wikidata.org/) (CC0)
 
 ## Links
 
