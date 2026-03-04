@@ -3,14 +3,12 @@
 // ABOUTME: Registers TMDB and Wikidata tools, handles stdio and HTTP transports.
 
 /**
- * TMDB MCP Server
+ * Film Data MCP Server
  * Provides access to The Movie Database (TMDB) API through Model Context Protocol
  *
- * Available tools:
- * - search_movies: Search for movies by title
- * - get_movie_details: Get detailed information about a specific movie
- * - search_tv_shows: Search for TV shows by name
- * - get_tv_details: Get detailed information about a specific TV show
+ * 12 TMDB tools: search, movie_details, tv_details, person_details,
+ * discover, trending, curated_lists, genres, watch_providers,
+ * find_by_external_id, collection_details, company_details
  *
  * Supports two transport modes:
  * - stdio: For local Claude Desktop integration (default)
@@ -25,59 +23,25 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import { CallToolRequestSchema, ListToolsRequestSchema } from "@modelcontextprotocol/sdk/types.js";
 
-// Import TMDB client
 import { TMDBClient } from "./utils/tmdb-client.js";
-
-// Import movie tools
+import { searchTool, handleSearch } from "./tools/search.js";
 import {
-    searchMoviesTool,
-    getMovieDetailsTool,
-    discoverMoviesTool,
-    getRecommendationsTool,
-    getTrendingTool,
-    getMovieCreditsTool,
-    handleSearchMovies,
-    handleGetMovieDetails,
-    handleDiscoverMovies,
-    handleGetRecommendations,
-    handleGetTrending,
-    handleGetMovieCredits,
-    SearchMoviesSchema,
-    GetMovieDetailsSchema,
-    DiscoverMoviesSchema,
-    GetRecommendationsSchema,
-    GetTrendingSchema,
-    GetMovieCreditsSchema,
-} from "./tools/movies.js";
-
-// Import TV show tools
+    movieDetailsTool, handleMovieDetails,
+    tvDetailsTool, handleTVDetails,
+    personDetailsTool, handlePersonDetails,
+} from "./tools/details.js";
+import { discoverTool, handleDiscover } from "./tools/discover.js";
 import {
-    searchTVShowsTool,
-    getTVShowDetailsTool,
-    discoverTVShowsTool,
-    getTVRecommendationsTool,
-    getTVCreditsTool,
-    handleSearchTVShows,
-    handleGetTVShowDetails,
-    handleDiscoverTVShows,
-    handleGetTVRecommendations,
-    handleGetTVCredits,
-    SearchTVShowsSchema,
-    GetTVShowDetailsSchema,
-    DiscoverTVShowsSchema,
-    GetTVRecommendationsSchema,
-    GetTVCreditsSchema,
-} from "./tools/tv.js";
-
-// Import people tools
+    trendingTool, handleTrending,
+    curatedListsTool, handleCuratedLists,
+} from "./tools/browse.js";
 import {
-    searchPeopleTool,
-    getPersonDetailsTool,
-    handleSearchPeople,
-    handleGetPersonDetails,
-    SearchPeopleSchema,
-    GetPersonDetailsSchema,
-} from "./tools/people.js";
+    genresTool, handleGenres,
+    watchProvidersTool, handleWatchProviders,
+    findByExternalIdTool, handleFindByExternalId,
+    collectionDetailsTool, handleCollectionDetails,
+    companyDetailsTool, handleCompanyDetails,
+} from "./tools/reference.js";
 
 // Load environment variables
 config();
@@ -108,24 +72,22 @@ const server = new Server(
 
 /**
  * Handler for listing available tools
- * Returns all 13 TMDB tools
  */
 server.setRequestHandler(ListToolsRequestSchema, async () => {
     return {
         tools: [
-            searchMoviesTool,
-            getMovieDetailsTool,
-            discoverMoviesTool,
-            getRecommendationsTool,
-            getTrendingTool,
-            getMovieCreditsTool,
-            searchTVShowsTool,
-            getTVShowDetailsTool,
-            discoverTVShowsTool,
-            getTVRecommendationsTool,
-            getTVCreditsTool,
-            searchPeopleTool,
-            getPersonDetailsTool,
+            searchTool,
+            movieDetailsTool,
+            tvDetailsTool,
+            personDetailsTool,
+            discoverTool,
+            trendingTool,
+            curatedListsTool,
+            genresTool,
+            watchProvidersTool,
+            findByExternalIdTool,
+            collectionDetailsTool,
+            companyDetailsTool,
         ],
     };
 });
@@ -138,179 +100,29 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     try {
         const { name, arguments: args } = request.params;
 
-        switch (name) {
-            case "search_movies": {
-                const validatedArgs = SearchMoviesSchema.parse(args);
-                const result = await handleSearchMovies(validatedArgs, tmdbClient);
-                return {
-                    content: [
-                        {
-                            type: "text",
-                            text: result,
-                        },
-                    ],
-                };
-            }
+        // Each handler validates args internally via Zod
+        const handlers: Record<string, (args: any, client: TMDBClient) => Promise<string>> = {
+            search: handleSearch,
+            movie_details: handleMovieDetails,
+            tv_details: handleTVDetails,
+            person_details: handlePersonDetails,
+            discover: handleDiscover,
+            trending: handleTrending,
+            curated_lists: handleCuratedLists,
+            genres: handleGenres,
+            watch_providers: handleWatchProviders,
+            find_by_external_id: handleFindByExternalId,
+            collection_details: handleCollectionDetails,
+            company_details: handleCompanyDetails,
+        };
 
-            case "get_movie_details": {
-                const validatedArgs = GetMovieDetailsSchema.parse(args);
-                const result = await handleGetMovieDetails(validatedArgs, tmdbClient);
-                return {
-                    content: [
-                        {
-                            type: "text",
-                            text: result,
-                        },
-                    ],
-                };
-            }
-
-            case "discover_movies": {
-                const validatedArgs = DiscoverMoviesSchema.parse(args);
-                const result = await handleDiscoverMovies(validatedArgs, tmdbClient);
-                return {
-                    content: [
-                        {
-                            type: "text",
-                            text: result,
-                        },
-                    ],
-                };
-            }
-
-            case "get_recommendations": {
-                const validatedArgs = GetRecommendationsSchema.parse(args);
-                const result = await handleGetRecommendations(validatedArgs, tmdbClient);
-                return {
-                    content: [
-                        {
-                            type: "text",
-                            text: result,
-                        },
-                    ],
-                };
-            }
-
-            case "search_tv_shows": {
-                const validatedArgs = SearchTVShowsSchema.parse(args);
-                const result = await handleSearchTVShows(validatedArgs, tmdbClient);
-                return {
-                    content: [
-                        {
-                            type: "text",
-                            text: result,
-                        },
-                    ],
-                };
-            }
-
-            case "get_tv_details": {
-                const validatedArgs = GetTVShowDetailsSchema.parse(args);
-                const result = await handleGetTVShowDetails(validatedArgs, tmdbClient);
-                return {
-                    content: [
-                        {
-                            type: "text",
-                            text: result,
-                        },
-                    ],
-                };
-            }
-
-            case "get_trending": {
-                const validatedArgs = GetTrendingSchema.parse(args);
-                const result = await handleGetTrending(validatedArgs, tmdbClient);
-                return {
-                    content: [
-                        {
-                            type: "text",
-                            text: result,
-                        },
-                    ],
-                };
-            }
-
-            case "get_movie_credits": {
-                const validatedArgs = GetMovieCreditsSchema.parse(args);
-                const result = await handleGetMovieCredits(validatedArgs, tmdbClient);
-                return {
-                    content: [
-                        {
-                            type: "text",
-                            text: result,
-                        },
-                    ],
-                };
-            }
-
-            case "search_people": {
-                const validatedArgs = SearchPeopleSchema.parse(args);
-                const result = await handleSearchPeople(validatedArgs, tmdbClient);
-                return {
-                    content: [
-                        {
-                            type: "text",
-                            text: result,
-                        },
-                    ],
-                };
-            }
-
-            case "get_person_details": {
-                const validatedArgs = GetPersonDetailsSchema.parse(args);
-                const result = await handleGetPersonDetails(validatedArgs, tmdbClient);
-                return {
-                    content: [
-                        {
-                            type: "text",
-                            text: result,
-                        },
-                    ],
-                };
-            }
-
-            case "discover_tv_shows": {
-                const validatedArgs = DiscoverTVShowsSchema.parse(args);
-                const result = await handleDiscoverTVShows(validatedArgs, tmdbClient);
-                return {
-                    content: [
-                        {
-                            type: "text",
-                            text: result,
-                        },
-                    ],
-                };
-            }
-
-            case "get_tv_recommendations": {
-                const validatedArgs = GetTVRecommendationsSchema.parse(args);
-                const result = await handleGetTVRecommendations(validatedArgs, tmdbClient);
-                return {
-                    content: [
-                        {
-                            type: "text",
-                            text: result,
-                        },
-                    ],
-                };
-            }
-
-            case "get_tv_credits": {
-                const validatedArgs = GetTVCreditsSchema.parse(args);
-                const result = await handleGetTVCredits(validatedArgs, tmdbClient);
-                return {
-                    content: [
-                        {
-                            type: "text",
-                            text: result,
-                        },
-                    ],
-                };
-            }
-
-            default:
-                throw new Error(`Unknown tool: ${name}`);
+        const handler = handlers[name];
+        if (!handler) {
+            throw new Error(`Unknown tool: ${name}`);
         }
+
+        const result = await handler(args, tmdbClient);
+        return { content: [{ type: "text", text: result }] };
     } catch (error) {
         // Handle Zod validation errors and API errors
         if (error instanceof Error) {
