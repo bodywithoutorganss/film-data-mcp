@@ -88,19 +88,18 @@ Handlers validate via Zod internally and return `JSON.stringify(result, null, 2)
 
 ### Response Size Considerations
 
-Some append combinations produce responses too large for LLM context windows:
+Some append combinations produce large responses. Built-in filters help:
 
-- `movie_details` + `credits`: ~250K chars for blockbusters (large cast/crew lists)
-- `person_details` + `combined_credits`: ~90K chars for prolific filmmakers
-- `watch_providers` per movie: ~130K chars (returns all ~40 regions, no region filter yet)
+- `movie_details` / `tv_details` / `person_details` + credits: limited to top 20 cast + crew by default via `credits_limit` parameter. Pass `credits_limit: 0` for unlimited.
+- `watch_providers` per movie: use the `region` parameter (e.g., `"US"`) to get a single country instead of all ~40 regions.
 
-Practical alternative: use `discover` with `with_crew`/`with_cast` filters instead of appending credits. Returns paginated, context-friendly results.
+For filmography exploration, `discover` with `with_crew`/`with_cast` filters returns paginated, context-friendly results.
 
 ### Wikidata Data Gaps
 
 - Awards data lags ~1-2 years behind real-world ceremonies. Recent winners may return empty results.
 - Award history queries may include duplicate entries (both film entity and person entity for the same year/award).
-- Some Wikidata entities lack labels, showing raw QIDs (e.g., `Q585668`) instead of human-readable names.
+- Some Wikidata entities lack labels. These are automatically cleaned to `"Unknown (Q585668)"` format.
 
 ### TMDB ID Stability
 

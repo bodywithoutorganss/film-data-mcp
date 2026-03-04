@@ -129,9 +129,9 @@ npm run format     # Prettier
 
 Some tool responses can exceed LLM context windows. A few patterns to keep in mind:
 
-- **Credits for blockbusters** (`movie_details` with `credits` append) can produce 250K+ chars. Prefer `discover` with `with_crew` or `with_cast` filters to explore a person's filmography — it returns paginated, right-sized results.
-- **Watch providers per movie** returns availability for all ~40 regions. Large responses (~130K chars) may exceed context. A region filter is planned for a future release.
-- **Person combined credits** (`person_details` with `combined_credits`) can exceed 90K chars for prolific filmmakers. Again, `discover` with person ID filters is the more practical approach.
+- **Credits** are limited to the top 20 cast + crew by default. Use `credits_limit` to adjust (e.g., `credits_limit: 5` for compact results, `credits_limit: 0` for unlimited). For filmography exploration, `discover` with `with_crew`/`with_cast` filters returns paginated results.
+- **Watch providers** return all ~40 regions by default. Use the `region` parameter (e.g., `"US"`) to get a single country — keeps responses small.
+- **Person combined credits** can be large for prolific filmmakers. `credits_limit` helps, or use `discover` with person ID filters for a paginated approach.
 - **Wikidata awards** have a ~1-2 year lag. Very recent award wins may not appear in `get_film_awards` or `get_person_awards` results.
 
 ## ID Stability
