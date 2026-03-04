@@ -70,7 +70,7 @@ const wikidataClient = new WikidataClient();
 const server = new Server(
     {
         name: "film-data-mcp",
-        version: "0.1.0",
+        version: "0.7.0",
     },
     {
         capabilities: {
