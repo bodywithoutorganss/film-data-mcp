@@ -1,7 +1,7 @@
 // ABOUTME: SPARQL client for Wikidata entity resolution and awards queries.
 // ABOUTME: Resolves TMDB/IMDb IDs to Wikidata entities, queries award and nomination data.
 
-import type { SparqlResponse, ResolvedEntity, WikidataAward, WikidataNomination, AwardHistoryEntry } from "../types/wikidata.js";
+import type { SparqlResponse, ResolvedEntity, ResolutionMethod, WikidataAward, WikidataNomination, AwardHistoryEntry } from "../types/wikidata.js";
 import { AWARD_CATEGORIES } from "../types/awards-registry.js";
 
 const SPARQL_ENDPOINT = "https://query.wikidata.org/sparql";
@@ -35,7 +35,7 @@ export class WikidataClient {
 
   private parseResolvedEntity(
     data: SparqlResponse,
-    resolvedVia: "tmdb_id" | "imdb_id"
+    resolvedVia: ResolutionMethod
   ): ResolvedEntity | null {
     const bindings = data.results.bindings;
     if (bindings.length === 0) return null;

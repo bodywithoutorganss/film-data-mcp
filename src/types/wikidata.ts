@@ -48,7 +48,7 @@ export interface AwardsCompleteness {
 }
 
 export interface CrewNominationEntry {
-  person: { name: string; role: string };
+  person: { name: string; roles: string[] };
   nominations: WikidataNomination[];
 }
 
@@ -66,7 +66,7 @@ export interface FilmAwardsResult {
   completeness: AwardsCompleteness;
 }
 
-export type ResolutionMethod = "tmdb_id" | "imdb_id";
+export type ResolutionMethod = "tmdb_id" | "imdb_id" | "name_search";
 
 export interface ResolvedEntity {
   wikidataId: string;

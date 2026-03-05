@@ -104,7 +104,7 @@ const MAX_CREW_LOOKUPS = 5;
 
 interface CrewNominationsResult {
   crewNominations: CrewNominationEntry[];
-  skippedCrew: Array<{ name: string; role: string; reason: string }>;
+  skippedCrew: Array<{ name: string; roles: string[]; reason: string }>;
 }
 
 async function getFilmCrewNominations(
@@ -129,7 +129,7 @@ async function getFilmCrewNominations(
       try {
         entity = await resolvePerson(member.id, tmdbClient, wikidataClient);
       } catch {
-        skippedCrew.push({ name: member.name, role: member.job, reason: "unresolvable" });
+        skippedCrew.push({ name: member.name, roles: [member.job], reason: "unresolvable" });
         return null;
       }
 
@@ -141,7 +141,7 @@ async function getFilmCrewNominations(
       if (filmNominations.length === 0) return null;
 
       return {
-        person: { name: member.name, role: member.job },
+        person: { name: member.name, roles: [member.job] },
         nominations: filmNominations,
       };
     })
