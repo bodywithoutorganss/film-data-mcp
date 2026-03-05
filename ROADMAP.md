@@ -48,9 +48,15 @@ Film research is scattered across TMDB, IMDb, Wikipedia, JustWatch, and festival
 - Design: `docs/plans/2026-03-04-m8-discovery-polish-design.md`
 - Plan: `docs/plans/2026-03-04-m8-implementation.md`
 
+### M9: Crew Resolution Improvements
+**Criteria:** Name-based Wikidata fallback (wbsearchentities + P106 occupation filter). Expanded job filter (composers, cinematographers, editors, broad producer matching). Crew deduplication by TMDB person ID. `role` → `roles` response shape change.
+**Status:** Complete — v0.8.0 tagged. 287 tests across 16 files (308 including skipped live + integration tests).
+- Design: `~/Dropbox/CS/personal-marketplace/docs/plans/2026-03-04-crew-resolution-design.md`
+- Plan: `~/Dropbox/CS/personal-marketplace/docs/plans/2026-03-04-crew-resolution-plan.md`
+
 ## Current Status
 
-v0.7.0 released. M8 complete. 20 tools total (16 TMDB + 4 awards), 277 tests across 15 files. All milestones complete.
+v0.8.0 released. M9 complete. 20 tools total (16 TMDB + 4 awards), 287 tests across 16 files.
 
 ## Time Tracking
 
@@ -64,11 +70,12 @@ v0.7.0 released. M8 complete. 20 tools total (16 TMDB + 4 awards), 277 tests acr
 | M6: Discovery Tools | 1 session | 2 sessions (design + plan, implementation) | — | Complete |
 | M7: Awards Intelligence | 1 session | 1 session (design + plan + implementation) | — | Complete |
 | M8: Discovery & Polish | 1 session | 1 session (design + plan + implementation) | — | Complete |
+| M9: Crew Resolution | 1 session | 1 session (implementation) | — | Complete |
 
 ## Key Decisions
 
 - TMDB has no awards API — Wikidata SPARQL fills this gap (CC0 license)
-- Entity resolution: TMDB ID → IMDb ID fallback → error. No fuzzy matching.
+- Entity resolution: TMDB ID → IMDb ID → name search (with occupation filter) → error.
 - Awards registry: curated verified QIDs, not dynamic SPARQL discovery (casual QID assumptions are wrong ~90% of the time)
 - `buildToolDef()`: Zod schemas are single source of truth, auto-converted to JSON Schema for MCP
 - Credits/watch provider overflow solved with filtering params, not separate tools
