@@ -98,7 +98,7 @@ export const GetFilmAwardsSchema = z.object({
 
 export const getFilmAwardsTool = buildToolDef(
   "get_film_awards",
-  "Get all awards a film has received. Accepts a TMDB movie ID. Returns structured award data with ceremony names and years, crew P1411 nominations (from director/producer/writer profiles filtered to this film), and a completeness indicator showing total P166 claims vs. registered awards. Covers Academy Awards, Golden Globes, BAFTA, Cannes, and other major ceremonies.",
+  "Get all awards a film has received. Accepts a TMDB movie ID. Returns structured award data with ceremony names and years, crew P1411 nominations (from directors, producers, writers, composers, cinematographers, editors, and other award-relevant crew filtered to this film), and a completeness indicator showing total P166 claims vs. registered awards. Covers Academy Awards, Golden Globes, BAFTA, Cannes, and other major ceremonies.",
   GetFilmAwardsSchema
 );
 
