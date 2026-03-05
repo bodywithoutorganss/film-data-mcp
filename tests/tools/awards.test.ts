@@ -17,6 +17,7 @@ const mockWikidataClient = {
   resolvePersonByTmdbId: vi.fn(),
   resolveMovieByTmdbId: vi.fn(),
   resolveByImdbId: vi.fn(),
+  resolvePersonByName: vi.fn(),
   getPersonWins: vi.fn(),
   getPersonNominations: vi.fn(),
   getFilmAwards: vi.fn(),
@@ -329,7 +330,7 @@ describe("awards tools", () => {
       expect(janeEntry).toBeUndefined();
     });
 
-    it("caps crew lookup at 5 people", async () => {
+    it("processes all relevant crew without cap", async () => {
       mockWikidataClient.resolveMovieByTmdbId.mockResolvedValue({
         wikidataId: "Q100", label: "Big Film", resolvedVia: "tmdb_id",
       });
@@ -342,7 +343,6 @@ describe("awards tools", () => {
       mockTmdbClient.getMovieDetails.mockResolvedValue({
         credits: { cast: [], crew: bigCrew },
       });
-      // All resolve successfully
       for (let i = 0; i < 10; i++) {
         mockWikidataClient.resolvePersonByTmdbId.mockResolvedValueOnce({
           wikidataId: `Q${i + 1}`, label: `Person ${i}`, resolvedVia: "tmdb_id",
@@ -355,10 +355,110 @@ describe("awards tools", () => {
         mockTmdbClient as any,
         mockWikidataClient as any
       );
-      JSON.parse(result); // should not throw
+      JSON.parse(result);
 
-      // resolvePersonByTmdbId should have been called at most 5 times (cap)
-      expect(mockWikidataClient.resolvePersonByTmdbId).toHaveBeenCalledTimes(5);
+      expect(mockWikidataClient.resolvePersonByTmdbId).toHaveBeenCalledTimes(10);
+    });
+
+    it("includes composers and cinematographers in crew lookups", async () => {
+      mockWikidataClient.resolveMovieByTmdbId.mockResolvedValue({
+        wikidataId: "Q56167580", label: "Test Film", resolvedVia: "tmdb_id",
+      });
+      mockWikidataClient.getFilmAwards.mockResolvedValue([]);
+      mockWikidataClient.countAllP166Claims.mockResolvedValue(0);
+      mockTmdbClient.getMovieDetails.mockResolvedValue({
+        credits: {
+          cast: [],
+          crew: [
+            { id: 100, name: "Test Composer", job: "Original Music Composer" },
+            { id: 101, name: "Test DP", job: "Director of Photography" },
+          ],
+        },
+      });
+      mockWikidataClient.resolvePersonByTmdbId.mockResolvedValue(null);
+      mockTmdbClient.getPersonDetails.mockResolvedValue({ imdb_id: null });
+      mockWikidataClient.resolvePersonByName.mockResolvedValue(null);
+
+      const result = await handleGetFilmAwards(
+        { movie_id: 489985 },
+        mockTmdbClient as any,
+        mockWikidataClient as any,
+      );
+      const parsed = JSON.parse(result);
+      expect(parsed.skippedCrew).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ name: "Test Composer" }),
+          expect.objectContaining({ name: "Test DP" }),
+        ]),
+      );
+    });
+
+    it("deduplicates crew by TMDB person ID", async () => {
+      mockWikidataClient.resolveMovieByTmdbId.mockResolvedValue({
+        wikidataId: "Q56167580", label: "Test Film", resolvedVia: "tmdb_id",
+      });
+      mockWikidataClient.getFilmAwards.mockResolvedValue([]);
+      mockWikidataClient.countAllP166Claims.mockResolvedValue(0);
+      mockTmdbClient.getMovieDetails.mockResolvedValue({
+        credits: {
+          cast: [],
+          crew: [
+            { id: 200, name: "Multi Role", job: "Director" },
+            { id: 200, name: "Multi Role", job: "Producer" },
+            { id: 200, name: "Multi Role", job: "Editor" },
+          ],
+        },
+      });
+      mockWikidataClient.resolvePersonByTmdbId.mockResolvedValue({
+        wikidataId: "Q999", label: "Multi Role", resolvedVia: "tmdb_id",
+      });
+      mockWikidataClient.getPersonNominations.mockResolvedValue([{
+        wikidataId: "Q111332", label: "Best Doc", year: 2020,
+        forWork: { wikidataId: "Q56167580", label: "Test Film" },
+        ceremony: "academy-awards",
+      }]);
+
+      const result = await handleGetFilmAwards(
+        { movie_id: 489985 },
+        mockTmdbClient as any,
+        mockWikidataClient as any,
+      );
+      const parsed = JSON.parse(result);
+
+      expect(mockWikidataClient.resolvePersonByTmdbId).toHaveBeenCalledTimes(1);
+      expect(parsed.crewNominations[0].person.roles).toEqual(
+        expect.arrayContaining(["Director", "Producer", "Editor"]),
+      );
+    });
+
+    it("matches broad producer roles like Associate Producer", async () => {
+      mockWikidataClient.resolveMovieByTmdbId.mockResolvedValue({
+        wikidataId: "Q56167580", label: "Test Film", resolvedVia: "tmdb_id",
+      });
+      mockWikidataClient.getFilmAwards.mockResolvedValue([]);
+      mockWikidataClient.countAllP166Claims.mockResolvedValue(0);
+      mockTmdbClient.getMovieDetails.mockResolvedValue({
+        credits: {
+          cast: [],
+          crew: [
+            { id: 300, name: "Assoc Prod", job: "Associate Producer" },
+            { id: 301, name: "Archive Prod", job: "Archival Producer" },
+          ],
+        },
+      });
+      mockWikidataClient.resolvePersonByTmdbId.mockResolvedValue(null);
+      mockTmdbClient.getPersonDetails.mockResolvedValue({ imdb_id: null });
+      mockWikidataClient.resolvePersonByName.mockResolvedValue(null);
+
+      const result = await handleGetFilmAwards(
+        { movie_id: 489985 },
+        mockTmdbClient as any,
+        mockWikidataClient as any,
+      );
+      const parsed = JSON.parse(result);
+      const skippedNames = parsed.skippedCrew.map((s: any) => s.name);
+      expect(skippedNames).toContain("Assoc Prod");
+      expect(skippedNames).toContain("Archive Prod");
     });
   });
 

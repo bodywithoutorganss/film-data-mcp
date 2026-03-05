@@ -98,9 +98,12 @@ export const getFilmAwardsTool = buildToolDef(
 
 const AWARD_RELEVANT_JOBS = new Set([
   "Director", "Producer", "Executive Producer", "Writer", "Screenplay",
+  "Director of Photography", "Editor", "Original Music Composer",
 ]);
 
-const MAX_CREW_LOOKUPS = 5;
+function isAwardRelevantJob(job: string): boolean {
+  return AWARD_RELEVANT_JOBS.has(job) || job.includes("Producer");
+}
 
 interface CrewNominationsResult {
   crewNominations: CrewNominationEntry[];
@@ -117,19 +120,29 @@ async function getFilmCrewNominations(
   const credits = (details as any).credits;
   if (!credits?.crew) return { crewNominations: [], skippedCrew: [] };
 
-  const relevantCrew = credits.crew
-    .filter((c: any) => AWARD_RELEVANT_JOBS.has(c.job))
-    .slice(0, MAX_CREW_LOOKUPS);
+  // Deduplicate by TMDB person ID, merging roles
+  const crewById = new Map<number, { id: number; name: string; roles: string[] }>();
+  for (const member of credits.crew) {
+    if (!isAwardRelevantJob(member.job)) continue;
+    const existing = crewById.get(member.id);
+    if (existing) {
+      if (!existing.roles.includes(member.job)) {
+        existing.roles.push(member.job);
+      }
+    } else {
+      crewById.set(member.id, { id: member.id, name: member.name, roles: [member.job] });
+    }
+  }
 
   const skippedCrew: Array<{ name: string; roles: string[]; reason: string }> = [];
 
   const results = await Promise.all(
-    relevantCrew.map(async (member: any) => {
+    [...crewById.values()].map(async (member) => {
       let entity: ResolvedEntity | null = null;
       try {
         entity = await resolvePerson(member.id, tmdbClient, wikidataClient);
       } catch {
-        skippedCrew.push({ name: member.name, roles: [member.job], reason: "unresolvable" });
+        skippedCrew.push({ name: member.name, roles: member.roles, reason: "unresolvable" });
         return null;
       }
 
@@ -141,7 +154,7 @@ async function getFilmCrewNominations(
       if (filmNominations.length === 0) return null;
 
       return {
-        person: { name: member.name, roles: [member.job] },
+        person: { name: member.name, roles: member.roles },
         nominations: filmNominations,
       };
     })
