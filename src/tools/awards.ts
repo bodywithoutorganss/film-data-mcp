@@ -121,7 +121,7 @@ async function getFilmCrewNominations(
     .filter((c: any) => AWARD_RELEVANT_JOBS.has(c.job))
     .slice(0, MAX_CREW_LOOKUPS);
 
-  const skippedCrew: Array<{ name: string; role: string; reason: string }> = [];
+  const skippedCrew: Array<{ name: string; roles: string[]; reason: string }> = [];
 
   const results = await Promise.all(
     relevantCrew.map(async (member: any) => {

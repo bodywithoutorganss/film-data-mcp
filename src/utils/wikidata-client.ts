@@ -111,7 +111,9 @@ export class WikidataClient {
     url.searchParams.set("limit", "5");
     url.searchParams.set("format", "json");
 
-    const response = await fetch(url.toString());
+    const response = await fetch(url.toString(), {
+      headers: { "User-Agent": USER_AGENT },
+    });
     if (!response.ok) return null;
     const data = await response.json() as { search: Array<{ id: string; label: string }> };
     if (!data.search || data.search.length === 0) return null;
@@ -141,7 +143,7 @@ export class WikidataClient {
 
     if (filmRelevant.size === 1) {
       const [, entity] = [...filmRelevant.entries()][0];
-      return { ...entity, resolvedVia: "name_search" as const };
+      return { ...entity, resolvedVia: "name_search" };
     }
 
     return null;
