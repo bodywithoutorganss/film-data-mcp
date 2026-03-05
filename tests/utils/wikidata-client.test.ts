@@ -264,6 +264,20 @@ describe("WikidataClient", () => {
       const result = await client.resolvePersonByName("Test Person");
       expect(result).toBeNull();
     });
+
+    it("returns null when search results contain invalid entity IDs", async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          search: [{ id: "INVALID-ID", label: "Bad Entity" }],
+        }),
+      });
+
+      const result = await client.resolvePersonByName("Bad Entity");
+      expect(result).toBeNull();
+      // Should not have made a SPARQL call
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe("awards queries", () => {

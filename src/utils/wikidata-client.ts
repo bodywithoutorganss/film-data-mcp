@@ -119,6 +119,7 @@ export class WikidataClient {
     if (!data.search || data.search.length === 0) return null;
 
     const candidateIds = data.search.map((s) => s.id);
+    if (candidateIds.some((id) => !/^Q\d+$/.test(id))) return null;
     const valuesClause = candidateIds.map((id) => `wd:${id}`).join(" ");
     const query = `
       SELECT ?entity ?entityLabel ?occupation WHERE {

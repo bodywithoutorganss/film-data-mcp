@@ -50,13 +50,13 @@ Film research is scattered across TMDB, IMDb, Wikipedia, JustWatch, and festival
 
 ### M9: Crew Resolution Improvements
 **Criteria:** Name-based Wikidata fallback (wbsearchentities + P106 occupation filter). Expanded job filter (composers, cinematographers, editors, broad producer matching). Crew deduplication by TMDB person ID. `role` → `roles` response shape change.
-**Status:** Complete — v0.8.0 tagged. 287 tests across 16 files (308 including skipped live + integration tests).
+**Status:** Complete — v0.8.0 tagged. 288 tests across 16 files (309 including skipped live + integration tests).
 - Design: `~/Dropbox/CS/personal-marketplace/docs/plans/2026-03-04-crew-resolution-design.md`
 - Plan: `~/Dropbox/CS/personal-marketplace/docs/plans/2026-03-04-crew-resolution-plan.md`
 
 ## Current Status
 
-v0.8.0 released. M9 complete. 20 tools total (16 TMDB + 4 awards), 287 tests across 16 files.
+v0.8.0 released. M9 complete. 20 tools total (16 TMDB + 4 awards), 288 tests across 16 files.
 
 ## Time Tracking
 
