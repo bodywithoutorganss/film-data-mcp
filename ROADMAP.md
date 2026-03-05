@@ -54,9 +54,13 @@ Film research is scattered across TMDB, IMDb, Wikipedia, JustWatch, and festival
 - Design: `~/Dropbox/CS/personal-marketplace/docs/plans/2026-03-04-crew-resolution-design.md`
 - Plan: `~/Dropbox/CS/personal-marketplace/docs/plans/2026-03-04-crew-resolution-plan.md`
 
+### M10: Tooling Review & Hardening
+**Criteria:** Audit all 20 tools for name-based resolution gaps (e.g., `get_person_awards` lacks name fallback). Limitation review of current tooling — document known gaps, data quality issues, and edge cases across TMDB and Wikidata integrations. Produce actionable findings with fixes or design decisions.
+**Status:** Planned.
+
 ## Current Status
 
-v0.8.0 released. M9 complete. 20 tools total (16 TMDB + 4 awards), 288 tests across 16 files.
+v0.8.0 released. M9 complete. 20 tools total (16 TMDB + 4 awards), 288 tests across 16 files. M10 planned — tooling review and limitation audit.
 
 ## Time Tracking
 
