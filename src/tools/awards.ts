@@ -17,7 +17,8 @@ import { buildToolDef } from "../utils/tool-helpers.js";
 async function resolvePerson(
   tmdbId: number,
   tmdbClient: TMDBClient,
-  wikidataClient: WikidataClient
+  wikidataClient: WikidataClient,
+  name?: string
 ): Promise<ResolvedEntity> {
   const byTmdb = await wikidataClient.resolvePersonByTmdbId(String(tmdbId));
   if (byTmdb) return byTmdb;
@@ -26,6 +27,11 @@ async function resolvePerson(
   if (person.imdb_id) {
     const byImdb = await wikidataClient.resolveByImdbId(person.imdb_id);
     if (byImdb) return byImdb;
+  }
+
+  if (name) {
+    const byName = await wikidataClient.resolvePersonByName(name);
+    if (byName) return byName;
   }
 
   throw new Error(`Could not resolve TMDB person ${tmdbId} to a Wikidata entity`);
@@ -140,7 +146,7 @@ async function getFilmCrewNominations(
     [...crewById.values()].map(async (member) => {
       let entity: ResolvedEntity | null = null;
       try {
-        entity = await resolvePerson(member.id, tmdbClient, wikidataClient);
+        entity = await resolvePerson(member.id, tmdbClient, wikidataClient, member.name);
       } catch {
         skippedCrew.push({ name: member.name, roles: member.roles, reason: "unresolvable" });
         return null;

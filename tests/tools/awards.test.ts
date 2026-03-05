@@ -460,6 +460,76 @@ describe("awards tools", () => {
       expect(skippedNames).toContain("Assoc Prod");
       expect(skippedNames).toContain("Archive Prod");
     });
+
+    it("falls back to name-based resolution when ID resolution fails", async () => {
+      mockWikidataClient.resolveMovieByTmdbId.mockResolvedValue({
+        wikidataId: "Q56167580", label: "Minding the Gap", resolvedVia: "tmdb_id",
+      });
+      mockWikidataClient.getFilmAwards.mockResolvedValue([]);
+      mockWikidataClient.countAllP166Claims.mockResolvedValue(0);
+      mockTmdbClient.getMovieDetails.mockResolvedValue({
+        credits: {
+          cast: [],
+          crew: [
+            { id: 1915808, name: "Diane Quon", job: "Producer" },
+          ],
+        },
+      });
+      mockWikidataClient.resolvePersonByTmdbId.mockResolvedValue(null);
+      mockTmdbClient.getPersonDetails.mockResolvedValue({ imdb_id: null });
+      mockWikidataClient.resolvePersonByName.mockResolvedValue({
+        wikidataId: "Q61298652", label: "Diane Quon", resolvedVia: "name_search",
+      });
+      mockWikidataClient.getPersonNominations.mockResolvedValue([{
+        wikidataId: "Q111332", label: "Academy Award for Best Documentary Feature Film",
+        year: 2019,
+        forWork: { wikidataId: "Q56167580", label: "Minding the Gap" },
+        ceremony: "academy-awards",
+      }]);
+
+      const result = await handleGetFilmAwards(
+        { movie_id: 489985 },
+        mockTmdbClient as any,
+        mockWikidataClient as any,
+      );
+      const parsed = JSON.parse(result);
+
+      expect(parsed.crewNominations).toHaveLength(1);
+      expect(parsed.crewNominations[0].person.name).toBe("Diane Quon");
+      expect(mockWikidataClient.resolvePersonByName).toHaveBeenCalledWith("Diane Quon");
+    });
+
+    it("reports unresolvable when name search also fails", async () => {
+      mockWikidataClient.resolveMovieByTmdbId.mockResolvedValue({
+        wikidataId: "Q56167580", label: "Test Film", resolvedVia: "tmdb_id",
+      });
+      mockWikidataClient.getFilmAwards.mockResolvedValue([]);
+      mockWikidataClient.countAllP166Claims.mockResolvedValue(0);
+      mockTmdbClient.getMovieDetails.mockResolvedValue({
+        credits: {
+          cast: [],
+          crew: [
+            { id: 999, name: "John Williams", job: "Original Music Composer" },
+          ],
+        },
+      });
+      mockWikidataClient.resolvePersonByTmdbId.mockResolvedValue(null);
+      mockTmdbClient.getPersonDetails.mockResolvedValue({ imdb_id: null });
+      mockWikidataClient.resolvePersonByName.mockResolvedValue(null);
+
+      const result = await handleGetFilmAwards(
+        { movie_id: 489985 },
+        mockTmdbClient as any,
+        mockWikidataClient as any,
+      );
+      const parsed = JSON.parse(result);
+
+      expect(parsed.skippedCrew).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ name: "John Williams", reason: "unresolvable" }),
+        ]),
+      );
+    });
   });
 
   describe("countAllP166Claims", () => {
