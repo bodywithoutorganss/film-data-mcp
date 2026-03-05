@@ -152,6 +152,120 @@ describe("WikidataClient", () => {
     });
   });
 
+  describe("resolvePersonByName", () => {
+    it("resolves a person with a single film-relevant occupation match", async () => {
+      // First call: wbsearchentities
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          search: [
+            { id: "Q61298652", label: "Diane Quon" },
+            { id: "Q999999", label: "Diane Q." },
+          ],
+        }),
+      });
+      // Second call: SPARQL occupation query
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          results: {
+            bindings: [
+              {
+                entity: { type: "uri", value: "http://www.wikidata.org/entity/Q61298652" },
+                entityLabel: { type: "literal", value: "Diane Quon" },
+                occupation: { type: "uri", value: "http://www.wikidata.org/entity/Q3282637" },
+              },
+            ],
+          },
+        }),
+      });
+
+      const result = await client.resolvePersonByName("Diane Quon");
+      expect(result).toEqual({
+        wikidataId: "Q61298652",
+        label: "Diane Quon",
+        resolvedVia: "name_search",
+      });
+    });
+
+    it("returns null when no search results found", async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ search: [] }),
+      });
+
+      const result = await client.resolvePersonByName("Xyzzy Nonexistent");
+      expect(result).toBeNull();
+    });
+
+    it("returns null when multiple candidates have film occupations", async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          search: [
+            { id: "Q100", label: "John Smith" },
+            { id: "Q200", label: "John Smith" },
+          ],
+        }),
+      });
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          results: {
+            bindings: [
+              {
+                entity: { type: "uri", value: "http://www.wikidata.org/entity/Q100" },
+                entityLabel: { type: "literal", value: "John Smith" },
+                occupation: { type: "uri", value: "http://www.wikidata.org/entity/Q2526255" },
+              },
+              {
+                entity: { type: "uri", value: "http://www.wikidata.org/entity/Q200" },
+                entityLabel: { type: "literal", value: "John Smith" },
+                occupation: { type: "uri", value: "http://www.wikidata.org/entity/Q28389" },
+              },
+            ],
+          },
+        }),
+      });
+
+      const result = await client.resolvePersonByName("John Smith");
+      expect(result).toBeNull();
+    });
+
+    it("returns null when no candidates have film occupations", async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          search: [{ id: "Q500", label: "Jane Doe" }],
+        }),
+      });
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          results: {
+            bindings: [
+              {
+                entity: { type: "uri", value: "http://www.wikidata.org/entity/Q500" },
+                entityLabel: { type: "literal", value: "Jane Doe" },
+                occupation: { type: "uri", value: "http://www.wikidata.org/entity/Q82955" },
+              },
+            ],
+          },
+        }),
+      });
+
+      const result = await client.resolvePersonByName("Jane Doe");
+      expect(result).toBeNull();
+    });
+
+    it("returns null when search API returns non-OK response", async () => {
+      mockFetch.mockResolvedValueOnce({ ok: false, status: 500 });
+
+      const result = await client.resolvePersonByName("Test Person");
+      expect(result).toBeNull();
+    });
+  });
+
   describe("awards queries", () => {
     it("gets person wins (P166)", async () => {
       mockFetch.mockResolvedValueOnce({

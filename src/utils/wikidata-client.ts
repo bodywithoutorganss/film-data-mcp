@@ -86,6 +86,67 @@ export class WikidataClient {
     return this.parseResolvedEntity(data, "imdb_id");
   }
 
+  /**
+   * Film-relevant Wikidata occupation QIDs for disambiguation.
+   */
+  private static readonly FILM_OCCUPATIONS = new Set([
+    "Q2526255",   // film director
+    "Q3282637",   // film producer
+    "Q28389",     // screenwriter
+    "Q36834",     // composer
+    "Q222344",    // cinematographer
+    "Q7042855",   // film editor
+    "Q947873",    // television director
+    "Q578109",    // television producer
+    "Q4610556",   // documentary filmmaker
+    "Q2059704",   // production designer
+  ]);
+
+  async resolvePersonByName(name: string): Promise<ResolvedEntity | null> {
+    const url = new URL("https://www.wikidata.org/w/api.php");
+    url.searchParams.set("action", "wbsearchentities");
+    url.searchParams.set("search", name);
+    url.searchParams.set("language", "en");
+    url.searchParams.set("type", "item");
+    url.searchParams.set("limit", "5");
+    url.searchParams.set("format", "json");
+
+    const response = await fetch(url.toString());
+    if (!response.ok) return null;
+    const data = await response.json() as { search: Array<{ id: string; label: string }> };
+    if (!data.search || data.search.length === 0) return null;
+
+    const candidateIds = data.search.map((s) => s.id);
+    const valuesClause = candidateIds.map((id) => `wd:${id}`).join(" ");
+    const query = `
+      SELECT ?entity ?entityLabel ?occupation WHERE {
+        VALUES ?entity { ${valuesClause} }
+        ?entity wdt:P106 ?occupation .
+        SERVICE wikibase:label { bd:serviceParam wikibase:language "en" . }
+      }
+    `;
+    const sparqlResult = await this.executeSparql(query);
+
+    const filmRelevant = new Map<string, { wikidataId: string; label: string }>();
+    for (const binding of sparqlResult.results.bindings) {
+      const entityId = this.extractEntityId(binding.entity.value);
+      const occupationId = this.extractEntityId(binding.occupation.value);
+      if (WikidataClient.FILM_OCCUPATIONS.has(occupationId)) {
+        filmRelevant.set(entityId, {
+          wikidataId: entityId,
+          label: binding.entityLabel ? this.cleanLabel(binding.entityLabel.value) : name,
+        });
+      }
+    }
+
+    if (filmRelevant.size === 1) {
+      const [, entity] = [...filmRelevant.entries()][0];
+      return { ...entity, resolvedVia: "name_search" as const };
+    }
+
+    return null;
+  }
+
   private lookupCeremony(awardQid: string): string {
     const cat = AWARD_CATEGORIES.find((c) => c.wikidataId === awardQid);
     return cat?.ceremony ?? "unknown";
