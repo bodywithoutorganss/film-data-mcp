@@ -142,9 +142,20 @@ export class WikidataClient {
       }
     }
 
+    // Tier 1: exactly one candidate has a film occupation
     if (filmRelevant.size === 1) {
       const [, entity] = [...filmRelevant.entries()][0];
       return { ...entity, resolvedVia: "name_search" };
+    }
+
+    // Tier 2: no film-occupation matches, but only one candidate from name search
+    if (filmRelevant.size === 0 && candidateIds.length === 1) {
+      const id = candidateIds[0];
+      const binding = sparqlResult.results.bindings.find(
+        (b) => this.extractEntityId(b.entity.value) === id
+      );
+      const label = binding?.entityLabel ? this.cleanLabel(binding.entityLabel.value) : name;
+      return { wikidataId: id, label, resolvedVia: "name_search_unfiltered" };
     }
 
     return null;
