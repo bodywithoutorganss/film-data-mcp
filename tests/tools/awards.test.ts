@@ -449,6 +449,44 @@ describe("awards tools", () => {
       });
     });
 
+    it("enriches resolvedCrew with zero counts when no registered awards", async () => {
+      mockWikidataClient.resolveMovieByTmdbId.mockResolvedValue({
+        wikidataId: "Q56167580", label: "Test Film", resolvedVia: "tmdb_id",
+      });
+      mockWikidataClient.getFilmAwards.mockResolvedValue([]);
+      mockWikidataClient.countAllP166Claims.mockResolvedValue(0);
+      mockTmdbClient.getMovieDetails.mockResolvedValue({
+        credits: {
+          cast: [],
+          crew: [
+            { id: 200, name: "Unknown Director", job: "Director" },
+          ],
+        },
+      });
+      mockWikidataClient.resolvePersonByTmdbId.mockResolvedValue({
+        wikidataId: "Q200", label: "Unknown Director", resolvedVia: "tmdb_id",
+      });
+      mockWikidataClient.getPersonNominations.mockResolvedValue([]);
+      mockWikidataClient.getPersonWins.mockResolvedValue([]);
+
+      const result = await handleGetFilmAwards(
+        { movie_id: 489985 },
+        mockTmdbClient as any,
+        mockWikidataClient as any,
+      );
+      const parsed = JSON.parse(result);
+
+      expect(parsed.resolvedCrew).toHaveLength(1);
+      expect(parsed.resolvedCrew[0]).toEqual({
+        name: "Unknown Director",
+        roles: ["Director"],
+        wikidataId: "Q200",
+        totalWins: 0,
+        totalNominations: 0,
+        byCeremony: {},
+      });
+    });
+
     it("includes composers and cinematographers in crew lookups", async () => {
       mockWikidataClient.resolveMovieByTmdbId.mockResolvedValue({
         wikidataId: "Q56167580", label: "Test Film", resolvedVia: "tmdb_id",
