@@ -106,7 +106,7 @@ Film research is scattered across TMDB, IMDb, Wikipedia, JustWatch, and festival
 
 ## Current Status
 
-v0.10.0 in progress. M11 + M14 complete. 20 tools total (16 TMDB + 4 awards), 293 unit tests across 16 files + 16 integration tests across 2 files. M12-M13, M15-M20 planned — spans new tools, data expansion, research, workflow design, impact campaign data, plugin architecture, and a standalone philanthropic intelligence MCP.
+v0.10.0 in progress. M11 + M14 complete. 20 tools total (16 TMDB + 4 awards), 293 unit tests across 16 files + 16 integration tests across 2 files. BOD-199 (tiered name resolution) designed and planned, ready for implementation. M12-M13, M15-M20 planned — spans new tools, data expansion, research, workflow design, impact campaign data, plugin architecture, and a standalone philanthropic intelligence MCP.
 
 ## Time Tracking
 
