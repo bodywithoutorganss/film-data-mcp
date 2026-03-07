@@ -62,7 +62,9 @@ Film research is scattered across TMDB, IMDb, Wikipedia, JustWatch, and festival
 
 ### M11: Batch Keyword Discovery
 **Criteria:** Multi-keyword lookup capability — accept a list of keyword strings and return all TMDB keyword IDs in one operation. Either a new `batch_search_keywords` tool or an enhancement to the existing `search_keywords` tool. Addresses the current limitation where thematic discovery requires sequential single-keyword lookups before feeding IDs into `discover`.
-**Status:** Planned.
+**Status:** Complete — `search_keywords` query field now accepts `string | string[]`. Array input triggers parallel TMDB calls, returns results keyed by query term.
+- Design: `docs/plans/2026-03-07-m11-m14-design.md`
+- Plan: `docs/plans/2026-03-07-m11-m14-implementation.md`
 
 ### M12: Box Office & Financial Data
 **Criteria:** Supplementary financial data for documentaries beyond TMDB's revenue field (which returns $0 for most docs). Investigate Wikidata P2142 (box office) coverage for documentary films. If insufficient, evaluate external sources (The Numbers, Box Office Mojo). Goal: a tool or data layer that can answer "how did comparable docs perform financially?" including festival sales, streaming deal values, and theatrical gross.
@@ -74,7 +76,9 @@ Film research is scattered across TMDB, IMDb, Wikipedia, JustWatch, and festival
 
 ### M14: Person Awards Name Fallback
 **Criteria:** Add name-based Wikidata resolution to `get_person_awards`, matching the fallback chain already implemented in `get_film_awards` and crew resolution (M9). Currently `get_person_awards` only accepts a TMDB person ID with no name fallback — users must know the TMDB ID to query awards.
-**Status:** Planned.
+**Status:** Complete — optional `name` field added to schema, passed to `resolvePerson` for TMDB→IMDb→name fallback.
+- Design: `docs/plans/2026-03-07-m11-m14-design.md`
+- Plan: `docs/plans/2026-03-07-m11-m14-implementation.md`
 
 ### M15: Representation & Talent Data
 **Criteria:** Research and implement talent representation data — publicists, agents, managers, and agency affiliations. No known API currently covers this; milestone begins with research into potential data sources (TMDB credits metadata, IMDbPro, industry databases, Wikidata P agent/P management company properties). Produce findings report before committing to implementation approach.
@@ -102,7 +106,7 @@ Film research is scattered across TMDB, IMDb, Wikipedia, JustWatch, and festival
 
 ## Current Status
 
-v0.9.0 released. M10 complete. 20 tools total (16 TMDB + 4 awards), 288 unit tests across 16 files + 16 integration tests across 2 files. M11-M20 planned — spans new tools, data expansion, research, workflow design, impact campaign data, plugin architecture, and a standalone philanthropic intelligence MCP.
+v0.10.0 in progress. M11 + M14 complete. 20 tools total (16 TMDB + 4 awards), 293 unit tests across 16 files + 16 integration tests across 2 files. M12-M13, M15-M20 planned — spans new tools, data expansion, research, workflow design, impact campaign data, plugin architecture, and a standalone philanthropic intelligence MCP.
 
 ## Time Tracking
 
@@ -118,10 +122,10 @@ v0.9.0 released. M10 complete. 20 tools total (16 TMDB + 4 awards), 288 unit tes
 | M8: Discovery & Polish | 1 session | 1 session (design + plan + implementation) | — | Complete |
 | M9: Crew Resolution | 1 session | 1 session (implementation) | — | Complete |
 | M10: Tooling Review | 1 session | 1 session (design + plan + implementation) | — | Complete |
-| M11: Batch Keywords | 1 session | — | — | Planned |
+| M11: Batch Keywords | 1 session | 0.5 session | — | Complete |
 | M12: Box Office Data | 1-2 sessions | — | — | Planned |
 | M13: Awards Registry Exp. | 1-2 sessions | — | — | Planned |
-| M14: Person Awards Fallback | 1 session | — | — | Planned |
+| M14: Person Awards Fallback | 1 session | 0.5 session | — | Complete |
 | M15: Representation Data | 1 session (research) | — | — | Research needed |
 | M16: Special Thanks Credits | 1 session (research) | — | — | Research needed |
 | M17: Skills & Commands | 2-3 sessions (design + build) | — | — | Design needed |
