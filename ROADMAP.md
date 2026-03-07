@@ -92,13 +92,17 @@ Film research is scattered across TMDB, IMDb, Wikipedia, JustWatch, and festival
 **Criteria:** Design and build a standalone MCP server (part of the personal knowledge marketplace) that maps individuals and institutions to philanthropic and financial records. Core capabilities: 990 tax filing lookups (ProPublica Nonprofit Explorer API, GuideStar), family foundation identification and grant history, giving partnership memberships (Impact Partners, Sundance Catalyst, Chicken & Egg, etc.), board seat mapping across nonprofits and cultural institutions, and donor network graph construction. Separate from film-data-mcp — composes with it for funder research workflows. Individual profiles (wealth source, philanthropic focus, board seats) and institutional profiles (grant areas, 990 data, leadership) are distinct concerns requiring different data sources and schemas. Extensive design needed before implementation: data source evaluation, entity resolution strategy (name matching across 990s, board listings, and film credits), privacy/ethical boundaries, and API availability assessment.
 **Status:** Design needed.
 
+### M20: Plugin Architecture & Wikipedia MCP Integration
+**Criteria:** Restructure film-data-mcp as a Claude Code plugin in the personal knowledge marketplace, composable with other MCP servers. Key integration: existing Wikipedia MCP for richer entity resolution beyond SPARQL-only approach. Design questions: plugin structure that preserves standalone MCP usability, cross-MCP entity resolution composition, interoperability with other marketplace servers.
+**Status:** Design needed.
+
 ### M18: Impact Campaign Data
 **Criteria:** Research and design a structured data layer for documentary impact campaigns. Categories to model (requires careful design iteration): mission/theory of change, KPIs (screenings, policy meetings, media mentions, audience reach, legislative action), campaign timeline phases (pre-release grassroots, festival window, theatrical/streaming, long-tail educational), partners (NGOs, advocacy orgs, educational institutions), personnel (impact producers, outreach coordinators), case studies (measurable outcomes from comparable docs — e.g., Blackfish → SeaWorld policy, An Inconvenient Truth → climate legislation), political context (intersecting legislation, public debate, cultural moment), impact-specific funding (Ford Foundation, Catapult, Perspective Fund — distinct from production funding), community screening/educational distribution strategy, and measurement methodology (pre/post surveys, policy tracking, media analysis). Open architectural question: may be an extension of film-data-mcp or a separate MCP that composes with it — decide during design phase. Phase 1 is MCP tools for retrieving/querying impact campaign data; Phase 2 (likely M17 skills layer) is tools for *building* campaigns.
 **Status:** Design needed.
 
 ## Current Status
 
-v0.9.0 released. M10 complete. 20 tools total (16 TMDB + 4 awards), 288 unit tests across 16 files + 14 integration tests across 2 files. M11-M19 planned — spans new tools, data expansion, research, workflow design, impact campaign data, and a standalone philanthropic intelligence MCP.
+v0.9.0 released. M10 complete. 20 tools total (16 TMDB + 4 awards), 288 unit tests across 16 files + 16 integration tests across 2 files. M11-M20 planned — spans new tools, data expansion, research, workflow design, impact campaign data, plugin architecture, and a standalone philanthropic intelligence MCP.
 
 ## Time Tracking
 
@@ -123,6 +127,7 @@ v0.9.0 released. M10 complete. 20 tools total (16 TMDB + 4 awards), 288 unit tes
 | M17: Skills & Commands | 2-3 sessions (design + build) | — | — | Design needed |
 | M18: Impact Campaign Data | 2-3 sessions (research + design + build) | — | — | Design needed |
 | M19: Philanthropic Intel MCP | 3-4 sessions (research + design + build) | — | — | Design needed |
+| M20: Plugin Architecture | 2-3 sessions (design + build) | — | — | Design needed |
 
 ## Key Decisions
 
