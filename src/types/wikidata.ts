@@ -66,7 +66,7 @@ export interface FilmAwardsResult {
   completeness: AwardsCompleteness;
 }
 
-export type ResolutionMethod = "tmdb_id" | "imdb_id" | "name_search";
+export type ResolutionMethod = "tmdb_id" | "imdb_id" | "name_search" | "name_search_unfiltered";
 
 export interface ResolvedEntity {
   wikidataId: string;
