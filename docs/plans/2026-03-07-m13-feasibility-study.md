@@ -55,9 +55,9 @@ Our registry's query model is built on P166/P1411. Entities that aren't referenc
   - Outstanding Cinematography for Nonfiction Programming: Q24900788
   - Outstanding Writing for Nonfiction Programming: Q25345783
   - Outstanding Sound Mixing for Nonfiction Programming: Q30632982
-  - Plus 2 additional categories (verify exact QIDs during implementation)
-- **Assessment:** Low individual density (0-2 claims per category) but the QIDs are verified and these extend an existing registry ceremony. Low-effort addition.
-- **Registry work:** 7 new categories under existing `emmys` ceremony. No engineering changes needed.
+  - Plus 2 additional categories encountered during research but QIDs not captured — verify during implementation
+- **Assessment:** Low individual density (0-2 claims per category) but the 5 verified QIDs extend an existing registry ceremony. Low-effort addition.
+- **Registry work:** 5 verified + 2 unverified categories under existing `emmys` ceremony. Must verify remaining 2 QIDs via SPARQL before adding (per registry policy). No engineering changes needed.
 
 ### Cinema Eye Honors — NOT VIABLE (Wikidata)
 
@@ -94,8 +94,8 @@ Our registry's query model is built on P166/P1411. Entities that aren't referenc
 - **Instance type:** Award category (sub-entity of Toronto International Film Festival)
 - **P166 count:** 1
 - **P1411 count:** 1
-- **Assessment:** Marginal — only 2 total claims. The prize itself is narrow (single award for a TIFF sidebar program). Not worth standalone addition, but if we later add TIFF as a full ceremony (Q390018), this would come along as one category among many.
-- **Alternative source notes:** TIFF maintains comprehensive records. A broader TIFF ceremony addition (covering People's Choice, Platform, etc.) could be viable via web data.
+- **Assessment:** Marginal — only 2 total claims. The prize itself is narrow (single award for a TIFF sidebar program). Note: TIFF (Q390018) is already in our registry as the `tiff` ceremony with `tiff-peoples-choice` as an existing category. The Platform Prize could be added as another category under it (similar to how Emmy doc categories extend the existing `emmys` entry), but with only 2 claims the data value is low.
+- **Alternative source notes:** TIFF maintains comprehensive records. Adding more TIFF categories (Platform, Discovery, etc.) could be viable via web data to supplement the sparse Wikidata coverage.
 
 ---
 
@@ -218,7 +218,7 @@ Based on feasibility, M13 should add these 4 candidates:
 
 1. **Peabody Awards** (Q838121) — 1 ceremony + 1 category, 446 P166 claims
 2. **Gotham Awards** (Q1538791) — 1 ceremony + 10-15 categories, 23 P166/P1411 claims
-3. **Emmy documentary categories** — 7 new categories under existing `emmys` ceremony
+3. **Emmy documentary categories** — 5-7 new categories under existing `emmys` ceremony (5 QIDs verified, 2 need verification)
 4. **Guggenheim Fellowship** (Q1316544) — 1 ceremony + 1 category, 19,570 P166 claims (217-758 film-relevant). Requires qualifier-aware SPARQL query (new engineering).
 
 ### Deferred to future milestone (alternative data sources needed)
@@ -236,9 +236,11 @@ These candidates require non-Wikidata data sources (web scraping, API integratio
 - Film Independent Labs (especially Project Involve)
 - Ford Foundation / JustFilms
 - ITVS
-- Catapult Film Fund
 
 **Low priority:**
-- TIFF Platform Prize (marginal standalone value)
 - TIFF Talent Lab
-- NEA grants (negligible film density in Wikidata, more promising via NEA's own data)
+- Catapult Film Fund
+
+**Viable in Wikidata but deferred (too low-density to justify the effort now):**
+- TIFF Platform Prize — 2 P166/P1411 claims; could be added as a category under existing `tiff` ceremony, but near-zero data value
+- NEA Fellowship — 246 P166 claims but only ~13 film-relevant; technically P166-compatible but not worth the effort at current density. More promising via NEA's own grant database.
