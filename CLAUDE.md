@@ -83,9 +83,9 @@ Handlers validate via Zod internally and return `JSON.stringify(result, null, 2)
 
 ## Testing
 
-- `npm test` — unit tests (no network), 236 tests across 13 files
-- `npm run test:integration` — integration tests (hits live Wikidata SPARQL endpoint)
-- Live integration tests (`tests/integration/live-api.test.ts`) require `TMDB_ACCESS_TOKEN` env var
+- `npm test` — unit tests (no network), 288 tests across 16 files
+- `npm run test:integration` — integration tests (hits live TMDB + Wikidata APIs, needs `TMDB_ACCESS_TOKEN`)
+- Integration test files: `tests/integration/live-api.test.ts` (TMDB + Wikidata basics), `tests/integration/comp-films.integration.test.ts` (award tools vs. documentary comp films), `tests/tools/awards.integration.test.ts` (name-based resolution)
 - Test files mirror source structure: `tests/tools/`, `tests/types/`, `tests/utils/`
 
 ### Response Size Considerations
@@ -102,6 +102,11 @@ For filmography exploration, `discover` with `with_crew`/`with_cast` filters ret
 - Awards data lags ~1-2 years behind real-world ceremonies. Recent winners may return empty results.
 - Award history queries may include duplicate entries (both film entity and person entity for the same year/award).
 - Some Wikidata entities lack labels. These are automatically cleaned to `"Unknown (Q585668)"` format.
+- **Documentary-specific gaps (verified via comp film testing):**
+  - P166 (award received) is sparse for documentary films. Direct film queries often return 0 awards even for Oscar-nominated docs (e.g., Minding the Gap). The P1411 crew cross-referencing path is the primary channel for recovering documentary award data.
+  - Dick Johnson Is Dead: Independent Spirit Documentary nomination missing. Kirsten Johnson has 1 P166 claim that doesn't match any registered award category.
+  - Jesse Moss (Boys State co-director): 0 P166 and 0 P1411 claims — completely absent from Wikidata awards data.
+  - Some crew members for smaller documentary productions are unresolvable in Wikidata (no entity exists).
 
 ### TMDB ID Stability
 

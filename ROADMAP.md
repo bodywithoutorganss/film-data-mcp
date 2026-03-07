@@ -56,7 +56,7 @@ Film research is scattered across TMDB, IMDb, Wikipedia, JustWatch, and festival
 
 ### M10: Tooling Review & Hardening
 **Criteria:** Audit all 20 tools for name-based resolution gaps (e.g., `get_person_awards` lacks name fallback). Limitation review of current tooling — document known gaps, data quality issues, and edge cases across TMDB and Wikidata integrations. Produce actionable findings with fixes or design decisions. Includes testing award tools (`get_film_awards`, `get_person_awards`, `search_awards`, `get_award_history`) against BreakFall comp films where awards returned empty despite known wins (Minding the Gap, Boys State, Dick Johnson Is Dead, etc.) — verify whether M7 crew cross-referencing (P1411) recovers data that direct P166 queries miss.
-**Status:** In progress — design + plan complete. Implementation next session.
+**Status:** Complete — v0.9.0 tagged. 288 tests across 16 files + 14 integration tests. Key finding: P1411 crew cross-referencing is the primary value channel for documentary awards — direct P166 queries return 0 for most docs, but crew cross-refs recover nominations via personal Wikidata profiles.
 - Design: `docs/plans/2026-03-07-m10-tooling-review-design.md`
 - Plan: `docs/plans/2026-03-07-m10-implementation.md`
 
@@ -98,7 +98,7 @@ Film research is scattered across TMDB, IMDb, Wikipedia, JustWatch, and festival
 
 ## Current Status
 
-v0.8.0 released. M9 complete. 20 tools total (16 TMDB + 4 awards), 288 tests across 16 files. M10 in progress (design + plan complete, implementation next session). M11-M19 planned — spans new tools, data expansion, research, workflow design, impact campaign data, and a standalone philanthropic intelligence MCP.
+v0.9.0 released. M10 complete. 20 tools total (16 TMDB + 4 awards), 288 unit tests across 16 files + 14 integration tests across 2 files. M11-M19 planned — spans new tools, data expansion, research, workflow design, impact campaign data, and a standalone philanthropic intelligence MCP.
 
 ## Time Tracking
 
@@ -113,7 +113,7 @@ v0.8.0 released. M9 complete. 20 tools total (16 TMDB + 4 awards), 288 tests acr
 | M7: Awards Intelligence | 1 session | 1 session (design + plan + implementation) | — | Complete |
 | M8: Discovery & Polish | 1 session | 1 session (design + plan + implementation) | — | Complete |
 | M9: Crew Resolution | 1 session | 1 session (implementation) | — | Complete |
-| M10: Tooling Review | 1 session | 0.5 sessions (design + plan) | — | In Progress |
+| M10: Tooling Review | 1 session | 1 session (design + plan + implementation) | — | Complete |
 | M11: Batch Keywords | 1 session | — | — | Planned |
 | M12: Box Office Data | 1-2 sessions | — | — | Planned |
 | M13: Awards Registry Exp. | 1-2 sessions | — | — | Planned |
