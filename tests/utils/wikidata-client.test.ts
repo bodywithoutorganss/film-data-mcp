@@ -232,7 +232,7 @@ describe("WikidataClient", () => {
       expect(result).toBeNull();
     });
 
-    it("returns null when no candidates have film occupations", async () => {
+    it("resolves sole candidate without film occupation (Tier 2)", async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         json: async () => ({
@@ -255,7 +255,67 @@ describe("WikidataClient", () => {
       });
 
       const result = await client.resolvePersonByName("Jane Doe");
+      expect(result).toEqual({
+        wikidataId: "Q500",
+        label: "Jane Doe",
+        resolvedVia: "name_search_unfiltered",
+      });
+    });
+
+    it("returns null when multiple candidates lack film occupations (Tier 3)", async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          search: [
+            { id: "Q500", label: "Jane Doe" },
+            { id: "Q501", label: "Jane Doe" },
+          ],
+        }),
+      });
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          results: {
+            bindings: [
+              {
+                entity: { type: "uri", value: "http://www.wikidata.org/entity/Q500" },
+                entityLabel: { type: "literal", value: "Jane Doe" },
+                occupation: { type: "uri", value: "http://www.wikidata.org/entity/Q82955" },
+              },
+              {
+                entity: { type: "uri", value: "http://www.wikidata.org/entity/Q501" },
+                entityLabel: { type: "literal", value: "Jane Doe" },
+                occupation: { type: "uri", value: "http://www.wikidata.org/entity/Q901" },
+              },
+            ],
+          },
+        }),
+      });
+
+      const result = await client.resolvePersonByName("Jane Doe");
       expect(result).toBeNull();
+    });
+
+    it("resolves sole candidate with no occupations at all (Tier 2)", async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          search: [{ id: "Q600", label: "Solo Person" }],
+        }),
+      });
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          results: { bindings: [] },
+        }),
+      });
+
+      const result = await client.resolvePersonByName("Solo Person");
+      expect(result).toEqual({
+        wikidataId: "Q600",
+        label: "Solo Person",
+        resolvedVia: "name_search_unfiltered",
+      });
     });
 
     it("returns null when search API returns non-OK response", async () => {
