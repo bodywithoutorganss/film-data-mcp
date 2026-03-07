@@ -59,10 +59,27 @@ export interface PersonAwardsResult {
   completeness: AwardsCompleteness;
 }
 
+export interface ResolvedCrewEntry {
+  name: string;
+  roles: string[];
+  wikidataId: string;
+  totalWins: number;
+  totalNominations: number;
+  byCeremony: Record<string, { wins: number; nominations: number }>;
+}
+
+export interface SkippedCrewEntry {
+  name: string;
+  roles: string[];
+  reason: string;
+}
+
 export interface FilmAwardsResult {
   entity: ResolvedEntity;
   awards: WikidataAward[];
   crewNominations: CrewNominationEntry[];
+  resolvedCrew?: ResolvedCrewEntry[];
+  skippedCrew?: SkippedCrewEntry[];
   completeness: AwardsCompleteness;
 }
 

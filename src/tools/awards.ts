@@ -4,7 +4,7 @@
 import { z } from "zod";
 import type { TMDBClient } from "../utils/tmdb-client.js";
 import type { WikidataClient } from "../utils/wikidata-client.js";
-import type { ResolvedEntity, CrewNominationEntry, WikidataNomination, WikidataAward } from "../types/wikidata.js";
+import type { ResolvedEntity, CrewNominationEntry, ResolvedCrewEntry, SkippedCrewEntry, WikidataNomination, WikidataAward, FilmAwardsResult } from "../types/wikidata.js";
 import {
   findCategory,
   CEREMONIES,
@@ -114,15 +114,8 @@ function isAwardRelevantJob(job: string): boolean {
 
 interface CrewNominationsResult {
   crewNominations: CrewNominationEntry[];
-  resolvedCrew: Array<{
-    name: string;
-    roles: string[];
-    wikidataId: string;
-    totalWins: number;
-    totalNominations: number;
-    byCeremony: Record<string, { wins: number; nominations: number }>;
-  }>;
-  skippedCrew: Array<{ name: string; roles: string[]; reason: string }>;
+  resolvedCrew: ResolvedCrewEntry[];
+  skippedCrew: SkippedCrewEntry[];
 }
 
 async function getFilmCrewNominations(
@@ -237,18 +230,19 @@ export async function handleGetFilmAwards(
     wikidataClient.countAllP166Claims(entity.wikidataId),
     getFilmCrewNominations(movie_id, entity.wikidataId, tmdbClient, wikidataClient),
   ]);
-  return JSON.stringify({
+  const response: FilmAwardsResult = {
     entity,
     awards,
     crewNominations: crewResult.crewNominations,
-    ...(crewResult.resolvedCrew.length > 0 ? { resolvedCrew: crewResult.resolvedCrew } : {}),
-    ...(crewResult.skippedCrew.length > 0 ? { skippedCrew: crewResult.skippedCrew } : {}),
     completeness: {
       entityFound: true,
       p166ClaimCount,
       registeredAwardCount: awards.length,
     },
-  }, null, 2);
+  };
+  if (crewResult.resolvedCrew.length > 0) response.resolvedCrew = crewResult.resolvedCrew;
+  if (crewResult.skippedCrew.length > 0) response.skippedCrew = crewResult.skippedCrew;
+  return JSON.stringify(response, null, 2);
 }
 
 // --- get_award_history ---
