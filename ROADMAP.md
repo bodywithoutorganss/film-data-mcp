@@ -106,7 +106,7 @@ Film research is scattered across TMDB, IMDb, Wikipedia, JustWatch, and festival
 
 ## Current Status
 
-v0.10.0 in progress. M11 + M14 + BOD-199 complete. 20 tools total (16 TMDB + 4 awards), 295 unit tests across 16 files + 16 integration tests across 2 files. BOD-199 (tiered name resolution) implemented — sole Wikidata candidates accepted without film occupation filter. M12-M13, M15-M20 planned — spans new tools, data expansion, research, workflow design, impact campaign data, plugin architecture, and a standalone philanthropic intelligence MCP.
+v0.10.0 in progress. M11 + M14 + BOD-199 complete. 20 tools total (16 TMDB + 4 awards), 295 unit tests across 16 files + 16 integration tests across 2 files. BOD-198 (resolvedCrew enrichment) designed and planned, ready for implementation. M12-M13, M15-M20 planned — spans new tools, data expansion, research, workflow design, impact campaign data, plugin architecture, and a standalone philanthropic intelligence MCP.
 
 ## Time Tracking
 
@@ -127,6 +127,7 @@ v0.10.0 in progress. M11 + M14 + BOD-199 complete. 20 tools total (16 TMDB + 4 a
 | M13: Awards Registry Exp. | 1-2 sessions | — | — | Planned |
 | M14: Person Awards Fallback | 1 session | 0.5 session | — | Complete |
 | BOD-199: Tiered Name Resolution | 0.5 session | 0.5 session | — | Complete |
+| BOD-198: Resolved Crew Enrichment | 0.5 session | 0.25 session (design + plan) | — | In Progress |
 | M15: Representation Data | 1 session (research) | — | — | Research needed |
 | M16: Special Thanks Credits | 1 session (research) | — | — | Research needed |
 | M17: Skills & Commands | 2-3 sessions (design + build) | — | — | Design needed |
