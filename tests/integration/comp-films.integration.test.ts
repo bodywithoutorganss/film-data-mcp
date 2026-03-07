@@ -286,6 +286,24 @@ describe.skipIf(!TMDB_TOKEN)("comp film person awards", () => {
       );
     }
   );
+
+  it(
+    "get_person_awards resolves Amanda McBaine and returns completeness",
+    LIVE_TIMEOUT,
+    async () => {
+      const result = JSON.parse(
+        await handleGetPersonAwards(
+          { person_id: AMANDA_MCBAINE_ID },
+          tmdbClient,
+          wikidataClient
+        )
+      );
+      expect(result.completeness.entityFound).toBe(true);
+      console.log(
+        `Amanda McBaine: ${result.wins.length} wins, ${result.nominations.length} nominations, ${result.completeness.p166ClaimCount} total P166 claims`
+      );
+    }
+  );
 });
 
 describe.skipIf(!TMDB_TOKEN)("comp film crew cross-referencing", () => {
@@ -307,6 +325,37 @@ describe.skipIf(!TMDB_TOKEN)("comp film crew cross-referencing", () => {
       );
       console.log(
         `Minding the Gap: ${result.awards.length} direct awards, ${result.crewNominations.length} crew nominations`
+      );
+      if (result.skippedCrew) {
+        console.log(`Skipped crew: ${JSON.stringify(result.skippedCrew)}`);
+      }
+      for (const cn of result.crewNominations) {
+        console.log(
+          `  ${cn.person.name} (${cn.person.roles.join(", ")}): ${cn.nominations.length} nominations`
+        );
+      }
+
+      const totalResolved = result.crewNominations.length;
+      const totalSkipped = result.skippedCrew?.length ?? 0;
+      console.log(
+        `Resolution: ${totalResolved} resolved, ${totalSkipped} skipped`
+      );
+    }
+  );
+
+  it(
+    "Boys State crew nominations include resolved crew members",
+    { timeout: 60000 },
+    async () => {
+      const result = JSON.parse(
+        await handleGetFilmAwards(
+          { movie_id: BOYS_STATE_ID },
+          tmdbClient,
+          wikidataClient
+        )
+      );
+      console.log(
+        `Boys State: ${result.awards.length} direct awards, ${result.crewNominations.length} crew nominations`
       );
       if (result.skippedCrew) {
         console.log(`Skipped crew: ${JSON.stringify(result.skippedCrew)}`);
