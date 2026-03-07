@@ -58,11 +58,12 @@ async function resolveMovie(
 
 export const GetPersonAwardsSchema = z.object({
   person_id: z.number().int().positive().describe("TMDB person ID"),
+  name: z.string().optional().describe("Person name — used as fallback if TMDB/IMDb ID resolution fails"),
 });
 
 export const getPersonAwardsTool = buildToolDef(
   "get_person_awards",
-  "Get award wins and nominations for a person. Accepts a TMDB person ID. Returns wins, nominations, and a completeness indicator showing total P166 claims vs. registered awards. Covers Academy Awards, Golden Globes, BAFTA, Cannes, and other major ceremonies.",
+  "Get award wins and nominations for a person. Accepts a TMDB person ID and optional name (used as fallback if ID resolution fails). Returns wins, nominations, and a completeness indicator showing total P166 claims vs. registered awards. Covers Academy Awards, Golden Globes, BAFTA, Cannes, and other major ceremonies.",
   GetPersonAwardsSchema
 );
 
@@ -71,8 +72,8 @@ export async function handleGetPersonAwards(
   tmdbClient: TMDBClient,
   wikidataClient: WikidataClient
 ): Promise<string> {
-  const { person_id } = GetPersonAwardsSchema.parse(args);
-  const entity = await resolvePerson(person_id, tmdbClient, wikidataClient);
+  const { person_id, name } = GetPersonAwardsSchema.parse(args);
+  const entity = await resolvePerson(person_id, tmdbClient, wikidataClient, name);
   const [wins, nominations, p166ClaimCount] = await Promise.all([
     wikidataClient.getPersonWins(entity.wikidataId),
     wikidataClient.getPersonNominations(entity.wikidataId),

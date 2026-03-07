@@ -92,6 +92,26 @@ describe("awards tools", () => {
       ).rejects.toThrow("Could not resolve TMDB person 99999 to a Wikidata entity");
     });
 
+    it("falls back to name search when TMDB and IMDb resolution both fail", async () => {
+      mockWikidataClient.resolvePersonByTmdbId.mockResolvedValue(null);
+      mockTmdbClient.getPersonDetails.mockResolvedValue({ imdb_id: null });
+      mockWikidataClient.resolvePersonByName.mockResolvedValue({
+        wikidataId: "Q460277", label: "Roger Deakins", resolvedVia: "name_search",
+      });
+      mockWikidataClient.getPersonWins.mockResolvedValue([]);
+      mockWikidataClient.getPersonNominations.mockResolvedValue([]);
+      mockWikidataClient.countAllP166Claims.mockResolvedValue(0);
+
+      const result = await handleGetPersonAwards(
+        { person_id: 151, name: "Roger Deakins" },
+        mockTmdbClient as any,
+        mockWikidataClient as any
+      );
+      const parsed = JSON.parse(result);
+      expect(parsed.entity.resolvedVia).toBe("name_search");
+      expect(mockWikidataClient.resolvePersonByName).toHaveBeenCalledWith("Roger Deakins");
+    });
+
     it("throws when TMDB person has no IMDb ID and TMDB resolution fails", async () => {
       mockWikidataClient.resolvePersonByTmdbId.mockResolvedValue(null);
       mockTmdbClient.getPersonDetails.mockResolvedValue({ imdb_id: null });
