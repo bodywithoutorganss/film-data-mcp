@@ -71,8 +71,9 @@ Film research is scattered across TMDB, IMDb, Wikipedia, JustWatch, and festival
 **Status:** Planned.
 
 ### M13: Awards Registry Expansion
-**Criteria:** Expand awards registry with new ceremonies and data categories. Ceremonies: Critics Choice Awards (significant Oscar precursor), Gotham Awards (significant for indie film), Emmy Outstanding Limited Series, TIFF Platform Prize. Data layer: fellowships, labs, and grants — Guggenheim, Sundance Fellows/Labs, Film Independent Labs, TIFF Talent Lab, NEA, Sundance Documentary Fund, ITVS, Catapult Film Fund, Ford Foundation/JustFilms. Schema already supports `ceremony_type: "fellowship" | "lab" | "grant"` — requires verified QIDs and data population, not architecture changes.
-**Status:** Planned.
+**Criteria:** Add Wikidata-viable ceremonies and fellowships to the awards registry. Scope determined by feasibility study (2026-03-07): Peabody Awards (Q838121, 446 P166 claims), Gotham Awards (Q1538791, 12-15 categories), Emmy documentary categories (7 new categories under existing `emmys` entry), and Guggenheim Fellowship (Q1316544, 19,570 P166 claims, 217-758 film-relevant — requires qualifier-aware SPARQL query, new engineering). Non-viable Wikidata candidates (Critics' Choice Doc, Cinema Eye, IDA, Sundance Fund/Labs, Film Independent Labs, ITVS, Catapult, Ford/JustFilms) deferred to a future milestone requiring alternative data sources.
+**Status:** Feasibility complete. Implementation planned.
+- Feasibility study: `docs/plans/2026-03-07-m13-feasibility-study.md`
 
 ### M14: Person Awards Name Fallback
 **Criteria:** Add name-based Wikidata resolution to `get_person_awards`, matching the fallback chain already implemented in `get_film_awards` and crew resolution (M9). Currently `get_person_awards` only accepts a TMDB person ID with no name fallback — users must know the TMDB ID to query awards.
