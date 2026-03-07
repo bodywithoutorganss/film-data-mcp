@@ -118,6 +118,7 @@ For filmography exploration, `discover` with `with_crew`/`with_cast` filters ret
   - Dick Johnson Is Dead: Independent Spirit Documentary nomination missing. Kirsten Johnson has 1 P166 claim that doesn't match any registered award category.
   - Jesse Moss (Boys State co-director): 0 P166 and 0 P1411 claims — completely absent from Wikidata awards data.
   - Some crew members for smaller documentary productions are unresolvable in Wikidata (no entity exists).
+  - **Tier 2 name resolution:** When TMDB ID and IMDb ID resolution both fail, `resolvePersonByName` accepts a sole Wikidata candidate even without a film-related P106 occupation (`resolvedVia: "name_search_unfiltered"`). This handles non-filmmaker EPs (businesspeople, philanthropists) who appear in TMDB credits. When multiple candidates exist without film occupations, resolution still fails (Tier 3) — see BOD-203 for future scored ranking.
 
 ### TMDB ID Stability
 
