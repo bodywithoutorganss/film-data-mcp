@@ -192,7 +192,12 @@ async function getFilmCrewNominations(
   // Second pass: fetch wins and build enriched output for resolved crew
   const resolvedCrew = await Promise.all(
     intermediateResolved.map(async (member) => {
-      const wins = await wikidataClient.getPersonWins(member.wikidataId);
+      let wins: Awaited<ReturnType<typeof wikidataClient.getPersonWins>> = [];
+      try {
+        wins = await wikidataClient.getPersonWins(member.wikidataId);
+      } catch {
+        // Wins enrichment failed; degrade gracefully with nominations only
+      }
       const byCeremony: Record<string, { wins: number; nominations: number }> = {};
       for (const win of wins) {
         if (!byCeremony[win.ceremony]) byCeremony[win.ceremony] = { wins: 0, nominations: 0 };
