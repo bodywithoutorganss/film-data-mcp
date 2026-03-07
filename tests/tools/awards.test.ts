@@ -338,6 +338,7 @@ describe("awards tools", () => {
           // no forWork — can't confirm it's for this film
         },
       ]);
+      mockWikidataClient.getPersonWins.mockResolvedValue([]);
 
       const result = await handleGetFilmAwards(
         { movie_id: 489985 },
@@ -350,7 +351,14 @@ describe("awards tools", () => {
       expect(janeEntry).toBeUndefined();
       expect(parsed.resolvedCrew).toEqual(
         expect.arrayContaining([
-          expect.objectContaining({ name: "Jane Doe", roles: ["Director"] }),
+          expect.objectContaining({
+            name: "Jane Doe",
+            roles: ["Director"],
+            wikidataId: "Q100",
+            totalWins: 0,
+            totalNominations: 1,
+            byCeremony: { "academy-awards": { wins: 0, nominations: 1 } },
+          }),
         ])
       );
     });
@@ -374,6 +382,7 @@ describe("awards tools", () => {
         });
       }
       mockWikidataClient.getPersonNominations.mockResolvedValue([]);
+      mockWikidataClient.getPersonWins.mockResolvedValue([]);
 
       const result = await handleGetFilmAwards(
         { movie_id: 1 },
@@ -386,7 +395,14 @@ describe("awards tools", () => {
       // All 10 resolved but have 0 matching nominations — should appear in resolvedCrew
       expect(parsed.resolvedCrew).toHaveLength(10);
       expect(parsed.resolvedCrew[0]).toEqual(
-        expect.objectContaining({ name: expect.any(String), roles: ["Producer"] })
+        expect.objectContaining({
+          name: expect.any(String),
+          roles: ["Producer"],
+          wikidataId: expect.stringMatching(/^Q\d+$/),
+          totalWins: 0,
+          totalNominations: 0,
+          byCeremony: {},
+        })
       );
     });
 
