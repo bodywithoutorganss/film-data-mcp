@@ -390,6 +390,65 @@ describe("awards tools", () => {
       );
     });
 
+    it("enriches resolvedCrew with wikidataId, award counts, and ceremony breakdown", async () => {
+      mockWikidataClient.resolveMovieByTmdbId.mockResolvedValue({
+        wikidataId: "Q56167580", label: "Test Film", resolvedVia: "tmdb_id",
+      });
+      mockWikidataClient.getFilmAwards.mockResolvedValue([]);
+      mockWikidataClient.countAllP166Claims.mockResolvedValue(0);
+      mockTmdbClient.getMovieDetails.mockResolvedValue({
+        credits: {
+          cast: [],
+          crew: [
+            { id: 100, name: "Jane Doe", job: "Director" },
+          ],
+        },
+      });
+      mockWikidataClient.resolvePersonByTmdbId.mockResolvedValue({
+        wikidataId: "Q100", label: "Jane Doe", resolvedVia: "tmdb_id",
+      });
+      // No film-specific nominations — Jane goes to resolvedCrew
+      mockWikidataClient.getPersonNominations.mockResolvedValue([
+        {
+          wikidataId: "Q131520", label: "Academy Award for Best Cinematography",
+          year: 2020, ceremony: "academy-awards",
+          forWork: { wikidataId: "Q999", label: "Other Film" },
+        },
+        {
+          wikidataId: "Q189878", label: "BAFTA Award for Best Cinematography",
+          year: 2021, ceremony: "bafta",
+          forWork: { wikidataId: "Q998", label: "Another Film" },
+        },
+      ]);
+      // Second pass: wins for resolved crew
+      mockWikidataClient.getPersonWins.mockResolvedValue([
+        {
+          wikidataId: "Q131520", label: "Academy Award for Best Cinematography",
+          year: 2018, ceremony: "academy-awards",
+        },
+      ]);
+
+      const result = await handleGetFilmAwards(
+        { movie_id: 489985 },
+        mockTmdbClient as any,
+        mockWikidataClient as any,
+      );
+      const parsed = JSON.parse(result);
+
+      expect(parsed.resolvedCrew).toHaveLength(1);
+      expect(parsed.resolvedCrew[0]).toEqual({
+        name: "Jane Doe",
+        roles: ["Director"],
+        wikidataId: "Q100",
+        totalWins: 1,
+        totalNominations: 2,
+        byCeremony: {
+          "academy-awards": { wins: 1, nominations: 1 },
+          "bafta": { wins: 0, nominations: 1 },
+        },
+      });
+    });
+
     it("includes composers and cinematographers in crew lookups", async () => {
       mockWikidataClient.resolveMovieByTmdbId.mockResolvedValue({
         wikidataId: "Q56167580", label: "Test Film", resolvedVia: "tmdb_id",
