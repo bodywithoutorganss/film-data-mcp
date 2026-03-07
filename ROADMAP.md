@@ -106,7 +106,7 @@ Film research is scattered across TMDB, IMDb, Wikipedia, JustWatch, and festival
 
 ## Current Status
 
-v0.10.0 in progress. M11 + M14 + BOD-199 + BOD-198 complete. 20 tools total (16 TMDB + 4 awards), 298 unit tests across 16 files + 16 integration tests across 2 files. BOD-204 (stale `FilmAwardsResult` type) tracked as tech debt. M12-M13, M15-M20 planned — spans new tools, data expansion, research, workflow design, impact campaign data, plugin architecture, and a standalone philanthropic intelligence MCP.
+v0.10.0 in progress. M11 + M14 + BOD-199 + BOD-198 complete. 20 tools total (16 TMDB + 4 awards), 298 unit tests across 16 files + 16 integration tests across 2 files. BOD-204 (stale `FilmAwardsResult` type) resolved. M12-M13, M15-M20 planned — spans new tools, data expansion, research, workflow design, impact campaign data, plugin architecture, and a standalone philanthropic intelligence MCP.
 
 ## Time Tracking
 
@@ -134,7 +134,7 @@ v0.10.0 in progress. M11 + M14 + BOD-199 + BOD-198 complete. 20 tools total (16 
 | M18: Impact Campaign Data | 2-3 sessions (research + design + build) | — | — | Design needed |
 | M19: Philanthropic Intel MCP | 3-4 sessions (research + design + build) | — | — | Design needed |
 | M20: Plugin Architecture | 2-3 sessions (design + build) | — | — | Design needed |
-| BOD-204: Stale FilmAwardsResult type | — | — | — | Backlog |
+| BOD-204: Stale FilmAwardsResult type | — | 0.1 session | — | Complete |
 
 ## Key Decisions
 
