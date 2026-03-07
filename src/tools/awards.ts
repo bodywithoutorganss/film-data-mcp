@@ -4,7 +4,7 @@
 import { z } from "zod";
 import type { TMDBClient } from "../utils/tmdb-client.js";
 import type { WikidataClient } from "../utils/wikidata-client.js";
-import type { ResolvedEntity, CrewNominationEntry } from "../types/wikidata.js";
+import type { ResolvedEntity, CrewNominationEntry, WikidataNomination } from "../types/wikidata.js";
 import {
   findCategory,
   CEREMONIES,
@@ -114,7 +114,14 @@ function isAwardRelevantJob(job: string): boolean {
 
 interface CrewNominationsResult {
   crewNominations: CrewNominationEntry[];
-  resolvedCrew: Array<{ name: string; roles: string[] }>;
+  resolvedCrew: Array<{
+    name: string;
+    roles: string[];
+    wikidataId: string;
+    totalWins: number;
+    totalNominations: number;
+    byCeremony: Record<string, { wins: number; nominations: number }>;
+  }>;
   skippedCrew: Array<{ name: string; roles: string[]; reason: string }>;
 }
 
@@ -142,7 +149,12 @@ async function getFilmCrewNominations(
     }
   }
 
-  const resolvedCrew: Array<{ name: string; roles: string[] }> = [];
+  const intermediateResolved: Array<{
+    name: string;
+    roles: string[];
+    wikidataId: string;
+    allNominations: WikidataNomination[];
+  }> = [];
   const skippedCrew: Array<{ name: string; roles: string[]; reason: string }> = [];
 
   const results = await Promise.all(
@@ -161,13 +173,42 @@ async function getFilmCrewNominations(
       );
 
       if (filmNominations.length === 0) {
-        resolvedCrew.push({ name: member.name, roles: member.roles });
+        intermediateResolved.push({
+          name: member.name,
+          roles: member.roles,
+          wikidataId: entity.wikidataId,
+          allNominations: nominations,
+        });
         return null;
       }
 
       return {
         person: { name: member.name, roles: member.roles },
         nominations: filmNominations,
+      };
+    })
+  );
+
+  // Second pass: fetch wins and build enriched output for resolved crew
+  const resolvedCrew = await Promise.all(
+    intermediateResolved.map(async (member) => {
+      const wins = await wikidataClient.getPersonWins(member.wikidataId);
+      const byCeremony: Record<string, { wins: number; nominations: number }> = {};
+      for (const win of wins) {
+        if (!byCeremony[win.ceremony]) byCeremony[win.ceremony] = { wins: 0, nominations: 0 };
+        byCeremony[win.ceremony].wins++;
+      }
+      for (const nom of member.allNominations) {
+        if (!byCeremony[nom.ceremony]) byCeremony[nom.ceremony] = { wins: 0, nominations: 0 };
+        byCeremony[nom.ceremony].nominations++;
+      }
+      return {
+        name: member.name,
+        roles: member.roles,
+        wikidataId: member.wikidataId,
+        totalWins: wins.length,
+        totalNominations: member.allNominations.length,
+        byCeremony,
       };
     })
   );
