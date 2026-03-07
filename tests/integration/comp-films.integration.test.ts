@@ -396,19 +396,42 @@ describe.skipIf(!TMDB_TOKEN)("comp film crew cross-referencing", () => {
       console.log(
         `Dick Johnson Is Dead: ${result.awards.length} direct awards, ${result.crewNominations.length} crew nominations`
       );
+      if (result.resolvedCrew) {
+        console.log(`Resolved (no matching nominations): ${JSON.stringify(result.resolvedCrew)}`);
+      }
+      if (result.skippedCrew) {
+        console.log(`Skipped crew: ${JSON.stringify(result.skippedCrew)}`);
+      }
       for (const cn of result.crewNominations) {
         console.log(
           `  ${cn.person.name} (${cn.person.roles.join(", ")}): ${cn.nominations.length} nominations`
         );
       }
 
+      const withNoms = result.crewNominations.length;
+      const withoutNoms = result.resolvedCrew?.length ?? 0;
+      const totalSkipped = result.skippedCrew?.length ?? 0;
+      console.log(
+        `Resolution: ${withNoms} with nominations, ${withoutNoms} resolved (no matches), ${totalSkipped} unresolvable`
+      );
+
       const kirstenEntry = result.crewNominations.find(
         (cn: any) => cn.person.name.match(/Johnson/i)
       );
       if (!kirstenEntry) {
-        console.warn(
-          "DATA GAP: Kirsten Johnson has no P1411 nominations linked to Dick Johnson Is Dead in Wikidata"
+        // Check if she at least resolved
+        const kirstenResolved = result.resolvedCrew?.find(
+          (c: any) => c.name.match(/Johnson/i)
         );
+        if (kirstenResolved) {
+          console.warn(
+            "DATA GAP: Kirsten Johnson resolved to Wikidata but has no P1411 nominations for Dick Johnson Is Dead"
+          );
+        } else {
+          console.warn(
+            "DATA GAP: Kirsten Johnson not found in resolved or nominated crew"
+          );
+        }
       }
     }
   );
