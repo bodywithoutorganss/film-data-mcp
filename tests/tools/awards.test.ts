@@ -503,6 +503,50 @@ describe("awards tools", () => {
       });
     });
 
+    it("degrades gracefully when getPersonWins fails for resolved crew", async () => {
+      mockWikidataClient.resolveMovieByTmdbId.mockResolvedValue({
+        wikidataId: "Q56167580", label: "Test Film", resolvedVia: "tmdb_id",
+      });
+      mockWikidataClient.getFilmAwards.mockResolvedValue([]);
+      mockWikidataClient.countAllP166Claims.mockResolvedValue(0);
+      mockTmdbClient.getMovieDetails.mockResolvedValue({
+        credits: {
+          cast: [],
+          crew: [
+            { id: 100, name: "Jane Doe", job: "Director" },
+          ],
+        },
+      });
+      mockWikidataClient.resolvePersonByTmdbId.mockResolvedValue({
+        wikidataId: "Q100", label: "Jane Doe", resolvedVia: "tmdb_id",
+      });
+      mockWikidataClient.getPersonNominations.mockResolvedValue([
+        {
+          wikidataId: "Q131520", label: "Academy Award for Best Cinematography",
+          year: 2020, ceremony: "academy-awards",
+          forWork: { wikidataId: "Q999", label: "Other Film" },
+        },
+      ]);
+      mockWikidataClient.getPersonWins.mockRejectedValue(new Error("SPARQL timeout"));
+
+      const result = await handleGetFilmAwards(
+        { movie_id: 489985 },
+        mockTmdbClient as any,
+        mockWikidataClient as any,
+      );
+      const parsed = JSON.parse(result);
+
+      expect(parsed.resolvedCrew).toHaveLength(1);
+      expect(parsed.resolvedCrew[0]).toEqual({
+        name: "Jane Doe",
+        roles: ["Director"],
+        wikidataId: "Q100",
+        totalWins: 0,
+        totalNominations: 1,
+        byCeremony: { "academy-awards": { wins: 0, nominations: 1 } },
+      });
+    });
+
     it("includes composers and cinematographers in crew lookups", async () => {
       mockWikidataClient.resolveMovieByTmdbId.mockResolvedValue({
         wikidataId: "Q56167580", label: "Test Film", resolvedVia: "tmdb_id",

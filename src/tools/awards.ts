@@ -4,7 +4,7 @@
 import { z } from "zod";
 import type { TMDBClient } from "../utils/tmdb-client.js";
 import type { WikidataClient } from "../utils/wikidata-client.js";
-import type { ResolvedEntity, CrewNominationEntry, WikidataNomination } from "../types/wikidata.js";
+import type { ResolvedEntity, CrewNominationEntry, WikidataNomination, WikidataAward } from "../types/wikidata.js";
 import {
   findCategory,
   CEREMONIES,
@@ -192,7 +192,7 @@ async function getFilmCrewNominations(
   // Second pass: fetch wins and build enriched output for resolved crew
   const resolvedCrew = await Promise.all(
     intermediateResolved.map(async (member) => {
-      let wins: Awaited<ReturnType<typeof wikidataClient.getPersonWins>> = [];
+      let wins: WikidataAward[] = [];
       try {
         wins = await wikidataClient.getPersonWins(member.wikidataId);
       } catch {
