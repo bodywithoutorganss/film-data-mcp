@@ -326,6 +326,9 @@ describe.skipIf(!TMDB_TOKEN)("comp film crew cross-referencing", () => {
       console.log(
         `Minding the Gap: ${result.awards.length} direct awards, ${result.crewNominations.length} crew nominations`
       );
+      if (result.resolvedCrew) {
+        console.log(`Resolved (no matching nominations): ${JSON.stringify(result.resolvedCrew)}`);
+      }
       if (result.skippedCrew) {
         console.log(`Skipped crew: ${JSON.stringify(result.skippedCrew)}`);
       }
@@ -335,10 +338,11 @@ describe.skipIf(!TMDB_TOKEN)("comp film crew cross-referencing", () => {
         );
       }
 
-      const totalResolved = result.crewNominations.length;
+      const withNoms = result.crewNominations.length;
+      const withoutNoms = result.resolvedCrew?.length ?? 0;
       const totalSkipped = result.skippedCrew?.length ?? 0;
       console.log(
-        `Resolution: ${totalResolved} resolved, ${totalSkipped} skipped`
+        `Resolution: ${withNoms} with nominations, ${withoutNoms} resolved (no matches), ${totalSkipped} unresolvable`
       );
     }
   );
@@ -357,6 +361,9 @@ describe.skipIf(!TMDB_TOKEN)("comp film crew cross-referencing", () => {
       console.log(
         `Boys State: ${result.awards.length} direct awards, ${result.crewNominations.length} crew nominations`
       );
+      if (result.resolvedCrew) {
+        console.log(`Resolved (no matching nominations): ${JSON.stringify(result.resolvedCrew)}`);
+      }
       if (result.skippedCrew) {
         console.log(`Skipped crew: ${JSON.stringify(result.skippedCrew)}`);
       }
@@ -366,10 +373,11 @@ describe.skipIf(!TMDB_TOKEN)("comp film crew cross-referencing", () => {
         );
       }
 
-      const totalResolved = result.crewNominations.length;
+      const withNoms = result.crewNominations.length;
+      const withoutNoms = result.resolvedCrew?.length ?? 0;
       const totalSkipped = result.skippedCrew?.length ?? 0;
       console.log(
-        `Resolution: ${totalResolved} resolved, ${totalSkipped} skipped`
+        `Resolution: ${withNoms} with nominations, ${withoutNoms} resolved (no matches), ${totalSkipped} unresolvable`
       );
     }
   );

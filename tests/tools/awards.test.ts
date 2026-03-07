@@ -325,9 +325,14 @@ describe("awards tools", () => {
         mockWikidataClient as any
       );
       const parsed = JSON.parse(result);
-      // Person entry should not appear (0 matched nominations = filtered out)
+      // Person resolved but 0 matched nominations — should appear in resolvedCrew
       const janeEntry = parsed.crewNominations.find((c: any) => c.person.name === "Jane Doe");
       expect(janeEntry).toBeUndefined();
+      expect(parsed.resolvedCrew).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ name: "Jane Doe", roles: ["Director"] }),
+        ])
+      );
     });
 
     it("processes all relevant crew without cap", async () => {
@@ -355,9 +360,14 @@ describe("awards tools", () => {
         mockTmdbClient as any,
         mockWikidataClient as any
       );
-      JSON.parse(result);
+      const parsed = JSON.parse(result);
 
       expect(mockWikidataClient.resolvePersonByTmdbId).toHaveBeenCalledTimes(10);
+      // All 10 resolved but have 0 matching nominations — should appear in resolvedCrew
+      expect(parsed.resolvedCrew).toHaveLength(10);
+      expect(parsed.resolvedCrew[0]).toEqual(
+        expect.objectContaining({ name: expect.any(String), roles: ["Producer"] })
+      );
     });
 
     it("includes composers and cinematographers in crew lookups", async () => {

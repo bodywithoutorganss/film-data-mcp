@@ -113,6 +113,7 @@ function isAwardRelevantJob(job: string): boolean {
 
 interface CrewNominationsResult {
   crewNominations: CrewNominationEntry[];
+  resolvedCrew: Array<{ name: string; roles: string[] }>;
   skippedCrew: Array<{ name: string; roles: string[]; reason: string }>;
 }
 
@@ -124,7 +125,7 @@ async function getFilmCrewNominations(
 ): Promise<CrewNominationsResult> {
   const details = await tmdbClient.getMovieDetails(movieId, ["credits"]);
   const credits = (details as any).credits;
-  if (!credits?.crew) return { crewNominations: [], skippedCrew: [] };
+  if (!credits?.crew) return { crewNominations: [], resolvedCrew: [], skippedCrew: [] };
 
   // Deduplicate by TMDB person ID, merging roles
   const crewById = new Map<number, { id: number; name: string; roles: string[] }>();
@@ -140,6 +141,7 @@ async function getFilmCrewNominations(
     }
   }
 
+  const resolvedCrew: Array<{ name: string; roles: string[] }> = [];
   const skippedCrew: Array<{ name: string; roles: string[]; reason: string }> = [];
 
   const results = await Promise.all(
@@ -157,7 +159,10 @@ async function getFilmCrewNominations(
         (n) => n.forWork?.wikidataId === filmWikidataId
       );
 
-      if (filmNominations.length === 0) return null;
+      if (filmNominations.length === 0) {
+        resolvedCrew.push({ name: member.name, roles: member.roles });
+        return null;
+      }
 
       return {
         person: { name: member.name, roles: member.roles },
@@ -168,6 +173,7 @@ async function getFilmCrewNominations(
 
   return {
     crewNominations: results.filter((r): r is NonNullable<typeof r> => r !== null),
+    resolvedCrew,
     skippedCrew,
   };
 }
@@ -188,6 +194,7 @@ export async function handleGetFilmAwards(
     entity,
     awards,
     crewNominations: crewResult.crewNominations,
+    ...(crewResult.resolvedCrew.length > 0 ? { resolvedCrew: crewResult.resolvedCrew } : {}),
     ...(crewResult.skippedCrew.length > 0 ? { skippedCrew: crewResult.skippedCrew } : {}),
     completeness: {
       entityFound: true,
