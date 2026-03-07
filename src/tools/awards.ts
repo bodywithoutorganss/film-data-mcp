@@ -4,7 +4,7 @@
 import { z } from "zod";
 import type { TMDBClient } from "../utils/tmdb-client.js";
 import type { WikidataClient } from "../utils/wikidata-client.js";
-import type { ResolvedEntity, CrewNominationEntry, ResolvedCrewEntry, SkippedCrewEntry, WikidataNomination, WikidataAward, FilmAwardsResult } from "../types/wikidata.js";
+import type { ResolvedEntity, CrewNominationEntry, ResolvedCrewEntry, SkippedCrewEntry, WikidataNomination, WikidataAward, PersonAwardsResult, FilmAwardsResult } from "../types/wikidata.js";
 import {
   findCategory,
   CEREMONIES,
@@ -79,7 +79,7 @@ export async function handleGetPersonAwards(
     wikidataClient.getPersonNominations(entity.wikidataId),
     wikidataClient.countAllP166Claims(entity.wikidataId),
   ]);
-  return JSON.stringify({
+  const response: PersonAwardsResult = {
     entity,
     wins,
     nominations,
@@ -88,7 +88,8 @@ export async function handleGetPersonAwards(
       p166ClaimCount,
       registeredAwardCount: wins.length,
     },
-  }, null, 2);
+  };
+  return JSON.stringify(response, null, 2);
 }
 
 // --- get_film_awards ---
@@ -148,7 +149,7 @@ async function getFilmCrewNominations(
     wikidataId: string;
     allNominations: WikidataNomination[];
   }> = [];
-  const skippedCrew: Array<{ name: string; roles: string[]; reason: string }> = [];
+  const skippedCrew: SkippedCrewEntry[] = [];
 
   const results = await Promise.all(
     [...crewById.values()].map(async (member) => {
