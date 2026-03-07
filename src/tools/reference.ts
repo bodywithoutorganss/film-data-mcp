@@ -30,13 +30,16 @@ export async function handleGenres(
 // --- Search Keywords ---
 
 export const SearchKeywordsSchema = z.object({
-  query: z.string().min(1).describe("Keyword name to search for (e.g., 'masculinity', 'war veteran')"),
-  page: z.number().int().positive().optional().describe("Page number (default 1)"),
+  query: z.union([
+    z.string().min(1),
+    z.array(z.string().min(1)).min(1),
+  ]).describe("Keyword name(s) to search for. Pass a single string or an array of strings for batch lookup (e.g., ['masculinity', 'fraternity'])"),
+  page: z.number().int().positive().optional().describe("Page number (default 1). Only applies to single-query mode."),
 });
 
 export const searchKeywordsTool = buildToolDef(
   "search_keywords",
-  "Search for TMDB keyword IDs by name. Use the returned IDs with the discover tool's with_keywords filter to find films by theme.",
+  "Search for TMDB keyword IDs by name. Accepts a single keyword string or an array of keywords for batch lookup. Use the returned IDs with the discover tool's with_keywords filter to find films by theme. Batch mode returns results keyed by query term.",
   SearchKeywordsSchema
 );
 
@@ -45,6 +48,17 @@ export async function handleSearchKeywords(
   client: TMDBClient
 ): Promise<string> {
   const { query, page } = SearchKeywordsSchema.parse(args);
+
+  if (Array.isArray(query)) {
+    const entries = await Promise.all(
+      query.map(async (q) => {
+        const result = await client.searchKeywords(q);
+        return [q, { results: result.results, total_results: result.total_results }] as const;
+      })
+    );
+    return JSON.stringify(Object.fromEntries(entries), null, 2);
+  }
+
   const result = await client.searchKeywords(query, page);
   return JSON.stringify(result, null, 2);
 }

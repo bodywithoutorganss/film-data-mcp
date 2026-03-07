@@ -316,6 +316,19 @@ describe("SearchKeywordsSchema", () => {
   it("rejects empty query", () => {
     expect(() => SearchKeywordsSchema.parse({ query: "" })).toThrow();
   });
+
+  it("accepts array of queries", () => {
+    const result = SearchKeywordsSchema.parse({ query: ["masculinity", "fraternity"] });
+    expect(result.query).toEqual(["masculinity", "fraternity"]);
+  });
+
+  it("rejects empty array", () => {
+    expect(() => SearchKeywordsSchema.parse({ query: [] })).toThrow();
+  });
+
+  it("rejects array with empty strings", () => {
+    expect(() => SearchKeywordsSchema.parse({ query: ["valid", ""] })).toThrow();
+  });
 });
 
 describe("handleSearchKeywords", () => {
@@ -336,6 +349,26 @@ describe("handleSearchKeywords", () => {
     expect(mockClient.searchKeywords).toHaveBeenCalledWith("masculinity", undefined);
     const parsed = JSON.parse(result);
     expect(parsed.results[0].id).toBe(194226);
+  });
+
+  it("accepts array of queries and returns results keyed by query term", async () => {
+    mockClient.searchKeywords
+      .mockResolvedValueOnce({
+        page: 1, results: [{ id: 194226, name: "masculinity" }], total_pages: 1, total_results: 1,
+      })
+      .mockResolvedValueOnce({
+        page: 1, results: [{ id: 15926, name: "fraternity" }], total_pages: 1, total_results: 1,
+      });
+
+    const result = await handleSearchKeywords(
+      { query: ["masculinity", "fraternity"] }, mockClient as any
+    );
+    const parsed = JSON.parse(result);
+
+    expect(parsed.masculinity.results[0].id).toBe(194226);
+    expect(parsed.fraternity.results[0].id).toBe(15926);
+    expect(parsed.masculinity.total_results).toBe(1);
+    expect(mockClient.searchKeywords).toHaveBeenCalledTimes(2);
   });
 
   it("passes page parameter through", async () => {
