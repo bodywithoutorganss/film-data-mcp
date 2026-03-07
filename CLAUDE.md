@@ -56,11 +56,11 @@ src/
 | find_by_external_id | reference.ts | IMDb/TVDB/social media → TMDB lookup |
 | collection_details | reference.ts | Movie franchise/collection details |
 | company_details | reference.ts | Production company or TV network details |
-| search_keywords | reference.ts | Search for TMDB keyword IDs by name (for discover filters) |
+| search_keywords | reference.ts | Search for TMDB keyword IDs by name — single or batch (for discover filters) |
 | company_filmography | reference.ts | Browse a production company's movie/TV catalog |
 | get_festival_premieres | premieres.ts | Festival/limited premiere dates from TMDB release dates |
 | get_credits | credits.ts | Detailed cast/crew with department/job filtering and pagination |
-| get_person_awards | awards.ts | Award wins and nominations for a person (by TMDB ID) |
+| get_person_awards | awards.ts | Award wins and nominations for a person (by TMDB ID, with optional name fallback) |
 | get_film_awards | awards.ts | All awards a film has received, with crew cross-referencing (by TMDB movie ID) |
 | get_award_history | awards.ts | All winners of a specific award category across years |
 | search_awards | awards.ts | Search the awards registry by ceremony, category, or domain |
@@ -87,7 +87,7 @@ Handlers validate via Zod internally and return `JSON.stringify(result, null, 2)
 
 ## Testing
 
-- `npm test` — unit tests (no network), 288 tests across 16 files
+- `npm test` — unit tests (no network), 293 tests across 16 files
 - `npm run test:integration` — integration tests (hits live TMDB + Wikidata APIs, needs `TMDB_ACCESS_TOKEN`)
 - Integration test files: `tests/integration/live-api.test.ts` (TMDB + Wikidata basics), `tests/integration/comp-films.integration.test.ts` (award tools vs. documentary comp films), `tests/tools/awards.integration.test.ts` (name-based resolution)
 - Test files mirror source structure: `tests/tools/`, `tests/types/`, `tests/utils/`
