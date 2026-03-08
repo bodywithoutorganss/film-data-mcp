@@ -93,11 +93,14 @@ Film research is scattered across TMDB, IMDb, Wikipedia, JustWatch, and festival
 - Plan: `docs/plans/2026-03-08-m15-implementation.md`
 
 ### M16: Special Thanks & Acknowledgment Credits
-**Criteria:** Surface "Thanks" and "Special Thanks" credit data from TMDB (sparse but present in some entries) and investigate Wikidata coverage. Useful for mapping informal collaboration networks and influence relationships in documentary production. Research phase to assess data quality before building tools.
-**Status:** Research needed.
+**Criteria:** Surface "Thanks" and "Special Thanks" credit data from TMDB. New `get_thanks_credits` tool (#23) with three modes: forward (film→thanked people), reverse (person→films thanked in + formal crew roles), batch (aggregate across multiple films with frequency map). Research phase assessed TMDB coverage (45% of films, stronger for fiction) and rejected Wikidata P7137 (5 films globally). Key finding: Thanks credits stored as `job: "Thanks"` under `department: "Crew"`, not as a separate department. Phase 3 enrichment deferred indefinitely (Wikidata not viable).
+**Status:** Complete — v0.13.0. 23 tools (18 TMDB + 4 awards + 1 representation). 370 unit tests + 4 integration tests.
+- Design: `docs/plans/2026-03-08-m16-special-thanks-design.md`
+- Plan: `docs/plans/2026-03-08-m16-implementation.md`
+- Research: `docs/plans/2026-03-08-m16-research-findings.md`
 
 ### M17: Skills & Command Workflows
-**Criteria:** Design and build Claude Code skills and slash commands that compose film-data-mcp tools into producer workflows. Examples: comp sheet generation (search → details → awards → synthesis), filmmaker career mapping (person → credits → collaborator network), distribution pathway analysis (festival premieres → watch providers → financial data), documentary discovery with curated keyword bundles (BOD-208: keyword exclusion sets for filtering concert/fan content from Documentary genre, predefined keyword bundles for common doc sub-genres like social issue, personal essay, investigative). Requires extensive design iteration — the tool surface is mature enough (22 tools) but the workflow layer that chains them for real production tasks doesn't exist yet.
+**Criteria:** Design and build Claude Code skills and slash commands that compose film-data-mcp tools into producer workflows. Examples: comp sheet generation (search → details → awards → synthesis), filmmaker career mapping (person → credits → collaborator network), distribution pathway analysis (festival premieres → watch providers → financial data), documentary discovery with curated keyword bundles (BOD-208: keyword exclusion sets for filtering concert/fan content from Documentary genre, predefined keyword bundles for common doc sub-genres like social issue, personal essay, investigative). Requires extensive design iteration — the tool surface is mature enough (23 tools) but the workflow layer that chains them for real production tasks doesn't exist yet.
 **Status:** Design needed.
 
 ### M19: Philanthropic & Financial Intelligence (Separate MCP)
@@ -115,7 +118,7 @@ Film research is scattered across TMDB, IMDb, Wikipedia, JustWatch, and festival
 
 ## Current Status
 
-v0.12.0. 22 tools total (17 TMDB + 4 awards + 1 representation), 24 ceremonies, 101 award categories. M12 and M15 merged. Time tracking automated via `scripts/cc-time.sh` — roadmap now uses CC hours (not sessions) with 12.8h completed and 18.75h estimated remaining. M16 design done, awaiting implementation.
+v0.13.0. 23 tools total (18 TMDB + 4 awards + 1 representation), 24 ceremonies, 101 award categories. M16 (`get_thanks_credits` — forward/reverse/batch Thanks credit queries) complete. M17-M20 planned.
 
 ### Known Issues (from GTM stress test)
 - **BOD-206:** Gotham Best Documentary `get_award_history` returns empty — Wikidata P166 data gap (structural, not code)
@@ -151,13 +154,13 @@ Actuals measured from commit timestamps via `scripts/cc-time.sh`. Gaps > 45 minu
 | GTM stress test script | — | 0.2 | Complete |
 | BOD-208 + BOD-203 + misc fixes | — | 0.4 | Complete |
 | M20 Wikipedia research | — | 0.2 | Complete |
-| **Completed total** | — | **12.8** | |
-| M16: Special Thanks Credits | 1.25 | — | Design done |
+| M16: Special Thanks Credits | 1.25 | — | Complete |
+| **Completed total** | — | **12.8 + M16** | |
 | M17: Skills & Commands | 4.0 | — | Design needed |
 | M18: Impact Campaign Data | 4.0 | — | Design needed |
 | M19: Philanthropic Intel MCP | 7.0 | — | Design needed |
 | M20: Plugin Architecture | 2.5 | — | Design needed |
-| **Remaining total** | **18.75** | — | |
+| **Remaining total** | **17.5** | — | |
 
 ## Key Decisions
 

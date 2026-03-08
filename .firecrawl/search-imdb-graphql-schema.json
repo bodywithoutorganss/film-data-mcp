@@ -1,0 +1,20 @@
+IMDb API GraphQL - query multiple names - Stack Overflow
+  URL: https://stackoverflow.com/questions/78955570/imdb-api-graphql-query-multiple-names
+  When I run this query in the IMDb GraphQL playground I get this message: "errors": [ { "message": "Cannot query field \"Name\" on type \"Name\".
+
+API Product Overview - IMDb Developer
+  URL: https://developer.imdb.com/documentation/api-documentation/
+  The IMDb API provides an industry standard solution to receive real-time access to premier IMDb title and name entertainment datasets.
+
+API Key Concepts - IMDb Developer
+  URL: https://developer.imdb.com/documentation/api-documentation/key-concepts/
+  IMDb APIs use GraphQL for querying data sets. Using GraphQL and its well-defined schema makes it easy to query IMDb APIs because it does not require written ...
+
+Sample Queries - IMDb Developer
+  URL: https://developer.imdb.com/documentation/api-documentation/sample-queries/
+  Check out our ready-to-run GraphQL queries to familiarize yourself with the IMDb schema, then start making them your own.
+
+A GraphQL API for IMDB - GitHub
+  URL: https://github.com/kiendang/imdb-graphql
+  A GraphQL API for IMDB. Schema: schema { query: Query } type Query { title(imdbID: String!): Title movie(imdbID: String!): Movie series(imdbID: String!): Series
+  Category: github

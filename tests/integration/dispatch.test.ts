@@ -1,4 +1,4 @@
-// ABOUTME: Verifies that index.ts dispatch map routes all 20 tool names to correct handlers.
+// ABOUTME: Verifies that index.ts dispatch map routes all 23 tool names to correct handlers.
 // ABOUTME: Reconstructs the dispatch pattern without starting the MCP server.
 
 import { describe, it, expect } from "vitest";
@@ -17,6 +17,9 @@ import {
 } from "../../src/tools/awards.js";
 import { handleGetFestivalPremieres, festivalPremieresTool } from "../../src/tools/premieres.js";
 import { handleGetCredits, creditsTool } from "../../src/tools/credits.js";
+import { handleGetPersonRepresentation, getPersonRepresentationTool } from "../../src/tools/representation.js";
+import { handleGetFinancials, financialsTool } from "../../src/tools/financials.js";
+import { handleGetThanksCredits, thanksCreditsTool } from "../../src/tools/thanks.js";
 import { searchTool } from "../../src/tools/search.js";
 import { movieDetailsTool, tvDetailsTool, personDetailsTool } from "../../src/tools/details.js";
 import { discoverTool } from "../../src/tools/discover.js";
@@ -57,10 +60,13 @@ describe("dispatch map", () => {
     get_film_awards: (args: any) => handleGetFilmAwards(args, mockTmdbClient, mockWikidataClient),
     get_award_history: (args: any) => handleGetAwardHistory(args, mockTmdbClient, mockWikidataClient),
     search_awards: (args: any) => handleSearchAwards(args, mockTmdbClient, mockWikidataClient),
+    get_person_representation: (args: any) => handleGetPersonRepresentation(args, mockTmdbClient, mockWikidataClient),
+    get_financials: handleGetFinancials,
+    get_thanks_credits: handleGetThanksCredits,
   };
 
-  it("has exactly 20 tool entries", () => {
-    expect(Object.keys(handlers)).toHaveLength(20);
+  it("has exactly 23 tool entries", () => {
+    expect(Object.keys(handlers)).toHaveLength(23);
   });
 
   it("all tool definition names have a matching handler", () => {
@@ -72,6 +78,7 @@ describe("dispatch map", () => {
       festivalPremieresTool, creditsTool,
       getPersonAwardsTool, getFilmAwardsTool,
       getAwardHistoryTool, searchAwardsTool,
+      getPersonRepresentationTool, financialsTool, thanksCreditsTool,
     ];
 
     for (const tool of toolDefs) {
@@ -88,6 +95,7 @@ describe("dispatch map", () => {
       "get_festival_premieres", "get_credits",
       "get_person_awards", "get_film_awards",
       "get_award_history", "search_awards",
+      "get_person_representation", "get_financials", "get_thanks_credits",
     ]);
 
     for (const name of Object.keys(handlers)) {
@@ -101,11 +109,14 @@ describe("dispatch map", () => {
     }
   });
 
-  it("awards closures are callable (bind verification)", () => {
-    // Awards handlers use closures that capture wikidataClient.
+  it("awards and representation closures are callable (bind verification)", () => {
+    // Awards and representation handlers use closures that capture wikidataClient.
     // Verify the closure-bound handlers are callable functions.
-    const awardTools = ["get_person_awards", "get_film_awards", "get_award_history", "search_awards"];
-    for (const name of awardTools) {
+    const closureTools = [
+      "get_person_awards", "get_film_awards", "get_award_history", "search_awards",
+      "get_person_representation",
+    ];
+    for (const name of closureTools) {
       expect(typeof handlers[name]).toBe("function");
       // The closure should accept (args) and internally pass tmdbClient + wikidataClient
       expect(handlers[name].length, `${name} closure should accept 1 arg`).toBe(1);

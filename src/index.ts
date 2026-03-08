@@ -10,7 +10,7 @@
  * discover, trending, curated_lists, genres, watch_providers,
  * find_by_external_id, collection_details, company_details,
  * search_keywords, company_filmography, get_festival_premieres,
- * get_credits, get_financials
+ * get_credits, get_financials, get_thanks_credits
  *
  * 4 Wikidata awards tools: get_person_awards, get_film_awards,
  * get_award_history, search_awards
@@ -56,6 +56,7 @@ import { creditsTool, handleGetCredits } from "./tools/credits.js";
 import { getPersonRepresentationTool, handleGetPersonRepresentation } from "./tools/representation.js";
 import { OMDbClient } from "./utils/omdb-client.js";
 import { financialsTool, handleGetFinancials } from "./tools/financials.js";
+import { thanksCreditsTool, handleGetThanksCredits } from "./tools/thanks.js";
 
 // Load environment variables
 config();
@@ -78,7 +79,7 @@ const omdbClient = omdbKey ? new OMDbClient(omdbKey) : null;
 const server = new Server(
     {
         name: "film-data-mcp",
-        version: "0.12.0",
+        version: "0.13.0",
     },
     {
         capabilities: {
@@ -115,6 +116,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             searchAwardsTool,
             getPersonRepresentationTool,
             financialsTool,
+            thanksCreditsTool,
         ],
     };
 });
@@ -151,6 +153,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             search_awards: (args) => handleSearchAwards(args, tmdbClient, wikidataClient),
             get_person_representation: (args) => handleGetPersonRepresentation(args, tmdbClient, wikidataClient),
             get_financials: (args) => handleGetFinancials(args, tmdbClient, omdbClient),
+            get_thanks_credits: handleGetThanksCredits,
         };
 
         const handler = handlers[name];

@@ -31,6 +31,7 @@ src/
     premieres.ts         - Festival premiere extraction from TMDB release dates
     credits.ts           - Detailed credits with department/job filtering and pagination
     financials.ts        - Financial data aggregation from TMDB + OMDb
+    thanks.ts            - Thanks/Special Thanks credits (forward, reverse, batch)
   types/
     tmdb.ts              - TMDB response types
     tmdb-extended.ts     - Extended types for append_to_response and new endpoints
@@ -44,7 +45,7 @@ src/
     tool-helpers.ts      - buildToolDef() — Zod schema to MCP tool definition
 ```
 
-## Tools (22 total: 17 TMDB, 4 awards, 1 representation)
+## Tools (23 total: 18 TMDB, 4 awards, 1 representation)
 
 | Tool | File | Description |
 |------|------|-------------|
@@ -70,6 +71,7 @@ src/
 | search_awards | awards.ts | Search the awards registry by ceremony, category, or domain |
 | get_person_representation | representation.ts | Talent agency affiliations via Wikidata P1875 (by TMDB ID, with optional name fallback) |
 | get_financials | financials.ts | Financial data (budget, revenue, domestic gross) from TMDB + OMDb |
+| get_thanks_credits | thanks.ts | Thanks/Special Thanks credits — forward (film→people), reverse (person→films), batch (frequency map) |
 
 ## Tool Pattern
 
@@ -98,7 +100,7 @@ M13 added: Peabody Awards (1 category), Gotham Awards (4 categories), Emmy docum
 
 - `npm test` — unit tests (no network)
 - `npm run test:integration` — integration tests (hits live TMDB + Wikidata APIs, needs `TMDB_ACCESS_TOKEN`)
-- Integration test files: `tests/integration/live-api.test.ts` (TMDB + Wikidata basics), `tests/integration/comp-films.integration.test.ts` (award tools vs. documentary comp films), `tests/tools/awards.integration.test.ts` (name-based resolution), `tests/integration/m13-registry.integration.test.ts` (M13 Wikidata-only — Peabody, Guggenheim, Gotham, Emmy), `tests/tools/representation.integration.test.ts` (Wikidata-only — Zendaya→CAA, Dwayne Johnson→UTA)
+- Integration test files: `tests/integration/live-api.test.ts` (TMDB + Wikidata basics), `tests/integration/comp-films.integration.test.ts` (award tools vs. documentary comp films), `tests/tools/awards.integration.test.ts` (name-based resolution), `tests/integration/m13-registry.integration.test.ts` (M13 Wikidata-only — Peabody, Guggenheim, Gotham, Emmy), `tests/tools/representation.integration.test.ts` (Wikidata-only — Zendaya→CAA, Dwayne Johnson→UTA), `tests/integration/m16-thanks.integration.test.ts` (TMDB-only — Pulp Fiction, Jim Starlin, batch aggregation)
 - Test files mirror source structure: `tests/tools/`, `tests/types/`, `tests/utils/`
 
 ### Response Size Considerations
@@ -132,6 +134,14 @@ For filmography exploration, `discover` with `with_crew`/`with_cast` filters ret
 - **~~Direct film awards lack `result` field (BOD-207)~~:** Fixed. `WikidataAward` now has `result: "win"` (P166) and `WikidataNomination` has `result: "nomination"` (P1411).
 - **~~Discover Documentary genre is too broad (BOD-208)~~:** Fixed. Discover tool description warns about Documentary genre breadth and recommends keyword filtering. Curated keyword bundles deferred to M17 skills layer.
 - **Representation data (P1875) is sparse for US talent agencies:** ~1,200 film professionals at talent agencies total; only ~70 across CAA/WME/UTA/ICM. Coverage is strongest for Japanese (Stardust, Smile-Up, Amuse) and Korean (BH Entertainment, Namoo Actors) agencies. Art distributors (Light Cone, Video Data Bank) inflate the broader total. `get_person_representation` includes a `coverageNote` field warning users about this.
+
+### Thanks Credits Data Coverage
+
+- **TMDB Thanks credits are sparse:** ~45% of films have them (62% fiction, 14% docs). Stored as `department: "Crew"` with `job: "Thanks"` — NOT as a separate "Thanks" department.
+- **Only one job variant observed:** "Thanks" (no "Special Thanks" or "Acknowledgement" in TMDB data, though the filter uses `includes("thank")` for safety).
+- **Wikidata P7137 ("acknowledged") is not viable:** Only 5 film entities globally have P7137 claims. TMDB is the sole data source.
+- **Reverse lookup works:** Person `combined_credits` includes Thanks entries for both movies and TV.
+- **TMDB credits endpoint does not return film title** — `get_thanks_credits` forward mode returns `movie_id`/`series_id` but no title. Use `movie_details`/`tv_details` for title lookup.
 
 ### Scripts
 
