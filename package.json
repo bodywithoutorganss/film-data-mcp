@@ -1,6 +1,6 @@
 {
   "name": "film-data-mcp",
-  "version": "0.8.0",
+  "version": "0.12.0",
   "mcpName": "io.github.bodywithoutorganss/film-data-mcp",
   "description": "MCP server for film data — TMDB crew/cast + Wikidata awards",
   "license": "MIT",
