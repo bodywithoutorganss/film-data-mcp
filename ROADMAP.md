@@ -87,7 +87,7 @@ Film research is scattered across TMDB, IMDb, Wikipedia, JustWatch, and festival
 
 ### M15: Representation & Talent Data
 **Criteria:** Research and implement talent representation data — publicists, agents, managers, and agency affiliations. Research phase investigated 10+ sources (TMDB, IMDbPro, IMDb API, Wikidata, ContactAnyCelebrity, filmmakers.eu, agency websites, Apify, academic datasets, GitHub scrapers). Finding: Wikidata P1875 ("represented by") is the only viable free source — ~1,200 film professionals at talent agencies (CAA, WME, UTA, ICM + strong Japanese/Korean coverage). IMDbPro has gold-standard data but no API. Implementation: `get_person_representation` tool using existing Wikidata SPARQL infrastructure with TMDB ID resolution.
-**Status:** Complete — `get_person_representation` tool (#22). 332 unit tests across 17 files + 4 integration tests (Zendaya→CAA, Dwayne Johnson→UTA).
+**Status:** Complete — `get_person_representation` tool (#21). 332 unit tests across 17 files + 4 integration tests (Zendaya→CAA, Dwayne Johnson→UTA).
 - Research: `docs/plans/2026-03-08-m15-representation-data-research.md`
 - Design: `docs/plans/2026-03-08-m15-representation-design.md`
 - Plan: `docs/plans/2026-03-08-m15-implementation.md`
@@ -114,7 +114,7 @@ Film research is scattered across TMDB, IMDb, Wikipedia, JustWatch, and festival
 
 ## Current Status
 
-M15 complete on `m15-representation-data` branch. 21 tools total (16 TMDB + 4 awards + 1 representation), 24 ceremonies, 101 award categories. `get_person_representation` queries Wikidata P1875 for talent agency affiliations. M12 (box office & financial data) in progress on separate `m12-financials` branch. M16-M20 planned.
+M15 merged to master. 21 tools on master (16 TMDB + 4 awards + 1 representation), 24 ceremonies, 101 award categories. 332 unit tests across 17 files. `get_person_representation` queries Wikidata P1875 for talent agency affiliations. M12 (box office & financial data) design complete on separate `m12-financials` branch (not merged). M16-M20 planned.
 
 ### Known Issues (from GTM stress test)
 - **BOD-206:** Gotham Best Documentary `get_award_history` returns empty — Wikidata P166 data gap (structural, not code)
