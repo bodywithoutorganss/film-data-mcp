@@ -113,7 +113,7 @@ v0.10.0 tagged. 20 tools total (16 TMDB + 4 awards), 24 ceremonies, 101 award ca
 
 ### Known Issues (from GTM stress test)
 - **BOD-206:** Gotham Best Documentary `get_award_history` returns empty — Wikidata P166 data gap (structural, not code)
-- **BOD-207:** Direct film awards from `get_film_awards` missing `result` field (win vs nomination)
+- **BOD-207:** ~~Direct film awards missing `result` field~~ — Fixed. `WikidataAward.result: "win"` and `WikidataNomination.result: "nomination"` added.
 - **BOD-208:** `discover` with Documentary genre returns non-narrative docs (concert films, fan docs) — keyword filtering recommended
 
 ## Time Tracking
@@ -143,6 +143,8 @@ v0.10.0 tagged. 20 tools total (16 TMDB + 4 awards), 24 ceremonies, 101 award ca
 | M19: Philanthropic Intel MCP | 3-4 sessions (research + design + build) | — | — | Design needed |
 | M20: Plugin Architecture | 2-3 sessions (design + build) | — | — | Design needed |
 | BOD-204: Stale FilmAwardsResult type | — | 0.1 session | — | Complete |
+| BOD-207: Award result field | — | 0.1 session | — | Complete |
+| GTM stress test script | — | 0.5 session | — | Complete |
 
 ## Key Decisions
 
