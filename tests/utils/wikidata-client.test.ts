@@ -387,6 +387,7 @@ describe("WikidataClient", () => {
       expect(noms).toHaveLength(1);
       expect(noms[0].forWork).toEqual({ wikidataId: "Q183081", label: "No Country for Old Men" });
       expect(noms[0].year).toBe(2008);
+      expect(noms[0].result).toBe("nomination");
     });
 
     it("gets film awards (P166)", async () => {

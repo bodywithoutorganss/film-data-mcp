@@ -33,6 +33,7 @@ export interface WikidataNomination {
   year?: number;
   forWork?: WikidataEntity;
   ceremony: string;
+  result: "nomination";
 }
 
 export interface AwardHistoryEntry {

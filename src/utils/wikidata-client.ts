@@ -236,6 +236,7 @@ export class WikidataClient {
             ? { wikidataId: this.extractEntityId(b.forWork.value), label: b.forWorkLabel ? this.cleanLabel(b.forWorkLabel.value) : "Unknown" }
             : undefined,
           ceremony: this.lookupCeremony(qid),
+          result: "nomination" as const,
         };
       })
       .filter((n) => REGISTERED_QIDS.has(n.wikidataId));
