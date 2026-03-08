@@ -97,7 +97,7 @@ Film research is scattered across TMDB, IMDb, Wikipedia, JustWatch, and festival
 **Status:** Research needed.
 
 ### M17: Skills & Command Workflows
-**Criteria:** Design and build Claude Code skills and slash commands that compose film-data-mcp tools into producer workflows. Examples: comp sheet generation (search → details → awards → synthesis), filmmaker career mapping (person → credits → collaborator network), distribution pathway analysis (festival premieres → watch providers → financial data). Requires extensive design iteration — the tool surface is mature enough (20 tools) but the workflow layer that chains them for real production tasks doesn't exist yet.
+**Criteria:** Design and build Claude Code skills and slash commands that compose film-data-mcp tools into producer workflows. Examples: comp sheet generation (search → details → awards → synthesis), filmmaker career mapping (person → credits → collaborator network), distribution pathway analysis (festival premieres → watch providers → financial data), documentary discovery with curated keyword bundles (BOD-208: keyword exclusion sets for filtering concert/fan content from Documentary genre, predefined keyword bundles for common doc sub-genres like social issue, personal essay, investigative). Requires extensive design iteration — the tool surface is mature enough (22 tools) but the workflow layer that chains them for real production tasks doesn't exist yet.
 **Status:** Design needed.
 
 ### M19: Philanthropic & Financial Intelligence (Separate MCP)
@@ -119,7 +119,8 @@ v0.12.0. 22 tools total (17 TMDB + 4 awards + 1 representation), 24 ceremonies, 
 ### Known Issues (from GTM stress test)
 - **BOD-206:** Gotham Best Documentary `get_award_history` returns empty — Wikidata P166 data gap (structural, not code)
 - **BOD-207:** ~~Direct film awards missing `result` field~~ — Fixed. `WikidataAward.result: "win"` and `WikidataNomination.result: "nomination"` added.
-- **BOD-208:** `discover` with Documentary genre returns non-narrative docs (concert films, fan docs) — keyword filtering recommended
+- **BOD-208:** ~~`discover` with Documentary genre returns non-narrative docs~~ — Fixed. Tool description warns about genre 99 breadth, recommends keyword filtering. Curated keyword bundles deferred to M17.
+- **BOD-203:** ~~Richer candidate scoring for name resolution~~ — Canceled. Evidence analysis (12 docs, 107 crew) showed 78% of skips are absent Wikidata entities, not disambiguation failures. Generic occupation QIDs (`Q3455803` director, `Q47541952` producer) added to `FILM_OCCUPATIONS` to fix the one recoverable case.
 
 ## Time Tracking
 

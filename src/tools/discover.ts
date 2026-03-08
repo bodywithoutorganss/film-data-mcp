@@ -40,8 +40,8 @@ export const DiscoverSchema = z.object({
   // Company/keyword filters
   with_companies: z.string().optional().describe("Production company IDs"),
   without_companies: z.string().optional().describe("Exclude company IDs"),
-  with_keywords: z.string().optional().describe("Keyword IDs"),
-  without_keywords: z.string().optional().describe("Exclude keyword IDs"),
+  with_keywords: z.string().optional().describe("Keyword IDs (comma=AND, pipe=OR). Use search_keywords to find IDs by name. Essential for narrowing broad genres like Documentary (99)"),
+  without_keywords: z.string().optional().describe("Exclude keyword IDs (comma-separated). Use search_keywords to find IDs for unwanted themes"),
 
   // Runtime
   with_runtime_gte: z.number().int().optional().describe("Minimum runtime in minutes"),
@@ -70,7 +70,7 @@ export const DiscoverSchema = z.object({
 
 export const discoverTool = buildToolDef(
   "discover",
-  "Discover movies or TV shows with 30+ filters. Combine genres, release dates, vote averages, cast/crew, companies, keywords, watch providers, certifications, and more. Use the genres tool for genre IDs and search_keywords for keyword IDs.",
+  "Discover movies or TV shows with 30+ filters. Combine genres, release dates, vote averages, cast/crew, companies, keywords, watch providers, certifications, and more. Use the genres tool for genre IDs and search_keywords for keyword IDs. Note: some genres (especially Documentary, ID 99) are very broad — combine with with_keywords or without_keywords to filter by theme.",
   DiscoverSchema
 );
 
