@@ -68,7 +68,7 @@ Film research is scattered across TMDB, IMDb, Wikipedia, JustWatch, and festival
 
 ### M12: Box Office & Financial Data
 **Criteria:** New `get_financials` tool (#21) aggregating structured financial data from TMDB (budget, revenue) and OMDb (domestic gross). Multi-source architecture with source attribution per data point. OMDb API key optional — tool works TMDB-only when not set. Extensible for future sources (OpusData). Wikidata P2142 assessed and rejected (0.36% doc coverage, 0/5 comp films had data). Layer 2 (trade press scraping for deal intelligence) deferred to separate milestone.
-**Status:** Design complete, implementation plan ready (9 tasks).
+**Status:** Complete — v0.11.0 tagged. 21 tools (17 TMDB + 4 awards). OMDb client optional.
 - Design: `docs/plans/2026-03-08-m12-box-office-design.md`
 - Plan: `docs/plans/2026-03-08-m12-implementation.md`
 
@@ -111,7 +111,7 @@ Film research is scattered across TMDB, IMDb, Wikipedia, JustWatch, and festival
 
 ## Current Status
 
-v0.10.0 tagged. 20 tools total (16 TMDB + 4 awards), 24 ceremonies, 101 award categories. 321 unit tests across 16 files + 20 integration tests across 3 files. Producer GTM research script (`scripts/producer-research.mjs`) exercises 12/20 tools against live APIs — validated M11-M14 and BOD-198 in a real workflow. M12 (box office & financial data) designed — `get_financials` tool aggregating TMDB + OMDb with extensible multi-source architecture, implementation plan ready (9 tasks). M15-M20 planned — spans new tools, data expansion, research, workflow design, impact campaign data, plugin architecture, and a standalone philanthropic intelligence MCP.
+v0.11.0 tagged. 21 tools total (17 TMDB + 4 awards), 24 ceremonies, 101 award categories. 338 unit tests across 17 files + 20 integration tests across 3 files. Producer GTM research script (`scripts/producer-research.mjs`) exercises 12/21 tools against live APIs. M12 (box office & financial data) complete — `get_financials` tool aggregating TMDB + OMDb with optional OMDb API key. M15-M20 planned — spans new tools, data expansion, research, workflow design, impact campaign data, plugin architecture, and a standalone philanthropic intelligence MCP.
 
 ### Known Issues (from GTM stress test)
 - **BOD-206:** Gotham Best Documentary `get_award_history` returns empty — Wikidata P166 data gap (structural, not code)
@@ -133,7 +133,7 @@ v0.10.0 tagged. 20 tools total (16 TMDB + 4 awards), 24 ceremonies, 101 award ca
 | M9: Crew Resolution | 1 session | 1 session (implementation) | — | Complete |
 | M10: Tooling Review | 1 session | 1 session (design + plan + implementation) | — | Complete |
 | M11: Batch Keywords | 1 session | 0.5 session | — | Complete |
-| M12: Box Office Data | 1-2 sessions | 0.5 session (research + design + plan) | — | Design complete |
+| M12: Box Office Data | 1-2 sessions | 1 session (research + design + plan + implementation) | — | Complete |
 | M13: Awards Registry Exp. | 1-2 sessions | 2 sessions (feasibility + design + plan, implementation) | — | Complete |
 | M14: Person Awards Fallback | 1 session | 0.5 session | — | Complete |
 | BOD-199: Tiered Name Resolution | 0.5 session | 0.5 session | — | Complete |
