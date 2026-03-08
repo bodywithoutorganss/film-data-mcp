@@ -125,6 +125,46 @@ async function handleReverse(
   };
 }
 
+interface FrequencyEntry {
+  id: number;
+  name: string;
+  count: number;
+  films: { id: number; title: string; job: string }[];
+}
+
+async function handleBatch(
+  args: { movie_ids: number[] },
+  client: TMDBClient
+): Promise<Record<string, any>> {
+  const films: { movie_id: number; thanks: ThanksEntry[] }[] = [];
+  const personMap = new Map<number, FrequencyEntry>();
+
+  for (const movieId of args.movie_ids) {
+    const data = await client.getMovieCredits(movieId);
+    const thanks = filterThanksCrew(data.crew ?? []);
+    films.push({ movie_id: movieId, thanks });
+
+    for (const entry of thanks) {
+      const existing = personMap.get(entry.id);
+      if (existing) {
+        existing.count++;
+        existing.films.push({ id: movieId, title: "", job: entry.job });
+      } else {
+        personMap.set(entry.id, {
+          id: entry.id,
+          name: entry.name,
+          count: 1,
+          films: [{ id: movieId, title: "", job: entry.job }],
+        });
+      }
+    }
+  }
+
+  const frequencyMap = [...personMap.values()].sort((a, b) => b.count - a.count);
+
+  return { films, frequency_map: frequencyMap };
+}
+
 export async function handleGetThanksCredits(
   args: unknown,
   client: TMDBClient
@@ -138,7 +178,7 @@ export async function handleGetThanksCredits(
   } else if (parsed.mode === "reverse") {
     result = await handleReverse(parsed, client);
   } else {
-    throw new Error(`Mode "${parsed.mode}" not yet implemented`);
+    result = await handleBatch(parsed as { movie_ids: number[] }, client);
   }
 
   return JSON.stringify(result, null, 2);
