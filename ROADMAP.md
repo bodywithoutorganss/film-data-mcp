@@ -67,8 +67,10 @@ Film research is scattered across TMDB, IMDb, Wikipedia, JustWatch, and festival
 - Plan: `docs/plans/2026-03-07-m11-m14-implementation.md`
 
 ### M12: Box Office & Financial Data
-**Criteria:** Supplementary financial data for documentaries beyond TMDB's revenue field (which returns $0 for most docs). Investigate Wikidata P2142 (box office) coverage for documentary films. If insufficient, evaluate external sources (The Numbers, Box Office Mojo). Goal: a tool or data layer that can answer "how did comparable docs perform financially?" including festival sales, streaming deal values, and theatrical gross.
-**Status:** Planned.
+**Criteria:** New `get_financials` tool (#21) aggregating structured financial data from TMDB (budget, revenue) and OMDb (domestic gross). Multi-source architecture with source attribution per data point. OMDb API key optional — tool works TMDB-only when not set. Extensible for future sources (OpusData). Wikidata P2142 assessed and rejected (0.36% doc coverage, 0/5 comp films had data). Layer 2 (trade press scraping for deal intelligence) deferred to separate milestone.
+**Status:** Design complete, implementation plan ready (9 tasks).
+- Design: `docs/plans/2026-03-08-m12-box-office-design.md`
+- Plan: `docs/plans/2026-03-08-m12-implementation.md`
 
 ### M13: Awards Registry Expansion
 **Criteria:** Add Wikidata-viable ceremonies and fellowships to the awards registry. Scope determined by feasibility study (2026-03-07): Peabody Awards (Q838121, 446 P166 claims), Gotham Awards (Q1538791, 12-15 categories), Emmy documentary categories (5-7 new categories under existing `emmys` entry, 5 QIDs verified), and Guggenheim Fellowship (Q1316544, 19,570 P166 claims, 217-758 film-relevant — requires qualifier-aware SPARQL query, new engineering). Non-viable Wikidata candidates (Critics' Choice Doc, Cinema Eye, IDA, Sundance Fund/Labs, Film Independent Labs, ITVS, Catapult, Ford/JustFilms) deferred to a future milestone requiring alternative data sources.
@@ -109,7 +111,7 @@ Film research is scattered across TMDB, IMDb, Wikipedia, JustWatch, and festival
 
 ## Current Status
 
-v0.10.0 tagged. 20 tools total (16 TMDB + 4 awards), 24 ceremonies, 101 award categories. 321 unit tests across 16 files + 20 integration tests across 3 files. Producer GTM research script (`scripts/producer-research.mjs`) exercises 12/20 tools against live APIs — validated M11-M14 and BOD-198 in a real workflow. M12, M15-M20 planned — spans new tools, data expansion, research, workflow design, impact campaign data, plugin architecture, and a standalone philanthropic intelligence MCP.
+v0.10.0 tagged. 20 tools total (16 TMDB + 4 awards), 24 ceremonies, 101 award categories. 321 unit tests across 16 files + 20 integration tests across 3 files. Producer GTM research script (`scripts/producer-research.mjs`) exercises 12/20 tools against live APIs — validated M11-M14 and BOD-198 in a real workflow. M12 (box office & financial data) designed — `get_financials` tool aggregating TMDB + OMDb with extensible multi-source architecture, implementation plan ready (9 tasks). M15-M20 planned — spans new tools, data expansion, research, workflow design, impact campaign data, plugin architecture, and a standalone philanthropic intelligence MCP.
 
 ### Known Issues (from GTM stress test)
 - **BOD-206:** Gotham Best Documentary `get_award_history` returns empty — Wikidata P166 data gap (structural, not code)
@@ -131,7 +133,7 @@ v0.10.0 tagged. 20 tools total (16 TMDB + 4 awards), 24 ceremonies, 101 award ca
 | M9: Crew Resolution | 1 session | 1 session (implementation) | — | Complete |
 | M10: Tooling Review | 1 session | 1 session (design + plan + implementation) | — | Complete |
 | M11: Batch Keywords | 1 session | 0.5 session | — | Complete |
-| M12: Box Office Data | 1-2 sessions | — | — | Planned |
+| M12: Box Office Data | 1-2 sessions | 0.5 session (research + design + plan) | — | Design complete |
 | M13: Awards Registry Exp. | 1-2 sessions | 2 sessions (feasibility + design + plan, implementation) | — | Complete |
 | M14: Person Awards Fallback | 1 session | 0.5 session | — | Complete |
 | BOD-199: Tiered Name Resolution | 0.5 session | 0.5 session | — | Complete |
