@@ -93,8 +93,10 @@ Film research is scattered across TMDB, IMDb, Wikipedia, JustWatch, and festival
 - Plan: `docs/plans/2026-03-08-m15-implementation.md`
 
 ### M16: Special Thanks & Acknowledgment Credits
-**Criteria:** Surface "Thanks" and "Special Thanks" credit data from TMDB (sparse but present in some entries) and investigate Wikidata coverage. Useful for mapping informal collaboration networks and influence relationships in documentary production. Research phase to assess data quality before building tools.
-**Status:** Research needed.
+**Criteria:** Surface "Thanks" and "Special Thanks" credit data from TMDB and Wikidata. New `get_thanks_credits` tool with three modes: forward (film→thanked people), reverse (person→films thanked in + formal crew roles), batch (aggregate across multiple films with frequency map). Research phase to assess data quality, then TDD implementation. Phase 3 enrichment (Wikidata cross-referencing, TMDB profile data) deferred pending research findings.
+**Status:** Design + plan complete. Worktree at `.worktrees/m16-special-thanks`. 15-task plan ready (4 research + 11 implementation).
+- Design: `docs/plans/2026-03-08-m16-special-thanks-design.md`
+- Plan: `docs/plans/2026-03-08-m16-implementation.md`
 
 ### M17: Skills & Command Workflows
 **Criteria:** Design and build Claude Code skills and slash commands that compose film-data-mcp tools into producer workflows. Examples: comp sheet generation (search → details → awards → synthesis), filmmaker career mapping (person → credits → collaborator network), distribution pathway analysis (festival premieres → watch providers → financial data). Requires extensive design iteration — the tool surface is mature enough (20 tools) but the workflow layer that chains them for real production tasks doesn't exist yet.
@@ -114,7 +116,7 @@ Film research is scattered across TMDB, IMDb, Wikipedia, JustWatch, and festival
 
 ## Current Status
 
-v0.12.0. 22 tools total (17 TMDB + 4 awards + 1 representation), 24 ceremonies, 101 award categories. M12 (`get_financials` — TMDB + OMDb financial data) and M15 (`get_person_representation` — Wikidata P1875 talent agencies) both merged. M16-M20 planned.
+v0.12.0. 22 tools total (17 TMDB + 4 awards + 1 representation), 24 ceremonies, 101 award categories. M12 (`get_financials` — TMDB + OMDb financial data) and M15 (`get_person_representation` — Wikidata P1875 talent agencies) both merged. M16 designed and planned (worktree ready). M17-M20 planned.
 
 ### Known Issues (from GTM stress test)
 - **BOD-206:** Gotham Best Documentary `get_award_history` returns empty — Wikidata P166 data gap (structural, not code)
@@ -142,7 +144,7 @@ v0.12.0. 22 tools total (17 TMDB + 4 awards + 1 representation), 24 ceremonies, 
 | BOD-199: Tiered Name Resolution | 0.5 session | 0.5 session | — | Complete |
 | BOD-198: Resolved Crew Enrichment | 0.5 session | 0.5 session (design + plan + implementation) | — | Complete |
 | M15: Representation Data | 1 session (research) | 1 session (research + design + implementation) | — | Complete |
-| M16: Special Thanks Credits | 1 session (research) | — | — | Research needed |
+| M16: Special Thanks Credits | 1-2 sessions (research + implementation) | 0.5 session (design + plan) | — | In progress |
 | M17: Skills & Commands | 2-3 sessions (design + build) | — | — | Design needed |
 | M18: Impact Campaign Data | 2-3 sessions (research + design + build) | — | — | Design needed |
 | M19: Philanthropic Intel MCP | 3-4 sessions (research + design + build) | — | — | Design needed |
