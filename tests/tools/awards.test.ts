@@ -917,6 +917,62 @@ describe("awards tools", () => {
       expect(parsed.categories.some((c: any) => c.id === "cannes-best-director")).toBe(true);
     });
 
+    it("finds Peabody", async () => {
+      const result = await handleSearchAwards(
+        { query: "peabody" },
+        mockTmdbClient as any,
+        mockWikidataClient as any
+      );
+      const parsed = JSON.parse(result);
+      expect(parsed.ceremonies.some((c: any) => c.id === "peabody")).toBe(true);
+      expect(parsed.categories.some((c: any) => c.id === "peabody-award")).toBe(true);
+    });
+
+    it("finds Gotham", async () => {
+      const result = await handleSearchAwards(
+        { query: "gotham" },
+        mockTmdbClient as any,
+        mockWikidataClient as any
+      );
+      const parsed = JSON.parse(result);
+      expect(parsed.ceremonies.some((c: any) => c.id === "gotham")).toBe(true);
+      expect(parsed.categories.some((c: any) => c.id === "gotham-best-documentary")).toBe(true);
+    });
+
+    it("finds Guggenheim via fellowship query", async () => {
+      const result = await handleSearchAwards(
+        { query: "guggenheim" },
+        mockTmdbClient as any,
+        mockWikidataClient as any
+      );
+      const parsed = JSON.parse(result);
+      expect(parsed.ceremonies.some((c: any) => c.id === "guggenheim")).toBe(true);
+      expect(parsed.categories.some((c: any) => c.id === "guggenheim-film")).toBe(true);
+    });
+
+    it("finds fellowship domain", async () => {
+      const result = await handleSearchAwards(
+        { query: "fellowship" },
+        mockTmdbClient as any,
+        mockWikidataClient as any
+      );
+      const parsed = JSON.parse(result);
+      expect(parsed.ceremonies.some((c: any) => c.id === "guggenheim")).toBe(true);
+      expect(parsed.categories.some((c: any) => c.domain === "fellowship")).toBe(true);
+    });
+
+    it("documentary domain includes Peabody and Gotham doc categories", async () => {
+      const result = await handleSearchAwards(
+        { query: "documentary" },
+        mockTmdbClient as any,
+        mockWikidataClient as any
+      );
+      const parsed = JSON.parse(result);
+      const catIds = parsed.categories.map((c: any) => c.id);
+      expect(catIds).toContain("peabody-award");
+      expect(catIds).toContain("gotham-best-documentary");
+    });
+
     it("returns empty when one token has no match", async () => {
       const result = await handleSearchAwards(
         { query: "academy xyznonexistent" },
