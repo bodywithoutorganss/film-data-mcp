@@ -109,8 +109,9 @@ Film research is scattered across TMDB, IMDb, Wikipedia, JustWatch, and festival
 **Status:** Design needed.
 
 ### M20: Plugin Architecture & Wikipedia MCP Integration
-**Criteria:** Restructure film-data-mcp as a Claude Code plugin in the personal knowledge marketplace, composable with other MCP servers. Key integration: existing Wikipedia MCP for richer entity resolution beyond SPARQL-only approach. Design questions: plugin structure that preserves standalone MCP usability, cross-MCP entity resolution composition, interoperability with other marketplace servers.
-**Status:** Design needed.
+**Criteria:** Restructure film-data-mcp as a Claude Code plugin in the personal knowledge marketplace, composable with other MCP servers. Key integration: Wikipedia MCP as a fallback enrichment layer for the 37% of crew that Wikidata can't see. BOD-203 analysis (12 docs, 107 crew) found 78% of skipped crew have zero Wikidata presence, but 70% of those are mentioned on 2+ English Wikipedia pages (Jason Spingarn-Koff on 8 pages, Nels Bangerter on 10+, etc.). Wikipedia could provide: mention-based identity confirmation, unstructured award data from film article prose (especially for doc-specific ceremonies), and collaboration network signals from cross-article credit mentions. Design questions: resolution chain extension (4th step or parallel enrichment?), mention extraction from article text, performance impact (opt-in?), plugin structure that preserves standalone MCP usability.
+**Status:** Design needed. Research findings documented.
+- Research: `docs/plans/2026-03-08-m20-wikipedia-resolution-findings.md`
 
 ## Current Status
 
