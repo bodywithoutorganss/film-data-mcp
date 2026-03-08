@@ -93,13 +93,14 @@ Film research is scattered across TMDB, IMDb, Wikipedia, JustWatch, and festival
 - Plan: `docs/plans/2026-03-08-m15-implementation.md`
 
 ### M16: Special Thanks & Acknowledgment Credits
-**Criteria:** Surface "Thanks" and "Special Thanks" credit data from TMDB and Wikidata. New `get_thanks_credits` tool with three modes: forward (film→thanked people), reverse (person→films thanked in + formal crew roles), batch (aggregate across multiple films with frequency map). Research phase to assess data quality, then TDD implementation. Phase 3 enrichment (Wikidata cross-referencing, TMDB profile data) deferred pending research findings.
-**Status:** Design + plan complete. Worktree at `.worktrees/m16-special-thanks`. 15-task plan ready (4 research + 11 implementation).
+**Criteria:** Surface "Thanks" and "Special Thanks" credit data from TMDB. New `get_thanks_credits` tool (#23) with three modes: forward (film→thanked people), reverse (person→films thanked in + formal crew roles), batch (aggregate across multiple films with frequency map). Research phase assessed TMDB coverage (45% of films, stronger for fiction) and rejected Wikidata P7137 (5 films globally). Key finding: Thanks credits stored as `job: "Thanks"` under `department: "Crew"`, not as a separate department. Phase 3 enrichment deferred indefinitely (Wikidata not viable).
+**Status:** Complete — v0.13.0. 23 tools (18 TMDB + 4 awards + 1 representation). 370 unit tests + 4 integration tests.
 - Design: `docs/plans/2026-03-08-m16-special-thanks-design.md`
 - Plan: `docs/plans/2026-03-08-m16-implementation.md`
+- Research: `docs/plans/2026-03-08-m16-research-findings.md`
 
 ### M17: Skills & Command Workflows
-**Criteria:** Design and build Claude Code skills and slash commands that compose film-data-mcp tools into producer workflows. Examples: comp sheet generation (search → details → awards → synthesis), filmmaker career mapping (person → credits → collaborator network), distribution pathway analysis (festival premieres → watch providers → financial data). Requires extensive design iteration — the tool surface is mature enough (20 tools) but the workflow layer that chains them for real production tasks doesn't exist yet.
+**Criteria:** Design and build Claude Code skills and slash commands that compose film-data-mcp tools into producer workflows. Examples: comp sheet generation (search → details → awards → synthesis), filmmaker career mapping (person → credits → collaborator network), distribution pathway analysis (festival premieres → watch providers → financial data), documentary discovery with curated keyword bundles (BOD-208: keyword exclusion sets for filtering concert/fan content from Documentary genre, predefined keyword bundles for common doc sub-genres like social issue, personal essay, investigative). Requires extensive design iteration — the tool surface is mature enough (23 tools) but the workflow layer that chains them for real production tasks doesn't exist yet.
 **Status:** Design needed.
 
 ### M19: Philanthropic & Financial Intelligence (Separate MCP)
@@ -116,7 +117,7 @@ Film research is scattered across TMDB, IMDb, Wikipedia, JustWatch, and festival
 
 ## Current Status
 
-v0.12.0. 22 tools total (17 TMDB + 4 awards + 1 representation), 24 ceremonies, 101 award categories. M12 (`get_financials` — TMDB + OMDb financial data) and M15 (`get_person_representation` — Wikidata P1875 talent agencies) both merged. M16 designed and planned (worktree ready). M17-M20 planned.
+v0.13.0. 23 tools total (18 TMDB + 4 awards + 1 representation), 24 ceremonies, 101 award categories. M16 (`get_thanks_credits` — forward/reverse/batch Thanks credit queries) complete. M17-M20 planned.
 
 ### Known Issues (from GTM stress test)
 - **BOD-206:** Gotham Best Documentary `get_award_history` returns empty — Wikidata P166 data gap (structural, not code)
@@ -144,7 +145,7 @@ v0.12.0. 22 tools total (17 TMDB + 4 awards + 1 representation), 24 ceremonies, 
 | BOD-199: Tiered Name Resolution | 0.5 session | 0.5 session | — | Complete |
 | BOD-198: Resolved Crew Enrichment | 0.5 session | 0.5 session (design + plan + implementation) | — | Complete |
 | M15: Representation Data | 1 session (research) | 1 session (research + design + implementation) | — | Complete |
-| M16: Special Thanks Credits | 1-2 sessions (research + implementation) | 0.5 session (design + plan) | — | In progress |
+| M16: Special Thanks Credits | 1-2 sessions (research + implementation) | 1 session (design + plan + research + implementation) | — | Complete |
 | M17: Skills & Commands | 2-3 sessions (design + build) | — | — | Design needed |
 | M18: Impact Campaign Data | 2-3 sessions (research + design + build) | — | — | Design needed |
 | M19: Philanthropic Intel MCP | 3-4 sessions (research + design + build) | — | — | Design needed |
