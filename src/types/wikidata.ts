@@ -71,6 +71,7 @@ export interface ResolvedCrewEntry {
 }
 
 export interface SkippedCrewEntry {
+  tmdbId: number;
   name: string;
   roles: string[];
   reason: string;

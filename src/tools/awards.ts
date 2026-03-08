@@ -157,7 +157,7 @@ async function getFilmCrewNominations(
       try {
         entity = await resolvePerson(member.id, tmdbClient, wikidataClient, member.name);
       } catch {
-        skippedCrew.push({ name: member.name, roles: member.roles, reason: "unresolvable" });
+        skippedCrew.push({ tmdbId: member.id, name: member.name, roles: member.roles, reason: "unresolvable" });
         return null;
       }
 

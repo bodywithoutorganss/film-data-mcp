@@ -296,7 +296,7 @@ describe("awards tools", () => {
       expect(parsed.crewNominations[0].person).toEqual({ name: "Bing Liu", roles: ["Director"] });
       expect(parsed.crewNominations[0].nominations).toHaveLength(1);
       expect(parsed.crewNominations[0].nominations[0].label).toBe("Academy Award for Best Documentary Feature");
-      expect(parsed.skippedCrew).toEqual([{ name: "Diane Quon", roles: ["Producer"], reason: "unresolvable" }]);
+      expect(parsed.skippedCrew).toEqual([{ tmdbId: 9999, name: "Diane Quon", roles: ["Producer"], reason: "unresolvable" }]);
     });
 
     it("returns empty crewNominations when no credits available", async () => {
