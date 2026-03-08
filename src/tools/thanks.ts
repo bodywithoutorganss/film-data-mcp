@@ -80,6 +80,51 @@ async function handleForward(
   }
 }
 
+interface FormalRole {
+  id: number;
+  title: string;
+  media_type: string;
+  department: string;
+  job: string;
+}
+
+async function handleReverse(
+  args: { person_id: number },
+  client: TMDBClient
+): Promise<Record<string, any>> {
+  const details = await client.getPersonDetails(args.person_id, ["combined_credits"]);
+  const crew = details.combined_credits?.crew ?? [];
+
+  const thankedIn = crew
+    .filter((c: any) => isThanksJob(c.job))
+    .map((c: any) => ({
+      id: c.id,
+      title: c.title || c.name,
+      media_type: c.media_type,
+      job: c.job,
+    }));
+
+  const formalRoles: FormalRole[] = crew
+    .filter((c: any) => !isThanksJob(c.job))
+    .map((c: any) => ({
+      id: c.id,
+      title: c.title || c.name,
+      media_type: c.media_type,
+      department: c.department,
+      job: c.job,
+    }));
+
+  return {
+    person: {
+      id: details.id,
+      name: details.name,
+      known_for_department: details.known_for_department,
+    },
+    thanked_in: thankedIn,
+    formal_roles: formalRoles,
+  };
+}
+
 export async function handleGetThanksCredits(
   args: unknown,
   client: TMDBClient
@@ -90,6 +135,8 @@ export async function handleGetThanksCredits(
 
   if (parsed.mode === "forward") {
     result = await handleForward(parsed, client);
+  } else if (parsed.mode === "reverse") {
+    result = await handleReverse(parsed, client);
   } else {
     throw new Error(`Mode "${parsed.mode}" not yet implemented`);
   }
