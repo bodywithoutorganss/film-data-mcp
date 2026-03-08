@@ -254,6 +254,10 @@ git commit -m "research: M16 thanks credits findings and design decisions"
 ## Phase 2: Tool Implementation
 
 > **Note:** Exact output shape may be refined based on research findings from Phase 1. The code below assumes TMDB has Thanks data and combined_credits includes it (the most likely case). If research disproves this, revisit before proceeding.
+>
+> **Scope note:** Phase 3 (Cross-Referencing & Enrichment) from the design doc is deferred to a future milestone pending research findings. This plan covers the core tool only.
+>
+> **Batch mode is movie-only.** TV thanks credits are rare and batch TV aggregation can be added if needed.
 
 ### Task 5: Write schema tests for `get_thanks_credits`
 
@@ -267,37 +271,10 @@ git commit -m "research: M16 thanks credits findings and design decisions"
 // ABOUTME: Validates schema modes (forward, reverse, batch), handler logic, and aggregation.
 
 import { describe, it, expect } from "vitest";
-import { ThanksCreditsBaseSchema } from "../../src/tools/thanks.js";
+import { ThanksCreditsBaseSchema, ThanksCreditsSchema } from "../../src/tools/thanks.js";
 
 describe("ThanksCreditsSchema", () => {
-  // Forward mode
-  it("accepts forward mode with movie_id", () => {
-    const result = ThanksCreditsBaseSchema.parse({ mode: "forward", movie_id: 550 });
-    expect(result.mode).toBe("forward");
-    expect(result.movie_id).toBe(550);
-  });
-
-  it("accepts forward mode with series_id", () => {
-    const result = ThanksCreditsBaseSchema.parse({ mode: "forward", series_id: 1396 });
-    expect(result.mode).toBe("forward");
-    expect(result.series_id).toBe(1396);
-  });
-
-  // Reverse mode
-  it("accepts reverse mode with person_id", () => {
-    const result = ThanksCreditsBaseSchema.parse({ mode: "reverse", person_id: 287 });
-    expect(result.mode).toBe("reverse");
-    expect(result.person_id).toBe(287);
-  });
-
-  // Batch mode
-  it("accepts batch mode with movie_ids", () => {
-    const result = ThanksCreditsBaseSchema.parse({ mode: "batch", movie_ids: [550, 680] });
-    expect(result.mode).toBe("batch");
-    expect(result.movie_ids).toEqual([550, 680]);
-  });
-
-  // Validation
+  // Base schema field validation
   it("rejects invalid mode", () => {
     expect(() => ThanksCreditsBaseSchema.parse({ mode: "invalid" })).toThrow();
   });
@@ -305,6 +282,51 @@ describe("ThanksCreditsSchema", () => {
   it("rejects non-positive IDs", () => {
     expect(() => ThanksCreditsBaseSchema.parse({ mode: "forward", movie_id: -1 })).toThrow();
     expect(() => ThanksCreditsBaseSchema.parse({ mode: "reverse", person_id: 0 })).toThrow();
+  });
+
+  // Refined schema mode validation (ThanksCreditsSchema enforces mode-specific requirements)
+  it("accepts forward mode with movie_id", () => {
+    const result = ThanksCreditsSchema.parse({ mode: "forward", movie_id: 550 });
+    expect(result.mode).toBe("forward");
+    expect(result.movie_id).toBe(550);
+  });
+
+  it("accepts forward mode with series_id", () => {
+    const result = ThanksCreditsSchema.parse({ mode: "forward", series_id: 1396 });
+    expect(result.mode).toBe("forward");
+    expect(result.series_id).toBe(1396);
+  });
+
+  it("rejects forward mode with both movie_id and series_id", () => {
+    expect(() => ThanksCreditsSchema.parse({ mode: "forward", movie_id: 550, series_id: 1396 })).toThrow();
+  });
+
+  it("rejects forward mode without movie_id or series_id", () => {
+    expect(() => ThanksCreditsSchema.parse({ mode: "forward" })).toThrow();
+  });
+
+  it("accepts reverse mode with person_id", () => {
+    const result = ThanksCreditsSchema.parse({ mode: "reverse", person_id: 287 });
+    expect(result.mode).toBe("reverse");
+    expect(result.person_id).toBe(287);
+  });
+
+  it("rejects reverse mode without person_id", () => {
+    expect(() => ThanksCreditsSchema.parse({ mode: "reverse" })).toThrow();
+  });
+
+  it("accepts batch mode with movie_ids", () => {
+    const result = ThanksCreditsSchema.parse({ mode: "batch", movie_ids: [550, 680] });
+    expect(result.mode).toBe("batch");
+    expect(result.movie_ids).toEqual([550, 680]);
+  });
+
+  it("rejects batch mode without movie_ids", () => {
+    expect(() => ThanksCreditsSchema.parse({ mode: "batch" })).toThrow();
+  });
+
+  it("rejects batch mode with empty movie_ids", () => {
+    expect(() => ThanksCreditsSchema.parse({ mode: "batch", movie_ids: [] })).toThrow();
   });
 });
 ```
@@ -357,7 +379,7 @@ export const ThanksCreditsBaseSchema = z.object({
 
 export const ThanksCreditsSchema = ThanksCreditsBaseSchema.refine(
   (data) => {
-    if (data.mode === "forward") return data.movie_id !== undefined || data.series_id !== undefined;
+    if (data.mode === "forward") return (data.movie_id !== undefined) !== (data.series_id !== undefined);
     if (data.mode === "reverse") return data.person_id !== undefined;
     if (data.mode === "batch") return data.movie_ids !== undefined && data.movie_ids.length > 0;
     return false;
@@ -1050,6 +1072,8 @@ describe("get_thanks_credits integration", () => {
     );
 
     expect(result.movie_id).toBe(122);
+    // Verify title is populated — TMDB credits endpoint may not return title.
+    // If this fails, the forward handler needs a getMovieDetails fallback for title.
     expect(result.title).toBeTruthy();
     // LOTR ROTK likely has Thanks credits — verify count > 0 after research
     expect(Array.isArray(result.thanks)).toBe(true);
