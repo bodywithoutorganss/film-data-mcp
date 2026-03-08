@@ -24,6 +24,7 @@ export interface WikidataAward {
   label: string;
   year?: number;
   ceremony: string;
+  result: "win";
 }
 
 export interface WikidataNomination {

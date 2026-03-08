@@ -202,6 +202,7 @@ export class WikidataClient {
           label: b.awardLabel ? this.cleanLabel(b.awardLabel.value) : "Unknown",
           year: b.date ? new Date(b.date.value).getFullYear() : undefined,
           ceremony: this.lookupCeremony(qid),
+          result: "win" as const,
         };
       })
       .filter((a) => REGISTERED_QIDS.has(a.wikidataId));

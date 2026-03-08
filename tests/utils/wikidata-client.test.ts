@@ -362,6 +362,7 @@ describe("WikidataClient", () => {
       expect(wins[0].wikidataId).toBe("Q131520");
       expect(wins[0].label).toBe("Academy Award for Best Cinematography");
       expect(wins[0].year).toBe(2018);
+      expect(wins[0].result).toBe("win");
     });
 
     it("gets person nominations (P1411) with forWork", async () => {
@@ -412,7 +413,9 @@ describe("WikidataClient", () => {
       const awards = await client.getFilmAwards("Q61448040");
       expect(awards).toHaveLength(2);
       expect(awards[0].label).toBe("Academy Award for Best Picture");
+      expect(awards[0].result).toBe("win");
       expect(awards[1].label).toBe("Palme d'Or");
+      expect(awards[1].result).toBe("win");
     });
 
     it("gets award history by category QID", async () => {
