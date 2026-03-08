@@ -107,7 +107,7 @@ Film research is scattered across TMDB, IMDb, Wikipedia, JustWatch, and festival
 
 ## Current Status
 
-v0.10.0 in progress. M11 + M14 + BOD-199 + BOD-198 complete. 20 tools total (16 TMDB + 4 awards), 298 unit tests across 16 files + 16 integration tests across 2 files. BOD-204 (stale `FilmAwardsResult` type) resolved. M12-M13, M15-M20 planned — spans new tools, data expansion, research, workflow design, impact campaign data, plugin architecture, and a standalone philanthropic intelligence MCP.
+v0.10.0 in progress. M13 feasibility complete, design and implementation plan ready — next session executes the 10-task plan. 20 tools total (16 TMDB + 4 awards), 298 unit tests across 16 files + 16 integration tests across 2 files. M12, M15-M20 planned — spans new tools, data expansion, research, workflow design, impact campaign data, plugin architecture, and a standalone philanthropic intelligence MCP.
 
 ## Time Tracking
 
@@ -125,7 +125,7 @@ v0.10.0 in progress. M11 + M14 + BOD-199 + BOD-198 complete. 20 tools total (16 
 | M10: Tooling Review | 1 session | 1 session (design + plan + implementation) | — | Complete |
 | M11: Batch Keywords | 1 session | 0.5 session | — | Complete |
 | M12: Box Office Data | 1-2 sessions | — | — | Planned |
-| M13: Awards Registry Exp. | 1-2 sessions | — | — | Planned |
+| M13: Awards Registry Exp. | 1-2 sessions | 1 session (feasibility + design + plan) | — | Design complete |
 | M14: Person Awards Fallback | 1 session | 0.5 session | — | Complete |
 | BOD-199: Tiered Name Resolution | 0.5 session | 0.5 session | — | Complete |
 | BOD-198: Resolved Crew Enrichment | 0.5 session | 0.5 session (design + plan + implementation) | — | Complete |
