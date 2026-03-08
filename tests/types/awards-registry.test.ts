@@ -134,7 +134,7 @@ describe("awards registry", () => {
 
   it("contains Gotham documentary categories", () => {
     const gothamCats = findCategoriesByCeremony("gotham");
-    expect(gothamCats.length).toBeGreaterThanOrEqual(2);
+    expect(gothamCats).toHaveLength(4);
 
     const bestDoc = findCategory("gotham-best-documentary");
     expect(bestDoc).toBeDefined();
