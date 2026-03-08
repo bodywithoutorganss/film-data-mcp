@@ -137,6 +137,7 @@ For filmography exploration, `discover` with `with_crew`/`with_cast` filters ret
 
 - `scripts/producer-research.mjs` — GTM research workflow exercising 12/20 tools against live APIs with BreakFall comp films. Requires `TMDB_ACCESS_TOKEN`. Run with `node scripts/producer-research.mjs`.
 - `scripts/verify-qids.ts` — Wikidata QID verification for awards registry entries.
+- `scripts/cc-time.sh <pattern> [gap-minutes]` — Computes active CC time for a milestone from git commit timestamps. Sums inter-commit gaps below the threshold (default 45m); longer gaps are treated as session breaks. Use the `(Mxx):` commit prefix convention for accurate results. Run during session wrap to populate the ROADMAP.md time tracking table. When planning a new milestone, add an `Est (h)` value to the table based on the SP calibration: 1 SP ≈ 20m, 2 SP ≈ 45m, 3 SP ≈ 75m, 5 SP ≈ 2h.
 
 ### TMDB ID Stability
 

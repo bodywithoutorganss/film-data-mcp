@@ -115,7 +115,7 @@ Film research is scattered across TMDB, IMDb, Wikipedia, JustWatch, and festival
 
 ## Current Status
 
-v0.12.0. 22 tools total (17 TMDB + 4 awards + 1 representation), 24 ceremonies, 101 award categories. M12 and M15 merged. BOD-208 fixed (discover description), BOD-203 canceled with evidence (resolution analysis showed Wikidata coverage is the bottleneck, not disambiguation). `FILM_OCCUPATIONS` expanded with generic QIDs. `skippedCrew` now includes `tmdbId` for downstream follow-up. M20 research findings documented (Wikipedia mention-based enrichment). M16 in progress.
+v0.12.0. 22 tools total (17 TMDB + 4 awards + 1 representation), 24 ceremonies, 101 award categories. M12 and M15 merged. Time tracking automated via `scripts/cc-time.sh` — roadmap now uses CC hours (not sessions) with 12.8h completed and 18.75h estimated remaining. M16 design done, awaiting implementation.
 
 ### Known Issues (from GTM stress test)
 - **BOD-206:** Gotham Best Documentary `get_award_history` returns empty — Wikidata P166 data gap (structural, not code)
@@ -125,37 +125,39 @@ v0.12.0. 22 tools total (17 TMDB + 4 awards + 1 representation), 24 ceremonies, 
 
 ## Time Tracking
 
-| Milestone | Planned | Execution | Maintenance | Status |
-|-----------|---------|-----------|-------------|--------|
-| M1: Foundation + Wikidata | 3-4 sessions | 5 sessions | — | Complete |
-| M2: TMDB Redesign | — | 4 sessions | — | Complete |
-| M3: Awards Tools | — | 2 sessions | — | Complete |
-| M4: Tests + Audit | — | 3 sessions | — | Complete |
-| M5: Usability Fixes | 1 session | 1 session | 1 session | Complete |
-| M6: Discovery Tools | 1 session | 2 sessions (design + plan, implementation) | — | Complete |
-| M7: Awards Intelligence | 1 session | 1 session (design + plan + implementation) | — | Complete |
-| M8: Discovery & Polish | 1 session | 1 session (design + plan + implementation) | — | Complete |
-| M9: Crew Resolution | 1 session | 1 session (implementation) | — | Complete |
-| M10: Tooling Review | 1 session | 1 session (design + plan + implementation) | — | Complete |
-| M11: Batch Keywords | 1 session | 0.5 session | — | Complete |
-| M12: Box Office Data | 1-2 sessions | 1 session (research + design + plan + implementation) | — | Complete |
-| M13: Awards Registry Exp. | 1-2 sessions | 2 sessions (feasibility + design + plan, implementation) | — | Complete |
-| M14: Person Awards Fallback | 1 session | 0.5 session | — | Complete |
-| BOD-199: Tiered Name Resolution | 0.5 session | 0.5 session | — | Complete |
-| BOD-198: Resolved Crew Enrichment | 0.5 session | 0.5 session (design + plan + implementation) | — | Complete |
-| M15: Representation Data | 1 session (research) | 1 session (research + design + implementation) | — | Complete |
-| M16: Special Thanks Credits | 1 session (research) | — | — | Research needed |
-| M17: Skills & Commands | 2-3 sessions (design + build) | — | — | Design needed |
-| M18: Impact Campaign Data | 2-3 sessions (research + design + build) | — | — | Design needed |
-| M19: Philanthropic Intel MCP | 3-4 sessions (research + design + build) | — | — | Design needed |
-| M20: Plugin Architecture | 2-3 sessions (design + build) | — | — | Design needed |
-| BOD-204: Stale FilmAwardsResult type | — | 0.1 session | — | Complete |
-| BOD-207: Award result field | — | 0.1 session | — | Complete |
-| GTM stress test script | — | 0.5 session | — | Complete |
-| BOD-208: Discover genre fix | — | — | 0.1 session | Complete |
-| BOD-203: Resolution analysis | — | — | 0.5 session (analysis + FILM_OCCUPATIONS fix) | Canceled |
-| skippedCrew tmdbId | — | — | 0.1 session | Complete |
-| M20 Wikipedia research | — | — | 0.1 session (doc + Linear) | Complete |
+Actuals measured from commit timestamps via `scripts/cc-time.sh`. Gaps > 45 minutes between commits are treated as session breaks. M1–M8 actuals from manual commit-span analysis (pre-date the `(Mxx):` commit prefix convention).
+
+| Milestone | Est (h) | Actual (h) | Status |
+|-----------|---------|------------|--------|
+| M1: Foundation + Wikidata | — | 1.4 | Complete |
+| M2: TMDB Redesign | — | 0.7 | Complete |
+| M3: Awards Tools | — | 0.2 | Complete |
+| M4: Tests + Audit | — | 1.7 | Complete |
+| M5: Usability Fixes | — | 2.2 | Complete |
+| M6: Discovery Tools | — | 0.9 | Complete |
+| M7: Awards Intelligence | — | 1.1 | Complete |
+| M8: Discovery & Polish | — | 1.0 | Complete |
+| M9: Crew Resolution | — | 0.4 | Complete |
+| M10: Tooling Review | — | 0.8 | Complete |
+| M11: Batch Keywords | — | 0.1 | Complete |
+| M12: Box Office Data | — | 0.6 | Complete |
+| M13: Awards Registry Exp. | — | 1.3 | Complete |
+| M14: Person Awards Fallback | — | 0.1 | Complete |
+| BOD-199: Tiered Name Resolution | — | 0.3 | Complete |
+| BOD-198: Resolved Crew Enrichment | — | 0.4 | Complete |
+| M15: Representation Data | — | 0.4 | Complete |
+| BOD-204: Stale FilmAwardsResult type | — | 0.3 | Complete |
+| BOD-207: Award result field | — | 0.1 | Complete |
+| GTM stress test script | — | 0.2 | Complete |
+| BOD-208 + BOD-203 + misc fixes | — | 0.4 | Complete |
+| M20 Wikipedia research | — | 0.2 | Complete |
+| **Completed total** | — | **12.8** | |
+| M16: Special Thanks Credits | 1.25 | — | Design done |
+| M17: Skills & Commands | 4.0 | — | Design needed |
+| M18: Impact Campaign Data | 4.0 | — | Design needed |
+| M19: Philanthropic Intel MCP | 7.0 | — | Design needed |
+| M20: Plugin Architecture | 2.5 | — | Design needed |
+| **Remaining total** | **18.75** | — | |
 
 ## Key Decisions
 
