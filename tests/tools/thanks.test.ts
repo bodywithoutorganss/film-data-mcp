@@ -222,3 +222,86 @@ describe("handleGetThanksCredits — reverse mode", () => {
     expect(result.formal_roles).toHaveLength(0);
   });
 });
+
+describe("handleGetThanksCredits — batch mode", () => {
+  const mockTmdbClient = {
+    getMovieCredits: vi.fn(),
+    getTVAggregateCredits: vi.fn(),
+    getPersonDetails: vi.fn(),
+  };
+
+  beforeEach(() => {
+    vi.resetAllMocks();
+  });
+
+  it("aggregates thanks across multiple films", async () => {
+    mockTmdbClient.getMovieCredits
+      .mockResolvedValueOnce({
+        id: 100,
+        crew: [
+          { id: 1, name: "Alice", department: "Crew", job: "Special Thanks" },
+          { id: 2, name: "Bob", department: "Crew", job: "Thanks" },
+        ],
+        cast: [],
+      })
+      .mockResolvedValueOnce({
+        id: 200,
+        crew: [
+          { id: 1, name: "Alice", department: "Crew", job: "Thanks" },
+          { id: 3, name: "Carol", department: "Crew", job: "Special Thanks" },
+        ],
+        cast: [],
+      });
+
+    const result = JSON.parse(
+      await handleGetThanksCredits({ mode: "batch", movie_ids: [100, 200] }, mockTmdbClient as any)
+    );
+
+    expect(result.films).toHaveLength(2);
+    expect(result.frequency_map).toBeDefined();
+    const alice = result.frequency_map.find((p: any) => p.name === "Alice");
+    expect(alice.count).toBe(2);
+    expect(alice.films).toHaveLength(2);
+  });
+
+  it("sorts frequency map by count descending", async () => {
+    mockTmdbClient.getMovieCredits
+      .mockResolvedValueOnce({
+        id: 100,
+        crew: [
+          { id: 1, name: "Alice", department: "Crew", job: "Thanks" },
+          { id: 2, name: "Bob", department: "Crew", job: "Thanks" },
+        ],
+        cast: [],
+      })
+      .mockResolvedValueOnce({
+        id: 200,
+        crew: [{ id: 1, name: "Alice", department: "Crew", job: "Thanks" }],
+        cast: [],
+      });
+
+    const result = JSON.parse(
+      await handleGetThanksCredits({ mode: "batch", movie_ids: [100, 200] }, mockTmdbClient as any)
+    );
+
+    expect(result.frequency_map[0].name).toBe("Alice");
+    expect(result.frequency_map[0].count).toBe(2);
+    expect(result.frequency_map[1].name).toBe("Bob");
+    expect(result.frequency_map[1].count).toBe(1);
+  });
+
+  it("returns empty frequency map when no thanks credits exist", async () => {
+    mockTmdbClient.getMovieCredits.mockResolvedValue({
+      id: 100,
+      crew: [{ id: 3, name: "Carol", department: "Directing", job: "Director" }],
+      cast: [],
+    });
+
+    const result = JSON.parse(
+      await handleGetThanksCredits({ mode: "batch", movie_ids: [100] }, mockTmdbClient as any)
+    );
+
+    expect(result.films).toHaveLength(1);
+    expect(result.frequency_map).toHaveLength(0);
+  });
+});
