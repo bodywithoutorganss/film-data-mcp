@@ -262,6 +262,50 @@ describe("WikidataClient", () => {
       });
     });
 
+    it("resolves candidate with generic director/producer occupation as film-relevant", async () => {
+      // William Kay case: has Q3455803 (director) and Q47541952 (producer) — generic, not film-specific
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          search: [
+            { id: "Q121223048", label: "William Kay" },
+            { id: "Q16857770", label: "William Kay" },
+          ],
+        }),
+      });
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          results: {
+            bindings: [
+              {
+                entity: { type: "uri", value: "http://www.wikidata.org/entity/Q121223048" },
+                entityLabel: { type: "literal", value: "William Kay" },
+                occupation: { type: "uri", value: "http://www.wikidata.org/entity/Q3455803" }, // generic "director"
+              },
+              {
+                entity: { type: "uri", value: "http://www.wikidata.org/entity/Q121223048" },
+                entityLabel: { type: "literal", value: "William Kay" },
+                occupation: { type: "uri", value: "http://www.wikidata.org/entity/Q47541952" }, // generic "producer"
+              },
+              {
+                entity: { type: "uri", value: "http://www.wikidata.org/entity/Q16857770" },
+                entityLabel: { type: "literal", value: "William Kay" },
+                occupation: { type: "uri", value: "http://www.wikidata.org/entity/Q131524" }, // businessperson
+              },
+            ],
+          },
+        }),
+      });
+
+      const result = await client.resolvePersonByName("William Kay");
+      expect(result).toEqual({
+        wikidataId: "Q121223048",
+        label: "William Kay",
+        resolvedVia: "name_search",
+      });
+    });
+
     it("returns null when multiple candidates lack film occupations (Tier 3)", async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,

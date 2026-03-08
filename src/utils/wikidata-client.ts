@@ -91,7 +91,9 @@ export class WikidataClient {
    */
   private static readonly FILM_OCCUPATIONS = new Set([
     "Q2526255",   // film director
+    "Q3455803",   // director (generic — Wikidata editors inconsistently use this vs film-specific)
     "Q3282637",   // film producer
+    "Q47541952",  // producer (generic — same inconsistency as director)
     "Q28389",     // screenwriter
     "Q36834",     // composer
     "Q222344",    // cinematographer
