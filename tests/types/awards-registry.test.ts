@@ -193,6 +193,31 @@ describe("awards registry", () => {
     expect(docCinematography!.domain).toBe("cinematography");
   });
 
+  it("contains Guggenheim Fellowship ceremony", () => {
+    const guggenheim = findCeremony("guggenheim");
+    expect(guggenheim).toBeDefined();
+    expect(guggenheim!.wikidataId).toBe("Q1316544");
+    expect(guggenheim!.type).toBe("fellowship");
+  });
+
+  it("contains Guggenheim film category with qualifier", () => {
+    const cat = findCategory("guggenheim-film");
+    expect(cat).toBeDefined();
+    expect(cat!.wikidataId).toBe("Q1316544");
+    expect(cat!.ceremony).toBe("guggenheim");
+    expect(cat!.domain).toBe("fellowship");
+    expect(cat!.qualifier).toEqual({
+      property: "P101",
+      values: ["Q11424", "Q34508"],
+    });
+  });
+
+  it("includes Guggenheim in fellowship domain lookup", () => {
+    const fellowships = findCategoriesByDomain("fellowship");
+    expect(fellowships.length).toBeGreaterThanOrEqual(1);
+    expect(fellowships.some((c) => c.id === "guggenheim-film")).toBe(true);
+  });
+
   it("has no duplicate ids or wikidataIds in ceremonies", () => {
     const ids = CEREMONIES.map((c) => c.id);
     const wikidataIds = CEREMONIES.map((c) => c.wikidataId);
