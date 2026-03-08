@@ -154,8 +154,8 @@ Actuals measured from commit timestamps via `scripts/cc-time.sh`. Gaps > 45 minu
 | GTM stress test script | — | 0.2 | Complete |
 | BOD-208 + BOD-203 + misc fixes | — | 0.4 | Complete |
 | M20 Wikipedia research | — | 0.2 | Complete |
-| M16: Special Thanks Credits | 1.25 | — | Complete |
-| **Completed total** | — | **12.8 + M16** | |
+| M16: Special Thanks Credits | 1.25 | 1.3 | Complete |
+| **Completed total** | — | **14.1** | |
 | M17: Skills & Commands | 4.0 | — | Design needed |
 | M18: Impact Campaign Data | 4.0 | — | Design needed |
 | M19: Philanthropic Intel MCP | 7.0 | — | Design needed |
