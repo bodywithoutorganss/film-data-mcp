@@ -4,9 +4,11 @@
 
 **Goal:** Research TMDB/Wikidata "Thanks" credit coverage, then build a `get_thanks_credits` tool with forward, reverse, and batch query modes.
 
-**Architecture:** TMDB's `/movie/{id}/credits` already returns crew entries with `department: "Thanks"`. Person `combined_credits` includes these too. No new API client methods needed — the tool filters existing data. Wikidata coverage TBD by research.
+**Architecture:** TMDB's `/movie/{id}/credits` returns crew entries with `department: "Crew"` and `job: "Thanks"`. Person `combined_credits` includes these too. No new API client methods needed — the tool filters existing data. Wikidata P7137 assessed and rejected (5 films globally).
 
-**Tech Stack:** TypeScript, Zod, vitest, TMDB API, Wikidata SPARQL
+**Tech Stack:** TypeScript, Zod, vitest, TMDB API
+
+> **Research correction (Phase 1 finding):** Thanks credits are stored as `job: "Thanks"` under `department: "Crew"`, NOT as `department: "Thanks"`. All filter logic below reflects this correction. Mock test data uses `department: "Crew"` to match real TMDB shape.
 
 ---
 
@@ -439,8 +441,8 @@ describe("handleGetThanksCredits — forward mode", () => {
       id: 550,
       title: "Fight Club",
       crew: [
-        { id: 1, name: "Alice", department: "Thanks", job: "Special Thanks" },
-        { id: 2, name: "Bob", department: "Thanks", job: "Thanks" },
+        { id: 1, name: "Alice", department: "Crew", job: "Special Thanks" },
+        { id: 2, name: "Bob", department: "Crew", job: "Thanks" },
         { id: 3, name: "Carol", department: "Directing", job: "Director" },
       ],
       cast: [],
@@ -458,7 +460,7 @@ describe("handleGetThanksCredits — forward mode", () => {
     expect(result.thanks[1].name).toBe("Bob");
   });
 
-  it("returns empty thanks array when no Thanks department entries", async () => {
+  it("returns empty thanks array when no Thanks job entries", async () => {
     mockTmdbClient.getMovieCredits.mockResolvedValue({
       id: 550,
       title: "Fight Club",
@@ -478,7 +480,7 @@ describe("handleGetThanksCredits — forward mode", () => {
       id: 1396,
       name: "Breaking Bad",
       crew: [
-        { id: 10, name: "Dave", department: "Thanks", jobs: [{ job: "Special Thanks" }], total_episode_count: 62 },
+        { id: 10, name: "Dave", department: "Crew", jobs: [{ job: "Special Thanks" }], total_episode_count: 62 },
       ],
       cast: [],
     });
@@ -493,13 +495,13 @@ describe("handleGetThanksCredits — forward mode", () => {
     expect(result.thanks[0].episode_count).toBe(62);
   });
 
-  it("filters case-insensitively for Thanks department", async () => {
+  it("filters case-insensitively for Thanks job title", async () => {
     mockTmdbClient.getMovieCredits.mockResolvedValue({
       id: 550,
       title: "Fight Club",
       crew: [
-        { id: 1, name: "Alice", department: "THANKS", job: "Thanks" },
-        { id: 2, name: "Bob", department: "thanks", job: "Special Thanks" },
+        { id: 1, name: "Alice", department: "Crew", job: "Thanks" },
+        { id: 2, name: "Bob", department: "Crew", job: "SPECIAL THANKS" },
       ],
       cast: [],
     });
@@ -548,7 +550,7 @@ interface ThanksEntry {
 
 function filterThanksCrew(crew: any[]): ThanksEntry[] {
   return crew
-    .filter((c) => c.department?.toLowerCase() === "thanks")
+    .filter((c) => c.job?.toLowerCase().includes("thank"))
     .map((c) => ({
       id: c.id,
       name: c.name,
@@ -643,8 +645,8 @@ describe("handleGetThanksCredits — reverse mode", () => {
       known_for_department: "Acting",
       combined_credits: {
         crew: [
-          { id: 100, title: "Film A", media_type: "movie", department: "Thanks", job: "Special Thanks" },
-          { id: 200, title: "Film B", media_type: "movie", department: "Thanks", job: "Thanks" },
+          { id: 100, title: "Film A", media_type: "movie", department: "Crew", job: "Special Thanks" },
+          { id: 200, title: "Film B", media_type: "movie", department: "Crew", job: "Thanks" },
           { id: 300, title: "Film C", media_type: "movie", department: "Directing", job: "Director" },
         ],
         cast: [
@@ -672,7 +674,7 @@ describe("handleGetThanksCredits — reverse mode", () => {
       known_for_department: "Acting",
       combined_credits: {
         crew: [
-          { id: 100, title: "Film A", media_type: "movie", department: "Thanks", job: "Thanks" },
+          { id: 100, title: "Film A", media_type: "movie", department: "Crew", job: "Thanks" },
           { id: 300, title: "Film C", media_type: "movie", department: "Production", job: "Producer" },
           { id: 301, title: "Film D", media_type: "movie", department: "Production", job: "Executive Producer" },
         ],
@@ -746,7 +748,7 @@ async function handleReverse(
   const crew = details.combined_credits?.crew ?? [];
 
   const thankedIn = crew
-    .filter((c: any) => c.department?.toLowerCase() === "thanks")
+    .filter((c: any) => c.job?.toLowerCase().includes("thank"))
     .map((c: any) => ({
       id: c.id,
       title: c.title || c.name,
@@ -755,7 +757,7 @@ async function handleReverse(
     }));
 
   const formalRoles: FormalRole[] = crew
-    .filter((c: any) => c.department?.toLowerCase() !== "thanks")
+    .filter((c: any) => !c.job?.toLowerCase().includes("thank"))
     .map((c: any) => ({
       id: c.id,
       title: c.title || c.name,
@@ -833,16 +835,16 @@ describe("handleGetThanksCredits — batch mode", () => {
       .mockResolvedValueOnce({
         id: 100, title: "Film A",
         crew: [
-          { id: 1, name: "Alice", department: "Thanks", job: "Special Thanks" },
-          { id: 2, name: "Bob", department: "Thanks", job: "Thanks" },
+          { id: 1, name: "Alice", department: "Crew", job: "Special Thanks" },
+          { id: 2, name: "Bob", department: "Crew", job: "Thanks" },
         ],
         cast: [],
       })
       .mockResolvedValueOnce({
         id: 200, title: "Film B",
         crew: [
-          { id: 1, name: "Alice", department: "Thanks", job: "Thanks" },
-          { id: 3, name: "Carol", department: "Thanks", job: "Special Thanks" },
+          { id: 1, name: "Alice", department: "Crew", job: "Thanks" },
+          { id: 3, name: "Carol", department: "Crew", job: "Special Thanks" },
         ],
         cast: [],
       });
@@ -864,14 +866,14 @@ describe("handleGetThanksCredits — batch mode", () => {
       .mockResolvedValueOnce({
         id: 100, title: "Film A",
         crew: [
-          { id: 1, name: "Alice", department: "Thanks", job: "Thanks" },
-          { id: 2, name: "Bob", department: "Thanks", job: "Thanks" },
+          { id: 1, name: "Alice", department: "Crew", job: "Thanks" },
+          { id: 2, name: "Bob", department: "Crew", job: "Thanks" },
         ],
         cast: [],
       })
       .mockResolvedValueOnce({
         id: 200, title: "Film B",
-        crew: [{ id: 1, name: "Alice", department: "Thanks", job: "Thanks" }],
+        crew: [{ id: 1, name: "Alice", department: "Crew", job: "Thanks" }],
         cast: [],
       });
 
@@ -1066,40 +1068,39 @@ describe("get_thanks_credits integration", () => {
   // Update these after Task 2 if research reveals better candidates.
 
   it("forward mode returns thanks credits for a film", async () => {
-    // Use a film known to have Thanks credits (update ID after research)
+    // Pulp Fiction: 11 Thanks credits confirmed by research
     const result = JSON.parse(
-      await handleGetThanksCredits({ mode: "forward", movie_id: 122 }, client)
+      await handleGetThanksCredits({ mode: "forward", movie_id: 680 }, client)
     );
 
-    expect(result.movie_id).toBe(122);
-    // Verify title is populated — TMDB credits endpoint may not return title.
-    // If this fails, the forward handler needs a getMovieDetails fallback for title.
+    expect(result.movie_id).toBe(680);
     expect(result.title).toBeTruthy();
-    // LOTR ROTK likely has Thanks credits — verify count > 0 after research
-    expect(Array.isArray(result.thanks)).toBe(true);
+    expect(result.thanks.length).toBeGreaterThan(0);
+    expect(result.thanks[0]).toHaveProperty("name");
+    expect(result.thanks[0]).toHaveProperty("job");
   }, 30000);
 
   it("reverse mode returns films a person is thanked in", async () => {
-    // Use a person ID found during research who appears in Thanks credits.
-    // This test may need updating based on research findings.
-    // For now, use Peter Jackson (108) who likely appears in Thanks credits of related films.
+    // Jim Starlin (1713975): 4 Thanks credits confirmed by research
+    // (Avengers: Infinity War, Endgame, Legends of Tomorrow, What If...?)
     const result = JSON.parse(
-      await handleGetThanksCredits({ mode: "reverse", person_id: 108 }, client)
+      await handleGetThanksCredits({ mode: "reverse", person_id: 1713975 }, client)
     );
 
-    expect(result.person.id).toBe(108);
-    expect(result.person.name).toBeTruthy();
-    expect(Array.isArray(result.thanked_in)).toBe(true);
+    expect(result.person.id).toBe(1713975);
+    expect(result.person.name).toBe("Jim Starlin");
+    expect(result.thanked_in.length).toBeGreaterThan(0);
     expect(Array.isArray(result.formal_roles)).toBe(true);
   }, 30000);
 
   it("batch mode aggregates thanks across multiple films", async () => {
+    // Pulp Fiction (680, 11 thanks) + Endgame (299534, 5 thanks)
     const result = JSON.parse(
-      await handleGetThanksCredits({ mode: "batch", movie_ids: [122, 299534] }, client)
+      await handleGetThanksCredits({ mode: "batch", movie_ids: [680, 299534] }, client)
     );
 
     expect(result.films).toHaveLength(2);
-    expect(Array.isArray(result.frequency_map)).toBe(true);
+    expect(result.frequency_map.length).toBeGreaterThan(0);
   }, 30000);
 });
 ```
