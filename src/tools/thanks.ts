@@ -56,7 +56,7 @@ function filterThanksCrew(crew: any[]): ThanksEntry[] {
     .map((c) => ({
       id: c.id,
       name: c.name,
-      job: c.job ?? (c.jobs ? c.jobs.map((j: any) => j.job).join(", ") : ""),
+      job: c.job ?? (c.jobs ? c.jobs.filter((j: any) => isThanksJob(j.job)).map((j: any) => j.job).join(", ") : ""),
       ...(c.total_episode_count !== undefined ? { episode_count: c.total_episode_count } : {}),
     }));
 }
@@ -129,7 +129,7 @@ interface FrequencyEntry {
   id: number;
   name: string;
   count: number;
-  films: { id: number; title: string; job: string }[];
+  films: { id: number; job: string }[];
 }
 
 async function handleBatch(
@@ -148,13 +148,13 @@ async function handleBatch(
       const existing = personMap.get(entry.id);
       if (existing) {
         existing.count++;
-        existing.films.push({ id: movieId, title: "", job: entry.job });
+        existing.films.push({ id: movieId, job: entry.job });
       } else {
         personMap.set(entry.id, {
           id: entry.id,
           name: entry.name,
           count: 1,
-          films: [{ id: movieId, title: "", job: entry.job }],
+          films: [{ id: movieId, job: entry.job }],
         });
       }
     }
