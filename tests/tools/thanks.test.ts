@@ -142,3 +142,83 @@ describe("handleGetThanksCredits — forward mode", () => {
     expect(result.thanks).toHaveLength(2);
   });
 });
+
+describe("handleGetThanksCredits — reverse mode", () => {
+  const mockTmdbClient = {
+    getMovieCredits: vi.fn(),
+    getTVAggregateCredits: vi.fn(),
+    getPersonDetails: vi.fn(),
+  };
+
+  beforeEach(() => {
+    vi.resetAllMocks();
+  });
+
+  it("returns films where person is thanked from combined_credits", async () => {
+    mockTmdbClient.getPersonDetails.mockResolvedValue({
+      id: 287,
+      name: "Brad Pitt",
+      known_for_department: "Acting",
+      combined_credits: {
+        crew: [
+          { id: 100, title: "Film A", media_type: "movie", department: "Crew", job: "Special Thanks" },
+          { id: 200, title: "Film B", media_type: "movie", department: "Crew", job: "Thanks" },
+          { id: 300, title: "Film C", media_type: "movie", department: "Directing", job: "Director" },
+        ],
+        cast: [
+          { id: 400, title: "Film D", media_type: "movie", character: "Tyler Durden" },
+        ],
+      },
+    });
+
+    const result = JSON.parse(
+      await handleGetThanksCredits({ mode: "reverse", person_id: 287 }, mockTmdbClient as any)
+    );
+
+    expect(result.person.id).toBe(287);
+    expect(result.person.name).toBe("Brad Pitt");
+    expect(result.thanked_in).toHaveLength(2);
+    expect(result.thanked_in[0].title).toBe("Film A");
+    expect(result.thanked_in[0].job).toBe("Special Thanks");
+    expect(result.formal_roles).toBeDefined();
+  });
+
+  it("includes formal crew roles summary", async () => {
+    mockTmdbClient.getPersonDetails.mockResolvedValue({
+      id: 287,
+      name: "Brad Pitt",
+      known_for_department: "Acting",
+      combined_credits: {
+        crew: [
+          { id: 100, title: "Film A", media_type: "movie", department: "Crew", job: "Thanks" },
+          { id: 300, title: "Film C", media_type: "movie", department: "Production", job: "Producer" },
+          { id: 301, title: "Film D", media_type: "movie", department: "Production", job: "Executive Producer" },
+        ],
+        cast: [],
+      },
+    });
+
+    const result = JSON.parse(
+      await handleGetThanksCredits({ mode: "reverse", person_id: 287 }, mockTmdbClient as any)
+    );
+
+    expect(result.formal_roles).toHaveLength(2);
+    expect(result.formal_roles.some((r: any) => r.job === "Producer")).toBe(true);
+  });
+
+  it("returns empty arrays when person has no thanks or crew credits", async () => {
+    mockTmdbClient.getPersonDetails.mockResolvedValue({
+      id: 287,
+      name: "Brad Pitt",
+      known_for_department: "Acting",
+      combined_credits: { crew: [], cast: [] },
+    });
+
+    const result = JSON.parse(
+      await handleGetThanksCredits({ mode: "reverse", person_id: 287 }, mockTmdbClient as any)
+    );
+
+    expect(result.thanked_in).toHaveLength(0);
+    expect(result.formal_roles).toHaveLength(0);
+  });
+});
