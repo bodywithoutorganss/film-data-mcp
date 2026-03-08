@@ -64,6 +64,7 @@ export const CEREMONIES: Ceremony[] = [
 
   // Documentary and nonfiction ceremonies
   { id: "peabody", label: "Peabody Awards", wikidataId: "Q838121", type: "ceremony" },
+  { id: "gotham", label: "Gotham Awards", wikidataId: "Q1538791", type: "ceremony" },
 ];
 
 // --- Award Categories ---
@@ -191,6 +192,12 @@ export const AWARD_CATEGORIES: AwardCategory[] = [
 
   // --- Peabody Awards ---
   { id: "peabody-award", ceremony: "peabody", label: "Peabody Award", wikidataId: "Q838121", domain: "documentary" },
+
+  // --- Gotham Awards ---
+  { id: "gotham-best-documentary", ceremony: "gotham", label: "Gotham Award for Best Documentary", wikidataId: "Q20978457", domain: "documentary" },
+  { id: "gotham-breakthrough-nonfiction", ceremony: "gotham", label: "Gotham Award for Breakthrough Nonfiction Series", wikidataId: "Q109259295", domain: "documentary" },
+  { id: "gotham-best-director", ceremony: "gotham", label: "Gotham Award for Best Director", wikidataId: "Q131161019", domain: "director" },
+  { id: "gotham-breakthrough-actor", ceremony: "gotham", label: "Gotham Award for Breakthrough Actor", wikidataId: "Q48848495", domain: "acting" },
 ];
 
 // --- Lookup functions ---

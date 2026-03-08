@@ -125,6 +125,40 @@ describe("awards registry", () => {
     expect(cat!.domain).toBe("documentary");
   });
 
+  it("contains Gotham Awards ceremony", () => {
+    const gotham = findCeremony("gotham");
+    expect(gotham).toBeDefined();
+    expect(gotham!.wikidataId).toBe("Q1538791");
+    expect(gotham!.type).toBe("ceremony");
+  });
+
+  it("contains Gotham documentary categories", () => {
+    const gothamCats = findCategoriesByCeremony("gotham");
+    expect(gothamCats.length).toBeGreaterThanOrEqual(2);
+
+    const bestDoc = findCategory("gotham-best-documentary");
+    expect(bestDoc).toBeDefined();
+    expect(bestDoc!.wikidataId).toBe("Q20978457");
+    expect(bestDoc!.domain).toBe("documentary");
+
+    const nonfiction = findCategory("gotham-breakthrough-nonfiction");
+    expect(nonfiction).toBeDefined();
+    expect(nonfiction!.wikidataId).toBe("Q109259295");
+    expect(nonfiction!.domain).toBe("documentary");
+  });
+
+  it("contains Gotham best director and breakthrough actor", () => {
+    const bestDirector = findCategory("gotham-best-director");
+    expect(bestDirector).toBeDefined();
+    expect(bestDirector!.wikidataId).toBe("Q131161019");
+    expect(bestDirector!.domain).toBe("director");
+
+    const breakthroughActor = findCategory("gotham-breakthrough-actor");
+    expect(breakthroughActor).toBeDefined();
+    expect(breakthroughActor!.wikidataId).toBe("Q48848495");
+    expect(breakthroughActor!.domain).toBe("acting");
+  });
+
   it("has no duplicate ids or wikidataIds in ceremonies", () => {
     const ids = CEREMONIES.map((c) => c.id);
     const wikidataIds = CEREMONIES.map((c) => c.wikidataId);
