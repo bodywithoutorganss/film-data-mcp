@@ -92,6 +92,24 @@ describe("awards registry", () => {
     ).toEqual([]);
   });
 
+  it("includes 'fellowship' as a valid AwardDomain", () => {
+    const domains: AwardDomain[] = ["fellowship"];
+    expect(domains[0]).toBe("fellowship");
+  });
+
+  it("supports optional qualifier on AwardCategory", () => {
+    const cat: AwardCategory = {
+      id: "test-qualified",
+      ceremony: "test",
+      label: "Test",
+      wikidataId: "Q1",
+      domain: "fellowship",
+      qualifier: { property: "P101", values: ["Q11424"] },
+    };
+    expect(cat.qualifier).toBeDefined();
+    expect(cat.qualifier!.property).toBe("P101");
+  });
+
   it("has no duplicate ids or wikidataIds in ceremonies", () => {
     const ids = CEREMONIES.map((c) => c.id);
     const wikidataIds = CEREMONIES.map((c) => c.wikidataId);

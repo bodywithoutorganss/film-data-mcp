@@ -20,7 +20,8 @@ export type AwardDomain =
   | "documentary"
   | "international"
   | "animated"
-  | "short";
+  | "short"
+  | "fellowship";
 
 export interface AwardCategory {
   id: string;
@@ -28,6 +29,7 @@ export interface AwardCategory {
   label: string;
   wikidataId: string;
   domain: AwardDomain;
+  qualifier?: { property: string; values: string[] };
 }
 
 // --- Ceremonies ---
