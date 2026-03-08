@@ -130,6 +130,13 @@ export const AWARD_CATEGORIES: AwardCategory[] = [
   { id: "emmys-directing-drama", ceremony: "emmys", label: "Primetime Emmy Award for Outstanding Directing for a Drama Series", wikidataId: "Q583972", domain: "director" },
   { id: "emmys-writing-drama", ceremony: "emmys", label: "Primetime Emmy Award for Outstanding Writing for a Drama Series", wikidataId: "Q3123491", domain: "screenplay" },
 
+  // Emmy documentary/nonfiction categories
+  { id: "emmys-documentary-special", ceremony: "emmys", label: "Primetime Emmy Award for Outstanding Documentary or Nonfiction Special", wikidataId: "Q24895159", domain: "documentary" },
+  { id: "emmys-documentary-series", ceremony: "emmys", label: "Primetime Emmy Award for Outstanding Documentary or Nonfiction Series", wikidataId: "Q24895051", domain: "documentary" },
+  { id: "emmys-documentary-filmmaking", ceremony: "emmys", label: "Primetime Emmy Award for Exceptional Merit in Documentary Filmmaking", wikidataId: "Q24900788", domain: "documentary" },
+  { id: "emmys-directing-nonfiction", ceremony: "emmys", label: "Primetime Emmy Award for Outstanding Directing for a Documentary/Nonfiction Program", wikidataId: "Q25345783", domain: "director" },
+  { id: "emmys-cinematography-nonfiction", ceremony: "emmys", label: "Primetime Emmy Award for Outstanding Cinematography for a Nonfiction Program", wikidataId: "Q30632982", domain: "cinematography" },
+
   // --- Screen Actors Guild Awards ---
   { id: "sag-best-cast", ceremony: "sag-awards", label: "SAG Award for Outstanding Performance by a Cast in a Motion Picture", wikidataId: "Q518675", domain: "picture" },
   { id: "sag-best-actor", ceremony: "sag-awards", label: "SAG Award for Outstanding Performance by a Male Actor in a Leading Role", wikidataId: "Q654620", domain: "acting" },

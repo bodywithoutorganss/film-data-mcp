@@ -159,6 +159,40 @@ describe("awards registry", () => {
     expect(breakthroughActor!.domain).toBe("acting");
   });
 
+  it("contains Emmy documentary categories under existing emmys ceremony", () => {
+    const emmyCats = findCategoriesByCeremony("emmys");
+    const docNonfictionCats = emmyCats.filter(
+      (c) => c.id.includes("documentary") || c.id.includes("nonfiction")
+    );
+    expect(docNonfictionCats.length).toBe(5);
+
+    const docSpecial = findCategory("emmys-documentary-special");
+    expect(docSpecial).toBeDefined();
+    expect(docSpecial!.wikidataId).toBe("Q24895159");
+    expect(docSpecial!.ceremony).toBe("emmys");
+    expect(docSpecial!.domain).toBe("documentary");
+
+    const docSeries = findCategory("emmys-documentary-series");
+    expect(docSeries).toBeDefined();
+    expect(docSeries!.wikidataId).toBe("Q24895051");
+    expect(docSeries!.domain).toBe("documentary");
+
+    const docMerit = findCategory("emmys-documentary-filmmaking");
+    expect(docMerit).toBeDefined();
+    expect(docMerit!.wikidataId).toBe("Q24900788");
+    expect(docMerit!.domain).toBe("documentary");
+
+    const docDirecting = findCategory("emmys-directing-nonfiction");
+    expect(docDirecting).toBeDefined();
+    expect(docDirecting!.wikidataId).toBe("Q25345783");
+    expect(docDirecting!.domain).toBe("director");
+
+    const docCinematography = findCategory("emmys-cinematography-nonfiction");
+    expect(docCinematography).toBeDefined();
+    expect(docCinematography!.wikidataId).toBe("Q30632982");
+    expect(docCinematography!.domain).toBe("cinematography");
+  });
+
   it("has no duplicate ids or wikidataIds in ceremonies", () => {
     const ids = CEREMONIES.map((c) => c.id);
     const wikidataIds = CEREMONIES.map((c) => c.wikidataId);
