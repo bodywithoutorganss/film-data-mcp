@@ -1,4 +1,4 @@
-// ABOUTME: Probes TMDB credits for "Thanks" department entries across 10 films.
+// ABOUTME: Probes TMDB credits for "Thanks" job entries across 20 films.
 // ABOUTME: Research script for M16 — assesses coverage, job title variants, and reverse lookup viability.
 
 const TMDB_TOKEN = process.env.TMDB_ACCESS_TOKEN;
@@ -17,10 +17,21 @@ const PROBE_FILMS = [
   { id: 464593, title: "Won't You Be My Neighbor?", tier: "big_doc" },
   { id: 504562, title: "Free Solo", tier: "big_doc" },
   { id: 506702, title: "RBG", tier: "big_doc" },
-  // Fiction
+  // Fiction (original set)
   { id: 122, title: "LOTR: Return of the King", tier: "fiction" },
   { id: 299534, title: "Avengers: Endgame", tier: "fiction" },
   { id: 496243, title: "Parasite", tier: "fiction" },
+  // Fiction (expanded set — higher Thanks likelihood)
+  { id: 157336, title: "Interstellar", tier: "fiction" },
+  { id: 120, title: "LOTR: Fellowship of the Ring", tier: "fiction" },
+  { id: 278, title: "Shawshank Redemption", tier: "fiction" },
+  { id: 238, title: "The Godfather", tier: "fiction" },
+  { id: 155, title: "The Dark Knight", tier: "fiction" },
+  { id: 550, title: "Fight Club", tier: "fiction" },
+  { id: 680, title: "Pulp Fiction", tier: "fiction" },
+  { id: 11, title: "Star Wars", tier: "fiction" },
+  { id: 603, title: "The Matrix", tier: "fiction" },
+  { id: 13, title: "Forrest Gump", tier: "fiction" },
 ];
 
 async function tmdbGet(endpoint) {
@@ -34,7 +45,7 @@ async function tmdbGet(endpoint) {
 async function probeFilm(film) {
   const credits = await tmdbGet(`/movie/${film.id}/credits`);
   const thanksCrew = (credits.crew || []).filter(
-    (c) => c.department?.toLowerCase() === "thanks"
+    (c) => c.job?.toLowerCase().includes("thank")
   );
 
   // Check if thanked people have valid TMDB person pages
@@ -54,7 +65,7 @@ async function probeFilm(film) {
     }
   }
 
-  // Collect unique job titles in Thanks department
+  // Collect unique job titles for Thanks entries
   const jobTitles = [...new Set(thanksCrew.map((c) => c.job))];
 
   return {
@@ -67,11 +78,11 @@ async function probeFilm(film) {
   };
 }
 
-// Check if person combined_credits includes Thanks department entries
+// Check if person combined_credits includes Thanks job entries
 async function probeReverseLookup(personId, personName) {
   const details = await tmdbGet(`/person/${personId}?append_to_response=combined_credits`);
   const thanksCrew = (details.combined_credits?.crew || []).filter(
-    (c) => c.department?.toLowerCase() === "thanks"
+    (c) => c.job?.toLowerCase().includes("thank")
   );
   return {
     person_id: personId,

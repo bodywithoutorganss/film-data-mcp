@@ -1,0 +1,581 @@
+=== M16 TMDB Thanks Research ===
+
+--- Forward Probes (film → thanks credits) ---
+
+Minding the Gap (comp_doc): 0 thanks entries
+
+Boys State (comp_doc): 0 thanks entries
+
+Dick Johnson Is Dead (comp_doc): 1 thanks entries
+  Job titles: Thanks
+  Sample people: Carlos Conceição (Thanks)
+
+13th (big_doc): 0 thanks entries
+
+Won't You Be My Neighbor? (big_doc): 0 thanks entries
+
+Free Solo (big_doc): 0 thanks entries
+
+RBG (big_doc): 0 thanks entries
+
+LOTR: Return of the King (fiction): 0 thanks entries
+
+Avengers: Endgame (fiction): 5 thanks entries
+  Job titles: Thanks
+  Sample people: Carlos Pacheco (Thanks), Don McGregor (Thanks), Jim Starlin (Thanks)
+
+Parasite (fiction): 2 thanks entries
+  Job titles: Thanks
+  Sample people: Sohn Suk-hee (Thanks), Park Jeong-ja (Thanks)
+
+Interstellar (fiction): 3 thanks entries
+  Job titles: Thanks
+  Sample people: Ken Burns (Thanks), Dayton Duncan (Thanks), Michael Benton Adler (Thanks)
+
+LOTR: Fellowship of the Ring (fiction): 0 thanks entries
+
+Shawshank Redemption (fiction): 2 thanks entries
+  Job titles: Thanks
+  Sample people: Dennis Baker (Thanks), Stephen King (Thanks)
+
+The Godfather (fiction): 0 thanks entries
+
+The Dark Knight (fiction): 1 thanks entries
+  Job titles: Thanks
+  Sample people: Richard M. Daley (Thanks)
+
+Fight Club (fiction): 1 thanks entries
+  Job titles: Thanks
+  Sample people: Johann Benét (Thanks)
+
+Pulp Fiction (fiction): 11 thanks entries
+  Job titles: Thanks
+  Sample people: Jennifer Beals (Thanks), Cathryn Jaymes (Thanks), Lou Arkoff (Thanks)
+
+Star Wars (fiction): 0 thanks entries
+
+The Matrix (fiction): 0 thanks entries
+
+Forrest Gump (fiction): 2 thanks entries
+  Job titles: Thanks
+  Sample people: Lindsey Buckingham (Thanks), Robert J. Groden (Thanks)
+
+
+--- Summary ---
+Films with Thanks credits: 9/20
+Total Thanks entries: 28
+All job titles: Thanks
+
+--- Reverse Probe (person → films thanked in) ---
+Testing with: Carlos Conceição (ID: 1283552)
+
+Thanks in combined_credits: 1
+  Dick Johnson Is Dead (movie) — Thanks
+
+
+=== Full JSON Results ===
+
+[
+  {
+    "id": 489985,
+    "title": "Minding the Gap",
+    "tier": "comp_doc",
+    "thanks_count": 0,
+    "total_crew": 20,
+    "job_titles": [],
+    "sample_people": [],
+    "thanks_entries": []
+  },
+  {
+    "id": 653723,
+    "title": "Boys State",
+    "tier": "comp_doc",
+    "thanks_count": 0,
+    "total_crew": 24,
+    "job_titles": [],
+    "sample_people": [],
+    "thanks_entries": []
+  },
+  {
+    "id": 653574,
+    "title": "Dick Johnson Is Dead",
+    "tier": "comp_doc",
+    "thanks_count": 1,
+    "total_crew": 42,
+    "job_titles": [
+      "Thanks"
+    ],
+    "sample_people": [
+      {
+        "id": 1283552,
+        "name": "Carlos Conceição",
+        "job": "Thanks",
+        "has_profile": true,
+        "known_for_department": "Directing"
+      }
+    ],
+    "thanks_entries": [
+      {
+        "id": 1283552,
+        "name": "Carlos Conceição",
+        "job": "Thanks"
+      }
+    ]
+  },
+  {
+    "id": 340101,
+    "title": "13th",
+    "tier": "big_doc",
+    "thanks_count": 0,
+    "total_crew": 71,
+    "job_titles": [],
+    "sample_people": [],
+    "thanks_entries": []
+  },
+  {
+    "id": 464593,
+    "title": "Won't You Be My Neighbor?",
+    "tier": "big_doc",
+    "thanks_count": 0,
+    "total_crew": 7,
+    "job_titles": [],
+    "sample_people": [],
+    "thanks_entries": []
+  },
+  {
+    "id": 504562,
+    "title": "Free Solo",
+    "tier": "big_doc",
+    "thanks_count": 0,
+    "total_crew": 201,
+    "job_titles": [],
+    "sample_people": [],
+    "thanks_entries": []
+  },
+  {
+    "id": 506702,
+    "title": "RBG",
+    "tier": "big_doc",
+    "thanks_count": 0,
+    "total_crew": 1,
+    "job_titles": [],
+    "sample_people": [],
+    "thanks_entries": []
+  },
+  {
+    "id": 122,
+    "title": "LOTR: Return of the King",
+    "tier": "fiction",
+    "thanks_count": 0,
+    "total_crew": 170,
+    "job_titles": [],
+    "sample_people": [],
+    "thanks_entries": []
+  },
+  {
+    "id": 299534,
+    "title": "Avengers: Endgame",
+    "tier": "fiction",
+    "thanks_count": 5,
+    "total_crew": 610,
+    "job_titles": [
+      "Thanks"
+    ],
+    "sample_people": [
+      {
+        "id": 3064294,
+        "name": "Carlos Pacheco",
+        "job": "Thanks",
+        "has_profile": true,
+        "known_for_department": "Crew"
+      },
+      {
+        "id": 3202371,
+        "name": "Don McGregor",
+        "job": "Thanks",
+        "has_profile": false,
+        "known_for_department": "Crew"
+      },
+      {
+        "id": 1713975,
+        "name": "Jim Starlin",
+        "job": "Thanks",
+        "has_profile": true,
+        "known_for_department": "Writing"
+      }
+    ],
+    "thanks_entries": [
+      {
+        "id": 3064294,
+        "name": "Carlos Pacheco",
+        "job": "Thanks"
+      },
+      {
+        "id": 3202371,
+        "name": "Don McGregor",
+        "job": "Thanks"
+      },
+      {
+        "id": 1713975,
+        "name": "Jim Starlin",
+        "job": "Thanks"
+      },
+      {
+        "id": 2275679,
+        "name": "Zack Duncan",
+        "job": "Thanks"
+      },
+      {
+        "id": 2281440,
+        "name": "Nolan Ekberg",
+        "job": "Thanks"
+      }
+    ]
+  },
+  {
+    "id": 496243,
+    "title": "Parasite",
+    "tier": "fiction",
+    "thanks_count": 2,
+    "total_crew": 170,
+    "job_titles": [
+      "Thanks"
+    ],
+    "sample_people": [
+      {
+        "id": 2193292,
+        "name": "Sohn Suk-hee",
+        "job": "Thanks",
+        "has_profile": false,
+        "known_for_department": "Acting"
+      },
+      {
+        "id": 1335341,
+        "name": "Park Jeong-ja",
+        "job": "Thanks",
+        "has_profile": false,
+        "known_for_department": "Acting"
+      }
+    ],
+    "thanks_entries": [
+      {
+        "id": 2193292,
+        "name": "Sohn Suk-hee",
+        "job": "Thanks"
+      },
+      {
+        "id": 1335341,
+        "name": "Park Jeong-ja",
+        "job": "Thanks"
+      }
+    ]
+  },
+  {
+    "id": 157336,
+    "title": "Interstellar",
+    "tier": "fiction",
+    "thanks_count": 3,
+    "total_crew": 511,
+    "job_titles": [
+      "Thanks"
+    ],
+    "sample_people": [
+      {
+        "id": 204484,
+        "name": "Ken Burns",
+        "job": "Thanks",
+        "has_profile": true,
+        "known_for_department": "Directing"
+      },
+      {
+        "id": 1035127,
+        "name": "Dayton Duncan",
+        "job": "Thanks",
+        "has_profile": false,
+        "known_for_department": "Writing"
+      },
+      {
+        "id": 2142440,
+        "name": "Michael Benton Adler",
+        "job": "Thanks",
+        "has_profile": false,
+        "known_for_department": "Crew"
+      }
+    ],
+    "thanks_entries": [
+      {
+        "id": 204484,
+        "name": "Ken Burns",
+        "job": "Thanks"
+      },
+      {
+        "id": 1035127,
+        "name": "Dayton Duncan",
+        "job": "Thanks"
+      },
+      {
+        "id": 2142440,
+        "name": "Michael Benton Adler",
+        "job": "Thanks"
+      }
+    ]
+  },
+  {
+    "id": 120,
+    "title": "LOTR: Fellowship of the Ring",
+    "tier": "fiction",
+    "thanks_count": 0,
+    "total_crew": 180,
+    "job_titles": [],
+    "sample_people": [],
+    "thanks_entries": []
+  },
+  {
+    "id": 278,
+    "title": "Shawshank Redemption",
+    "tier": "fiction",
+    "thanks_count": 2,
+    "total_crew": 143,
+    "job_titles": [
+      "Thanks"
+    ],
+    "sample_people": [
+      {
+        "id": 1771867,
+        "name": "Dennis Baker",
+        "job": "Thanks",
+        "has_profile": false,
+        "known_for_department": "Acting"
+      },
+      {
+        "id": 3027,
+        "name": "Stephen King",
+        "job": "Thanks",
+        "has_profile": true,
+        "known_for_department": "Writing"
+      }
+    ],
+    "thanks_entries": [
+      {
+        "id": 1771867,
+        "name": "Dennis Baker",
+        "job": "Thanks"
+      },
+      {
+        "id": 3027,
+        "name": "Stephen King",
+        "job": "Thanks"
+      }
+    ]
+  },
+  {
+    "id": 238,
+    "title": "The Godfather",
+    "tier": "fiction",
+    "thanks_count": 0,
+    "total_crew": 105,
+    "job_titles": [],
+    "sample_people": [],
+    "thanks_entries": []
+  },
+  {
+    "id": 155,
+    "title": "The Dark Knight",
+    "tier": "fiction",
+    "thanks_count": 1,
+    "total_crew": 148,
+    "job_titles": [
+      "Thanks"
+    ],
+    "sample_people": [
+      {
+        "id": 1233538,
+        "name": "Richard M. Daley",
+        "job": "Thanks",
+        "has_profile": false,
+        "known_for_department": "Acting"
+      }
+    ],
+    "thanks_entries": [
+      {
+        "id": 1233538,
+        "name": "Richard M. Daley",
+        "job": "Thanks"
+      }
+    ]
+  },
+  {
+    "id": 550,
+    "title": "Fight Club",
+    "tier": "fiction",
+    "thanks_count": 1,
+    "total_crew": 189,
+    "job_titles": [
+      "Thanks"
+    ],
+    "sample_people": [
+      {
+        "id": 554001,
+        "name": "Johann Benét",
+        "job": "Thanks",
+        "has_profile": false,
+        "known_for_department": "Acting"
+      }
+    ],
+    "thanks_entries": [
+      {
+        "id": 554001,
+        "name": "Johann Benét",
+        "job": "Thanks"
+      }
+    ]
+  },
+  {
+    "id": 680,
+    "title": "Pulp Fiction",
+    "tier": "fiction",
+    "thanks_count": 11,
+    "total_crew": 127,
+    "job_titles": [
+      "Thanks"
+    ],
+    "sample_people": [
+      {
+        "id": 3130,
+        "name": "Jennifer Beals",
+        "job": "Thanks",
+        "has_profile": true,
+        "known_for_department": "Acting"
+      },
+      {
+        "id": 1425675,
+        "name": "Cathryn Jaymes",
+        "job": "Thanks",
+        "has_profile": false,
+        "known_for_department": "Production"
+      },
+      {
+        "id": 61121,
+        "name": "Lou Arkoff",
+        "job": "Thanks",
+        "has_profile": false,
+        "known_for_department": "Production"
+      }
+    ],
+    "thanks_entries": [
+      {
+        "id": 3130,
+        "name": "Jennifer Beals",
+        "job": "Thanks"
+      },
+      {
+        "id": 1425675,
+        "name": "Cathryn Jaymes",
+        "job": "Thanks"
+      },
+      {
+        "id": 61121,
+        "name": "Lou Arkoff",
+        "job": "Thanks"
+      },
+      {
+        "id": 79534,
+        "name": "Agnès B.",
+        "job": "Thanks"
+      },
+      {
+        "id": 121747,
+        "name": "Emanuel Steward",
+        "job": "Thanks"
+      },
+      {
+        "id": 1328142,
+        "name": "Lee Stollman",
+        "job": "Thanks"
+      },
+      {
+        "id": 4702,
+        "name": "Bill Unger",
+        "job": "Thanks"
+      },
+      {
+        "id": 1534236,
+        "name": "Linda R. Chen",
+        "job": "Thanks"
+      },
+      {
+        "id": 11641,
+        "name": "Scott Spiegel",
+        "job": "Thanks"
+      },
+      {
+        "id": 83351,
+        "name": "Stephen Martines",
+        "job": "Thanks"
+      },
+      {
+        "id": 58015,
+        "name": "Ricardo Mestres",
+        "job": "Thanks"
+      }
+    ]
+  },
+  {
+    "id": 11,
+    "title": "Star Wars",
+    "tier": "fiction",
+    "thanks_count": 0,
+    "total_crew": 91,
+    "job_titles": [],
+    "sample_people": [],
+    "thanks_entries": []
+  },
+  {
+    "id": 603,
+    "title": "The Matrix",
+    "tier": "fiction",
+    "thanks_count": 0,
+    "total_crew": 174,
+    "job_titles": [],
+    "sample_people": [],
+    "thanks_entries": []
+  },
+  {
+    "id": 13,
+    "title": "Forrest Gump",
+    "tier": "fiction",
+    "thanks_count": 2,
+    "total_crew": 177,
+    "job_titles": [
+      "Thanks"
+    ],
+    "sample_people": [
+      {
+        "id": 82240,
+        "name": "Lindsey Buckingham",
+        "job": "Thanks",
+        "has_profile": true,
+        "known_for_department": "Acting"
+      },
+      {
+        "id": 1041458,
+        "name": "Robert J. Groden",
+        "job": "Thanks",
+        "has_profile": false,
+        "known_for_department": "Acting"
+      }
+    ],
+    "thanks_entries": [
+      {
+        "id": 82240,
+        "name": "Lindsey Buckingham",
+        "job": "Thanks"
+      },
+      {
+        "id": 1041458,
+        "name": "Robert J. Groden",
+        "job": "Thanks"
+      }
+    ]
+  }
+]
