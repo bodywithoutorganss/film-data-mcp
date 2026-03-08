@@ -27,7 +27,7 @@ export interface OMDbMovie {
   Title: string;
   Year: string;
   imdbID: string;
-  BoxOffice: string;  // "$188,020,017" or "N/A"
+  BoxOffice?: string;  // "$188,020,017", "N/A", or absent
   Response: string;    // "True" or "False"
   Error?: string;      // Present when Response is "False"
 }
@@ -395,6 +395,38 @@ describe("handleGetFinancials", () => {
     expect(result.financials.domestic_gross).toBe(188020017);
   });
 
+  it("converts OMDb BoxOffice $0 to null", async () => {
+    mockTmdbClient.getMovieDetails.mockResolvedValue({
+      id: 1,
+      title: "Test",
+      imdb_id: "tt0000001",
+      budget: 1000000,
+      revenue: 5000000,
+    });
+    mockOmdbClient.getByImdbId.mockResolvedValue({
+      Title: "Test",
+      BoxOffice: "$0",
+      Response: "True",
+    });
+
+    const result = JSON.parse(
+      await handleGetFinancials({ movie_id: 1 }, mockTmdbClient as any, mockOmdbClient as any)
+    );
+
+    expect(result.financials.domestic_gross).toBeNull();
+    expect(result.sources.omdb).toEqual({ queried: true, had_data: false });
+  });
+
+  it("propagates TMDB errors (does not return partial data)", async () => {
+    mockTmdbClient.getMovieDetails.mockRejectedValue(new Error("TMDB API error: 404"));
+
+    await expect(
+      handleGetFinancials({ movie_id: 999999 }, mockTmdbClient as any, mockOmdbClient as any)
+    ).rejects.toThrow("TMDB API error: 404");
+
+    expect(mockOmdbClient.getByImdbId).not.toHaveBeenCalled();
+  });
+
   it("returns valid JSON string", async () => {
     mockTmdbClient.getMovieDetails.mockResolvedValue({
       id: 1,
@@ -475,7 +507,8 @@ export async function handleGetFinancials(
     omdbQueried = true;
     const omdbData = await omdbClient.getByImdbId(movie.imdb_id);
     if (omdbData) {
-      domesticGross = parseBoxOffice(omdbData.BoxOffice);
+      const parsed = parseBoxOffice(omdbData.BoxOffice);
+      domesticGross = parsed !== null ? zeroToNull(parsed) : null;
       omdbHadData = domesticGross !== null;
     }
   }
@@ -504,7 +537,7 @@ export async function handleGetFinancials(
 **Step 2: Run tests to verify they pass**
 
 Run: `npx vitest run tests/tools/financials.test.ts`
-Expected: All 8 tests PASS
+Expected: All 10 tests PASS
 
 **Step 3: Run full test suite**
 
@@ -551,9 +584,9 @@ Add the handler to the dispatch map in `CallToolRequestSchema`:
 get_financials: (args) => handleGetFinancials(args, tmdbClient, omdbClient),
 ```
 
-**Step 3: Update the server comment block**
+**Step 3: Update the server comment block and version**
 
-Update the comment at the top of the file to reflect 17 TMDB tools and the new tool. Add `get_financials` to the TMDB tool list.
+Update the comment at the top of the file to reflect 17 TMDB tools and the new tool. Add `get_financials` to the TMDB tool list. Fix stale server version (`"0.7.0"` → `"0.11.0"`) on line 74.
 
 **Step 4: Run full test suite**
 

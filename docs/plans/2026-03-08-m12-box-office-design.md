@@ -64,7 +64,7 @@ interface FinancialsResult {
 ```
 
 - Numeric values, not formatted strings. OMDb's `"$188,020,017"` parsed to `188020017`.
-- `null` = no data available. TMDB's `budget: 0` (unknown) converted to `null`.
+- `null` = no data available. Both TMDB `0` and OMDb `$0` converted to `null` — zero means "unknown," not "literally zero."
 - `sources` is the extensibility point — new sources get new keys.
 - Flat `financials` object (no nesting by source). TMDB and OMDb don't overlap on fields, so no conflict resolution needed. If a future source duplicates a field, pick the best and note the source.
 
@@ -111,7 +111,7 @@ Optional. Tool works TMDB-only when no key is set. `sources.omdb.queried` = `fal
 
 1. Fetch TMDB movie details (budget, revenue, imdb_id, title)
 2. If OMDb client available and TMDB returned an imdb_id, query OMDb
-3. Parse/normalize values (TMDB `0` → `null`, OMDb `"$X"` → number, `"N/A"` → `null`)
+3. Parse/normalize values (TMDB `0` → `null`, OMDb `"$X"` → number, `"N/A"` / `$0` → `null`)
 4. Assemble and return `FinancialsResult`
 
 ## Testing
