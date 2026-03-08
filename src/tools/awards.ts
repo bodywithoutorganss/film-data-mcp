@@ -267,7 +267,7 @@ export async function handleGetAwardHistory(
   const cat = findCategory(category);
   if (!cat) throw new Error(`Unknown award category: ${category}`);
 
-  const entries = await wikidataClient.getAwardHistory(cat.wikidataId);
+  const entries = await wikidataClient.getAwardHistory(cat.wikidataId, cat.qualifier);
 
   const groups = new Map<number | null, Array<{ id: string; label: string; forWork?: { wikidataId: string; label: string } }>>();
 

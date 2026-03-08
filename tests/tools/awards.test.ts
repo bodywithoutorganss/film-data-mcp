@@ -808,6 +808,40 @@ describe("awards tools", () => {
       expect(result.history[0].recipients).toHaveLength(1);
     });
 
+    it("passes qualifier from registry category to wikidata client", async () => {
+      mockWikidataClient.getAwardHistory.mockResolvedValue([
+        { recipientId: "Q123", recipientLabel: "Test Fellow", year: 2020 },
+      ]);
+
+      const result = await handleGetAwardHistory(
+        { category: "guggenheim-film" },
+        mockTmdbClient as any,
+        mockWikidataClient as any
+      );
+      const parsed = JSON.parse(result);
+      expect(parsed.category).toBe("Guggenheim Fellowship (Film/Video)");
+
+      expect(mockWikidataClient.getAwardHistory).toHaveBeenCalledWith(
+        "Q1316544",
+        { property: "P101", values: ["Q11424", "Q34508"] }
+      );
+    });
+
+    it("passes undefined qualifier for categories without one", async () => {
+      mockWikidataClient.getAwardHistory.mockResolvedValue([]);
+
+      await handleGetAwardHistory(
+        { category: "peabody-award" },
+        mockTmdbClient as any,
+        mockWikidataClient as any
+      );
+
+      expect(mockWikidataClient.getAwardHistory).toHaveBeenCalledWith(
+        "Q838121",
+        undefined
+      );
+    });
+
     it("throws for unknown category", async () => {
       await expect(
         handleGetAwardHistory({ category: "nonexistent" }, mockTmdbClient as any, mockWikidataClient as any)
