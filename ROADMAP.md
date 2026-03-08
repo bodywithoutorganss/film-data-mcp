@@ -11,7 +11,7 @@ Film research is scattered across TMDB, IMDb, Wikipedia, JustWatch, and festival
 ## Milestones
 
 ### M1: Foundation + Wikidata Awards Layer
-**Criteria:** Fork cleaned up, Wikidata SPARQL client with entity resolution (TMDB→IMDb→Wikidata), awards registry with verified QIDs for 21 ceremonies and 91 categories.
+**Criteria:** Fork cleaned up, Wikidata SPARQL client with entity resolution (TMDB→IMDb→Wikidata), awards registry with verified QIDs (21 ceremonies and 91 categories at M1; expanded to 24 ceremonies and 101 categories at M13).
 **Status:** Complete — Phases 1-2.
 
 ### M2: TMDB Tool Redesign
@@ -72,8 +72,10 @@ Film research is scattered across TMDB, IMDb, Wikipedia, JustWatch, and festival
 
 ### M13: Awards Registry Expansion
 **Criteria:** Add Wikidata-viable ceremonies and fellowships to the awards registry. Scope determined by feasibility study (2026-03-07): Peabody Awards (Q838121, 446 P166 claims), Gotham Awards (Q1538791, 12-15 categories), Emmy documentary categories (5-7 new categories under existing `emmys` entry, 5 QIDs verified), and Guggenheim Fellowship (Q1316544, 19,570 P166 claims, 217-758 film-relevant — requires qualifier-aware SPARQL query, new engineering). Non-viable Wikidata candidates (Critics' Choice Doc, Cinema Eye, IDA, Sundance Fund/Labs, Film Independent Labs, ITVS, Catapult, Ford/JustFilms) deferred to a future milestone requiring alternative data sources.
-**Status:** Feasibility complete. Implementation planned.
+**Status:** Complete — v0.10.0 tagged. 24 ceremonies, 101 categories. Qualifier-aware SPARQL for Guggenheim.
 - Feasibility study: `docs/plans/2026-03-07-m13-feasibility-study.md`
+- Design: `docs/plans/2026-03-07-m13-design.md`
+- Plan: `docs/plans/2026-03-07-m13-implementation.md`
 
 ### M14: Person Awards Name Fallback
 **Criteria:** Add name-based Wikidata resolution to `get_person_awards`, matching the fallback chain already implemented in `get_film_awards` and crew resolution (M9). Currently `get_person_awards` only accepts a TMDB person ID with no name fallback — users must know the TMDB ID to query awards.
@@ -107,7 +109,7 @@ Film research is scattered across TMDB, IMDb, Wikipedia, JustWatch, and festival
 
 ## Current Status
 
-v0.10.0 in progress. M13 feasibility complete, design and implementation plan ready — next session executes the 10-task plan. 20 tools total (16 TMDB + 4 awards), 298 unit tests across 16 files + 16 integration tests across 2 files. M12, M15-M20 planned — spans new tools, data expansion, research, workflow design, impact campaign data, plugin architecture, and a standalone philanthropic intelligence MCP.
+v0.10.0 tagged. 20 tools total (16 TMDB + 4 awards), 24 ceremonies, 101 award categories. 321 unit tests across 16 files + 20 integration tests across 3 files. M12, M15-M20 planned — spans new tools, data expansion, research, workflow design, impact campaign data, plugin architecture, and a standalone philanthropic intelligence MCP.
 
 ## Time Tracking
 
@@ -125,7 +127,7 @@ v0.10.0 in progress. M13 feasibility complete, design and implementation plan re
 | M10: Tooling Review | 1 session | 1 session (design + plan + implementation) | — | Complete |
 | M11: Batch Keywords | 1 session | 0.5 session | — | Complete |
 | M12: Box Office Data | 1-2 sessions | — | — | Planned |
-| M13: Awards Registry Exp. | 1-2 sessions | 1 session (feasibility + design + plan) | — | Design complete |
+| M13: Awards Registry Exp. | 1-2 sessions | 2 sessions (feasibility + design + plan, implementation) | — | Complete |
 | M14: Person Awards Fallback | 1 session | 0.5 session | — | Complete |
 | BOD-199: Tiered Name Resolution | 0.5 session | 0.5 session | — | Complete |
 | BOD-198: Resolved Crew Enrichment | 0.5 session | 0.5 session (design + plan + implementation) | — | Complete |

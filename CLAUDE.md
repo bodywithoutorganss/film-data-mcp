@@ -81,15 +81,17 @@ Handlers validate via Zod internally and return `JSON.stringify(result, null, 2)
 
 ## Awards Registry
 
-`src/types/awards-registry.ts` contains verified Wikidata QIDs for 21 ceremonies/festivals and 91 award categories. Every QID was verified via SPARQL. Do not add QIDs without verification.
+`src/types/awards-registry.ts` contains verified Wikidata QIDs for 24 ceremonies/festivals/fellowships and 101 award categories. Every QID was verified via SPARQL. Do not add QIDs without verification.
 
-**Not yet implemented:** fellowships, labs, and grants from design doc scope. The schema supports them (`ceremony_type` includes `"fellowship" | "lab" | "grant"`), so adding them requires only data.
+M13 added: Peabody Awards (1 category), Gotham Awards (4 categories), Emmy documentary/nonfiction (5 categories), and Guggenheim Fellowship (1 category with `qualifier` field for field-of-work SPARQL filtering). `AwardCategory` supports an optional `qualifier` for ceremonies like Guggenheim where a single QID covers all fields and needs `pq:` filtering to extract film-relevant fellows.
+
+**Not yet implemented:** labs and grants from design doc scope. The schema supports them (`ceremony_type` includes `"lab" | "grant"`), so adding them requires only data.
 
 ## Testing
 
-- `npm test` — unit tests (no network), 293 tests across 16 files
+- `npm test` — unit tests (no network), 321 tests across 16 files
 - `npm run test:integration` — integration tests (hits live TMDB + Wikidata APIs, needs `TMDB_ACCESS_TOKEN`)
-- Integration test files: `tests/integration/live-api.test.ts` (TMDB + Wikidata basics), `tests/integration/comp-films.integration.test.ts` (award tools vs. documentary comp films), `tests/tools/awards.integration.test.ts` (name-based resolution)
+- Integration test files: `tests/integration/live-api.test.ts` (TMDB + Wikidata basics), `tests/integration/comp-films.integration.test.ts` (award tools vs. documentary comp films), `tests/tools/awards.integration.test.ts` (name-based resolution), `tests/integration/m13-registry.integration.test.ts` (M13 Wikidata-only — Peabody, Guggenheim, Gotham, Emmy)
 - Test files mirror source structure: `tests/tools/`, `tests/types/`, `tests/utils/`
 
 ### Response Size Considerations
