@@ -174,11 +174,11 @@ export async function handleGetThanksCredits(
   let result: Record<string, any>;
 
   if (parsed.mode === "forward") {
-    result = await handleForward(parsed, client);
+    result = await handleForward(parsed as { movie_id?: number; series_id?: number }, client);
   } else if (parsed.mode === "reverse") {
-    result = await handleReverse(parsed, client);
+    result = await handleReverse({ person_id: parsed.person_id! }, client);
   } else {
-    result = await handleBatch(parsed as { movie_ids: number[] }, client);
+    result = await handleBatch({ movie_ids: parsed.movie_ids! }, client);
   }
 
   return JSON.stringify(result, null, 2);
