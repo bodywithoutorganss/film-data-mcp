@@ -13,6 +13,8 @@
  *
  * 4 Wikidata awards tools: get_person_awards, get_film_awards,
  * get_award_history, search_awards
+ *
+ * 1 Wikidata representation tool: get_person_representation
  */
 
 import { config } from "dotenv";
@@ -50,6 +52,7 @@ import {
 } from "./tools/awards.js";
 import { festivalPremieresTool, handleGetFestivalPremieres } from "./tools/premieres.js";
 import { creditsTool, handleGetCredits } from "./tools/credits.js";
+import { getPersonRepresentationTool, handleGetPersonRepresentation } from "./tools/representation.js";
 
 // Load environment variables
 config();
@@ -70,7 +73,7 @@ const wikidataClient = new WikidataClient();
 const server = new Server(
     {
         name: "film-data-mcp",
-        version: "0.7.0",
+        version: "0.11.0",
     },
     {
         capabilities: {
@@ -105,6 +108,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             getFilmAwardsTool,
             getAwardHistoryTool,
             searchAwardsTool,
+            getPersonRepresentationTool,
         ],
     };
 });
@@ -139,6 +143,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             get_film_awards: (args) => handleGetFilmAwards(args, tmdbClient, wikidataClient),
             get_award_history: (args) => handleGetAwardHistory(args, tmdbClient, wikidataClient),
             search_awards: (args) => handleSearchAwards(args, tmdbClient, wikidataClient),
+            get_person_representation: (args) => handleGetPersonRepresentation(args, tmdbClient, wikidataClient),
         };
 
         const handler = handlers[name];

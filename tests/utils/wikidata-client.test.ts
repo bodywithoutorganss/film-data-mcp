@@ -603,4 +603,105 @@ describe("WikidataClient", () => {
       expect(wins[0].label).toBe("Academy Award for Best Cinematography");
     });
   });
+
+  describe("getPersonRepresentation", () => {
+    it("parses P1875 results with all qualifiers", async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          results: {
+            bindings: [
+              {
+                rep: { type: "uri", value: "http://www.wikidata.org/entity/Q3002407" },
+                repLabel: { type: "literal", value: "Creative Artists Agency" },
+                repType: { type: "uri", value: "http://www.wikidata.org/entity/Q5354754" },
+                repTypeLabel: { type: "literal", value: "talent agency" },
+                startTime: { type: "literal", value: "2014-03-01T00:00:00Z" },
+              },
+            ],
+          },
+        }),
+      });
+
+      const result = await client.getPersonRepresentation("Q189489");
+      expect(result).toHaveLength(1);
+      expect(result[0]).toEqual({
+        name: "Creative Artists Agency",
+        wikidataId: "Q3002407",
+        type: "talent agency",
+        startDate: "2014-03-01",
+        endDate: null,
+        role: null,
+      });
+    });
+
+    it("returns empty array when no P1875 data exists", async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ results: { bindings: [] } }),
+      });
+
+      const result = await client.getPersonRepresentation("Q12345");
+      expect(result).toEqual([]);
+    });
+
+    it("deduplicates entries when rep has multiple P31 types", async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          results: {
+            bindings: [
+              {
+                rep: { type: "uri", value: "http://www.wikidata.org/entity/Q3002407" },
+                repLabel: { type: "literal", value: "Creative Artists Agency" },
+                repType: { type: "uri", value: "http://www.wikidata.org/entity/Q5354754" },
+                repTypeLabel: { type: "literal", value: "talent agency" },
+              },
+              {
+                rep: { type: "uri", value: "http://www.wikidata.org/entity/Q3002407" },
+                repLabel: { type: "literal", value: "Creative Artists Agency" },
+                repType: { type: "uri", value: "http://www.wikidata.org/entity/Q783794" },
+                repTypeLabel: { type: "literal", value: "company" },
+              },
+            ],
+          },
+        }),
+      });
+
+      const result = await client.getPersonRepresentation("Q189489");
+      expect(result).toHaveLength(1);
+      expect(result[0].name).toBe("Creative Artists Agency");
+    });
+
+    it("handles entries with no type or date qualifiers", async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          results: {
+            bindings: [
+              {
+                rep: { type: "uri", value: "http://www.wikidata.org/entity/Q7893586" },
+                repLabel: { type: "literal", value: "United Talent Agency" },
+              },
+            ],
+          },
+        }),
+      });
+
+      const result = await client.getPersonRepresentation("Q10738");
+      expect(result).toHaveLength(1);
+      expect(result[0]).toEqual({
+        name: "United Talent Agency",
+        wikidataId: "Q7893586",
+        type: null,
+        startDate: null,
+        endDate: null,
+        role: null,
+      });
+    });
+
+    it("validates QID format", async () => {
+      await expect(client.getPersonRepresentation("invalid")).rejects.toThrow("Invalid Wikidata QID");
+    });
+  });
 });

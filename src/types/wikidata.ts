@@ -92,3 +92,18 @@ export interface ResolvedEntity {
   label: string;
   resolvedVia: ResolutionMethod;
 }
+
+export interface RepresentationEntry {
+  name: string;
+  wikidataId: string;
+  type: string | null;
+  startDate: string | null;
+  endDate: string | null;
+  role: string | null;
+}
+
+export interface PersonRepresentationResult {
+  entity: ResolvedEntity;
+  representation: RepresentationEntry[];
+  coverageNote: string;
+}
