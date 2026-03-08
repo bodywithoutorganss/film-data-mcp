@@ -280,8 +280,10 @@ Only add QIDs that return at least 1 P166 result.
 ```typescript
 it("contains Emmy documentary categories under existing emmys ceremony", () => {
   const emmyCats = findCategoriesByCeremony("emmys");
-  // Existing Emmy categories (10) + new doc categories
-  expect(emmyCats.length).toBeGreaterThan(10);
+  const docNonfictionCats = emmyCats.filter(
+    (c) => c.id.includes("documentary") || c.id.includes("nonfiction")
+  );
+  expect(docNonfictionCats.length).toBeGreaterThanOrEqual(4);
 
   const docSpecial = findCategory("emmys-documentary-special");
   expect(docSpecial).toBeDefined();
@@ -306,7 +308,7 @@ In `src/types/awards-registry.ts`, add under the existing `// --- Primetime Emmy
 { id: "emmys-directing-documentary", ceremony: "emmys", label: "Primetime Emmy Award for Outstanding Directing for Documentary/Nonfiction Programming", wikidataId: "Q24895051", domain: "director" },
 { id: "emmys-cinematography-nonfiction", ceremony: "emmys", label: "Primetime Emmy Award for Outstanding Cinematography for Nonfiction Programming", wikidataId: "Q24900788", domain: "cinematography" },
 { id: "emmys-writing-nonfiction", ceremony: "emmys", label: "Primetime Emmy Award for Outstanding Writing for Nonfiction Programming", wikidataId: "Q25345783", domain: "screenplay" },
-{ id: "emmys-sound-mixing-nonfiction", ceremony: "emmys", label: "Primetime Emmy Award for Outstanding Sound Mixing for Nonfiction Programming", wikidataId: "Q30632982", domain: "score" },
+// emmys-sound-mixing-nonfiction (Q30632982) dropped — "score" domain is misleading for sound mixing, and data density is near-zero
 // Add any additional verified categories from Step 1
 ```
 
@@ -444,6 +446,18 @@ it("gets award history with qualifier filter", async () => {
   expect(decodedUrl).toContain("pq:P101");
   expect(decodedUrl).toContain("Q11424");
   expect(decodedUrl).toContain("Q34508");
+});
+
+it("rejects qualifier with invalid property format", async () => {
+  await expect(
+    client.getAwardHistory("Q131520", { property: "P101; DROP", values: ["Q1"] })
+  ).rejects.toThrow("Invalid qualifier property");
+});
+
+it("rejects qualifier with invalid value format", async () => {
+  await expect(
+    client.getAwardHistory("Q131520", { property: "P101", values: ["Q1", "evil"] })
+  ).rejects.toThrow("Invalid qualifier value");
 });
 
 it("gets award history without qualifier (unchanged behavior)", async () => {
