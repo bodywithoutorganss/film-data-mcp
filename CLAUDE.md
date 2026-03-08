@@ -115,7 +115,7 @@ For filmography exploration, `discover` with `with_crew`/`with_cast` filters ret
 `get_film_awards` returns three crew categories:
 - `crewNominations` — crew who resolved to Wikidata AND have P1411 nominations matching this film
 - `resolvedCrew` — crew who resolved to Wikidata but have no nominations matching this film. Enriched with `wikidataId`, `totalWins`, `totalNominations`, and `byCeremony` (ceremony-level win/nomination breakdown). Valuable for identifying notable crew associations and their overall award track record.
-- `skippedCrew` — crew who could not be resolved to any Wikidata entity (no TMDB ID, IMDb ID, or name match)
+- `skippedCrew` — crew who could not be resolved to any Wikidata entity (no TMDB ID, IMDb ID, or name match). Includes `tmdbId` for downstream follow-up via `person_details`
 
 ### Wikidata Data Gaps
 

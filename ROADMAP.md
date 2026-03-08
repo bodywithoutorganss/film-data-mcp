@@ -115,7 +115,7 @@ Film research is scattered across TMDB, IMDb, Wikipedia, JustWatch, and festival
 
 ## Current Status
 
-v0.12.0. 22 tools total (17 TMDB + 4 awards + 1 representation), 24 ceremonies, 101 award categories. M12 (`get_financials` — TMDB + OMDb financial data) and M15 (`get_person_representation` — Wikidata P1875 talent agencies) both merged. M16-M20 planned.
+v0.12.0. 22 tools total (17 TMDB + 4 awards + 1 representation), 24 ceremonies, 101 award categories. M12 and M15 merged. BOD-208 fixed (discover description), BOD-203 canceled with evidence (resolution analysis showed Wikidata coverage is the bottleneck, not disambiguation). `FILM_OCCUPATIONS` expanded with generic QIDs. `skippedCrew` now includes `tmdbId` for downstream follow-up. M20 research findings documented (Wikipedia mention-based enrichment). M16 in progress.
 
 ### Known Issues (from GTM stress test)
 - **BOD-206:** Gotham Best Documentary `get_award_history` returns empty — Wikidata P166 data gap (structural, not code)
@@ -152,6 +152,10 @@ v0.12.0. 22 tools total (17 TMDB + 4 awards + 1 representation), 24 ceremonies, 
 | BOD-204: Stale FilmAwardsResult type | — | 0.1 session | — | Complete |
 | BOD-207: Award result field | — | 0.1 session | — | Complete |
 | GTM stress test script | — | 0.5 session | — | Complete |
+| BOD-208: Discover genre fix | — | — | 0.1 session | Complete |
+| BOD-203: Resolution analysis | — | — | 0.5 session (analysis + FILM_OCCUPATIONS fix) | Canceled |
+| skippedCrew tmdbId | — | — | 0.1 session | Complete |
+| M20 Wikipedia research | — | — | 0.1 session (doc + Linear) | Complete |
 
 ## Key Decisions
 
