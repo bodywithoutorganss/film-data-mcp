@@ -14,7 +14,7 @@ import { buildToolDef } from "../utils/tool-helpers.js";
 
 // --- Entity resolution helpers ---
 
-async function resolvePerson(
+export async function resolvePerson(
   tmdbId: number,
   tmdbClient: TMDBClient,
   wikidataClient: WikidataClient,

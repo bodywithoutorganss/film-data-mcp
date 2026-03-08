@@ -86,8 +86,11 @@ Film research is scattered across TMDB, IMDb, Wikipedia, JustWatch, and festival
 - Plan: `docs/plans/2026-03-07-m11-m14-implementation.md`
 
 ### M15: Representation & Talent Data
-**Criteria:** Research and implement talent representation data — publicists, agents, managers, and agency affiliations. No known API currently covers this; milestone begins with research into potential data sources (TMDB credits metadata, IMDbPro, industry databases, Wikidata P agent/P management company properties). Produce findings report before committing to implementation approach.
-**Status:** Research needed.
+**Criteria:** Research and implement talent representation data — publicists, agents, managers, and agency affiliations. Research phase investigated 10+ sources (TMDB, IMDbPro, IMDb API, Wikidata, ContactAnyCelebrity, filmmakers.eu, agency websites, Apify, academic datasets, GitHub scrapers). Finding: Wikidata P1875 ("represented by") is the only viable free source — ~1,200 film professionals at talent agencies (CAA, WME, UTA, ICM + strong Japanese/Korean coverage). IMDbPro has gold-standard data but no API. Implementation: `get_person_representation` tool using existing Wikidata SPARQL infrastructure with TMDB ID resolution.
+**Status:** Complete — `get_person_representation` tool (#22). 332 unit tests across 17 files + 4 integration tests (Zendaya→CAA, Dwayne Johnson→UTA).
+- Research: `docs/plans/2026-03-08-m15-representation-data-research.md`
+- Design: `docs/plans/2026-03-08-m15-representation-design.md`
+- Plan: `docs/plans/2026-03-08-m15-implementation.md`
 
 ### M16: Special Thanks & Acknowledgment Credits
 **Criteria:** Surface "Thanks" and "Special Thanks" credit data from TMDB (sparse but present in some entries) and investigate Wikidata coverage. Useful for mapping informal collaboration networks and influence relationships in documentary production. Research phase to assess data quality before building tools.
@@ -111,7 +114,7 @@ Film research is scattered across TMDB, IMDb, Wikipedia, JustWatch, and festival
 
 ## Current Status
 
-v0.10.0 tagged. 20 tools total (16 TMDB + 4 awards), 24 ceremonies, 101 award categories. 321 unit tests across 16 files + 20 integration tests across 3 files. Producer GTM research script (`scripts/producer-research.mjs`) exercises 12/20 tools against live APIs — validated M11-M14 and BOD-198 in a real workflow. M12 (box office & financial data) designed — `get_financials` tool aggregating TMDB + OMDb with extensible multi-source architecture, implementation plan ready (9 tasks). M15-M20 planned — spans new tools, data expansion, research, workflow design, impact campaign data, plugin architecture, and a standalone philanthropic intelligence MCP.
+M15 complete on `m15-representation-data` branch. 21 tools total (16 TMDB + 4 awards + 1 representation), 24 ceremonies, 101 award categories. `get_person_representation` queries Wikidata P1875 for talent agency affiliations. M12 (box office & financial data) in progress on separate `m12-financials` branch. M16-M20 planned.
 
 ### Known Issues (from GTM stress test)
 - **BOD-206:** Gotham Best Documentary `get_award_history` returns empty — Wikidata P166 data gap (structural, not code)
@@ -138,7 +141,7 @@ v0.10.0 tagged. 20 tools total (16 TMDB + 4 awards), 24 ceremonies, 101 award ca
 | M14: Person Awards Fallback | 1 session | 0.5 session | — | Complete |
 | BOD-199: Tiered Name Resolution | 0.5 session | 0.5 session | — | Complete |
 | BOD-198: Resolved Crew Enrichment | 0.5 session | 0.5 session (design + plan + implementation) | — | Complete |
-| M15: Representation Data | 1 session (research) | — | — | Research needed |
+| M15: Representation Data | 1 session (research) | 1 session (research + design + implementation) | — | Complete |
 | M16: Special Thanks Credits | 1 session (research) | — | — | Research needed |
 | M17: Skills & Commands | 2-3 sessions (design + build) | — | — | Design needed |
 | M18: Impact Campaign Data | 2-3 sessions (research + design + build) | — | — | Design needed |

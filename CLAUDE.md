@@ -27,6 +27,7 @@ src/
     browse.ts            - Trending and curated lists (popular, top rated, etc.)
     reference.ts         - Genres, watch providers, external ID lookup, collections, companies, keywords, filmography
     awards.ts            - Wikidata SPARQL awards tools (person, film, history, search)
+    representation.ts    - Talent representation via Wikidata P1875 (agency affiliations)
     premieres.ts         - Festival premiere extraction from TMDB release dates
     credits.ts           - Detailed credits with department/job filtering and pagination
   types/
@@ -40,7 +41,7 @@ src/
     tool-helpers.ts      - buildToolDef() — Zod schema to MCP tool definition
 ```
 
-## Tools (20 total: 16 TMDB, 4 awards)
+## Tools (21 total: 16 TMDB, 4 awards, 1 representation)
 
 | Tool | File | Description |
 |------|------|-------------|
@@ -64,6 +65,7 @@ src/
 | get_film_awards | awards.ts | All awards a film has received, with crew cross-referencing (by TMDB movie ID) |
 | get_award_history | awards.ts | All winners of a specific award category across years |
 | search_awards | awards.ts | Search the awards registry by ceremony, category, or domain |
+| get_person_representation | representation.ts | Talent agency affiliations via Wikidata P1875 (by TMDB ID, with optional name fallback) |
 
 ## Tool Pattern
 
@@ -77,7 +79,7 @@ Handlers validate via Zod internally and return `JSON.stringify(result, null, 2)
 ## Data Sources
 
 - **TMDB**: Crew/cast/credits, metadata. Requires `TMDB_ACCESS_TOKEN` env var.
-- **Wikidata SPARQL**: Awards data. No auth required. Live queries to `https://query.wikidata.org/sparql`.
+- **Wikidata SPARQL**: Awards data and talent representation (P1875). No auth required. Live queries to `https://query.wikidata.org/sparql`.
 
 ## Awards Registry
 
@@ -89,9 +91,9 @@ M13 added: Peabody Awards (1 category), Gotham Awards (4 categories), Emmy docum
 
 ## Testing
 
-- `npm test` — unit tests (no network), 321 tests across 16 files
+- `npm test` — unit tests (no network), 332 tests across 17 files
 - `npm run test:integration` — integration tests (hits live TMDB + Wikidata APIs, needs `TMDB_ACCESS_TOKEN`)
-- Integration test files: `tests/integration/live-api.test.ts` (TMDB + Wikidata basics), `tests/integration/comp-films.integration.test.ts` (award tools vs. documentary comp films), `tests/tools/awards.integration.test.ts` (name-based resolution), `tests/integration/m13-registry.integration.test.ts` (M13 Wikidata-only — Peabody, Guggenheim, Gotham, Emmy)
+- Integration test files: `tests/integration/live-api.test.ts` (TMDB + Wikidata basics), `tests/integration/comp-films.integration.test.ts` (award tools vs. documentary comp films), `tests/tools/awards.integration.test.ts` (name-based resolution), `tests/integration/m13-registry.integration.test.ts` (M13 Wikidata-only — Peabody, Guggenheim, Gotham, Emmy), `tests/tools/representation.integration.test.ts` (Wikidata-only — Zendaya→CAA, Dwayne Johnson→UTA)
 - Test files mirror source structure: `tests/tools/`, `tests/types/`, `tests/utils/`
 
 ### Response Size Considerations
@@ -124,6 +126,7 @@ For filmography exploration, `discover` with `with_crew`/`with_cast` filters ret
 - **Gotham Best Documentary (BOD-206):** QID is in the registry and `search_awards` finds it, but `get_award_history` returns empty — Wikidata has no P166 claims for this category. Structural data gap, not a code bug.
 - **~~Direct film awards lack `result` field (BOD-207)~~:** Fixed. `WikidataAward` now has `result: "win"` (P166) and `WikidataNomination` has `result: "nomination"` (P1411).
 - **Discover Documentary genre is too broad (BOD-208):** TMDB genre 99 (Documentary) includes concert films, fan docs, and celebrity profiles. Keyword filtering via `with_keywords` is recommended for narrative doc discovery.
+- **Representation data (P1875) is sparse for US talent agencies:** ~1,200 film professionals at talent agencies total; only ~70 across CAA/WME/UTA/ICM. Coverage is strongest for Japanese (Stardust, Smile-Up, Amuse) and Korean (BH Entertainment, Namoo Actors) agencies. Art distributors (Light Cone, Video Data Bank) inflate the broader total. `get_person_representation` includes a `coverageNote` field warning users about this.
 
 ### Scripts
 

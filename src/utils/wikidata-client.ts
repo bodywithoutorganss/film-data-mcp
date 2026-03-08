@@ -1,7 +1,7 @@
 // ABOUTME: SPARQL client for Wikidata entity resolution and awards queries.
 // ABOUTME: Resolves TMDB/IMDb IDs to Wikidata entities, queries award and nomination data.
 
-import type { SparqlResponse, ResolvedEntity, ResolutionMethod, WikidataAward, WikidataNomination, AwardHistoryEntry } from "../types/wikidata.js";
+import type { SparqlResponse, ResolvedEntity, ResolutionMethod, WikidataAward, WikidataNomination, AwardHistoryEntry, RepresentationEntry } from "../types/wikidata.js";
 import { AWARD_CATEGORIES } from "../types/awards-registry.js";
 
 const SPARQL_ENDPOINT = "https://query.wikidata.org/sparql";
@@ -258,6 +258,40 @@ export class WikidataClient {
     const data = await this.executeSparql(query);
     const binding = data.results.bindings[0];
     return binding?.count ? parseInt(binding.count.value, 10) : 0;
+  }
+
+  async getPersonRepresentation(wikidataId: string): Promise<RepresentationEntry[]> {
+    this.validateQid(wikidataId);
+    const query = `
+      SELECT ?rep ?repLabel ?repType ?repTypeLabel ?startTime ?endTime ?role ?roleLabel WHERE {
+        wd:${wikidataId} p:P1875 ?stmt .
+        ?stmt ps:P1875 ?rep .
+        OPTIONAL { ?rep wdt:P31 ?repType . }
+        OPTIONAL { ?stmt pq:P580 ?startTime . }
+        OPTIONAL { ?stmt pq:P582 ?endTime . }
+        OPTIONAL { ?stmt pq:P3831 ?role . }
+        SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
+      }
+    `;
+    const data = await this.executeSparql(query);
+
+    // Deduplicate: a rep with multiple P31 types produces multiple rows
+    const seen = new Map<string, RepresentationEntry>();
+    for (const b of data.results.bindings) {
+      const repId = this.extractEntityId(b.rep.value);
+      if (!seen.has(repId)) {
+        seen.set(repId, {
+          name: b.repLabel ? this.cleanLabel(b.repLabel.value) : "Unknown",
+          wikidataId: repId,
+          type: b.repTypeLabel ? this.cleanLabel(b.repTypeLabel.value) : null,
+          startDate: b.startTime ? b.startTime.value.split("T")[0] : null,
+          endDate: b.endTime ? b.endTime.value.split("T")[0] : null,
+          role: b.roleLabel ? this.cleanLabel(b.roleLabel.value) : null,
+        });
+      }
+    }
+
+    return [...seen.values()];
   }
 
   async getAwardHistory(
