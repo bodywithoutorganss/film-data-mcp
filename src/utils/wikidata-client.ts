@@ -267,6 +267,9 @@ export class WikidataClient {
       if (!/^P\d+$/.test(qualifier.property)) {
         throw new Error(`Invalid qualifier property: ${qualifier.property}`);
       }
+      if (qualifier.values.length === 0) {
+        throw new Error("Qualifier values must not be empty");
+      }
       for (const v of qualifier.values) {
         if (!/^Q\d+$/.test(v)) {
           throw new Error(`Invalid qualifier value: ${v}`);

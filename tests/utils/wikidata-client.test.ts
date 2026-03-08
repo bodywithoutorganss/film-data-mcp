@@ -535,6 +535,12 @@ describe("WikidataClient", () => {
       ).rejects.toThrow("Invalid qualifier property");
     });
 
+    it("rejects qualifier with empty values array", async () => {
+      await expect(
+        client.getAwardHistory("Q131520", { property: "P101", values: [] })
+      ).rejects.toThrow("Qualifier values must not be empty");
+    });
+
     it("rejects qualifier with invalid value format", async () => {
       await expect(
         client.getAwardHistory("Q131520", { property: "P101", values: ["Q1", "evil"] })
