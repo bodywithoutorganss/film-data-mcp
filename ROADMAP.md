@@ -103,10 +103,6 @@ Film research is scattered across TMDB, IMDb, Wikipedia, JustWatch, and festival
 **Criteria:** Design and build Claude Code skills and slash commands that compose film-data-mcp tools into producer workflows. Examples: comp sheet generation (search → details → awards → synthesis), filmmaker career mapping (person → credits → collaborator network), distribution pathway analysis (festival premieres → watch providers → financial data), documentary discovery with curated keyword bundles (BOD-208: keyword exclusion sets for filtering concert/fan content from Documentary genre, predefined keyword bundles for common doc sub-genres like social issue, personal essay, investigative). Requires extensive design iteration — the tool surface is mature enough (23 tools) but the workflow layer that chains them for real production tasks doesn't exist yet.
 **Status:** Design needed.
 
-### M19: Philanthropic & Financial Intelligence (Separate MCP)
-**Criteria:** Design and build a standalone MCP server (part of the personal knowledge marketplace) that maps individuals and institutions to philanthropic and financial records. Core capabilities: 990 tax filing lookups (ProPublica Nonprofit Explorer API, GuideStar), family foundation identification and grant history, giving partnership memberships (Impact Partners, Sundance Catalyst, Chicken & Egg, etc.), board seat mapping across nonprofits and cultural institutions, and donor network graph construction. Separate from film-data-mcp — composes with it for funder research workflows. Individual profiles (wealth source, philanthropic focus, board seats) and institutional profiles (grant areas, 990 data, leadership) are distinct concerns requiring different data sources and schemas. Extensive design needed before implementation: data source evaluation, entity resolution strategy (name matching across 990s, board listings, and film credits), privacy/ethical boundaries, and API availability assessment.
-**Status:** Design needed.
-
 ### M18: Impact Campaign Data
 **Criteria:** Research and design a structured data layer for documentary impact campaigns. Categories to model (requires careful design iteration): mission/theory of change, KPIs (screenings, policy meetings, media mentions, audience reach, legislative action), campaign timeline phases (pre-release grassroots, festival window, theatrical/streaming, long-tail educational), partners (NGOs, advocacy orgs, educational institutions), personnel (impact producers, outreach coordinators), case studies (measurable outcomes from comparable docs — e.g., Blackfish → SeaWorld policy, An Inconvenient Truth → climate legislation), political context (intersecting legislation, public debate, cultural moment), impact-specific funding (Ford Foundation, Catapult, Perspective Fund — distinct from production funding), community screening/educational distribution strategy, and measurement methodology (pre/post surveys, policy tracking, media analysis). Open architectural question: may be an extension of film-data-mcp or a separate MCP that composes with it — decide during design phase. Phase 1 is MCP tools for retrieving/querying impact campaign data; Phase 2 (likely M17 skills layer) is tools for *building* campaigns.
 **Status:** Design needed.
@@ -118,7 +114,7 @@ Film research is scattered across TMDB, IMDb, Wikipedia, JustWatch, and festival
 
 ## Current Status
 
-v0.13.0. 23 tools total (18 TMDB + 4 awards + 1 representation), 24 ceremonies, 101 award categories. M16 (`get_thanks_credits` — forward/reverse/batch Thanks credit queries) complete. M17-M20 planned.
+v0.13.0. 23 tools total (18 TMDB + 4 awards + 1 representation), 24 ceremonies, 101 award categories. M16 (`get_thanks_credits` — forward/reverse/batch Thanks credit queries) complete. M17, M18, M20 planned. M19 (Philanthropic & Financial Intelligence) migrated to `financial-mcp-tools` repo (Linear project: Financial Intelligence MCP, BOD-201).
 
 ### Known Issues (from GTM stress test)
 - **BOD-206:** Gotham Best Documentary `get_award_history` returns empty — Wikidata P166 data gap (structural, not code)
@@ -158,9 +154,8 @@ Actuals measured from commit timestamps via `scripts/cc-time.sh`. Gaps > 45 minu
 | **Completed total** | — | **14.1** | |
 | M17: Skills & Commands | 4.0 | — | Design needed |
 | M18: Impact Campaign Data | 4.0 | — | Design needed |
-| M19: Philanthropic Intel MCP | 7.0 | — | Design needed |
 | M20: Plugin Architecture | 2.5 | — | Design needed |
-| **Remaining total** | **17.5** | — | |
+| **Remaining total** | **10.5** | — | |
 
 ## Key Decisions
 
