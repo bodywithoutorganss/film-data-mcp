@@ -110,6 +110,21 @@ describe("awards registry", () => {
     expect(cat.qualifier!.property).toBe("P101");
   });
 
+  it("contains Peabody Awards ceremony", () => {
+    const peabody = findCeremony("peabody");
+    expect(peabody).toBeDefined();
+    expect(peabody!.wikidataId).toBe("Q838121");
+    expect(peabody!.type).toBe("ceremony");
+  });
+
+  it("contains Peabody award category in documentary domain", () => {
+    const cat = findCategory("peabody-award");
+    expect(cat).toBeDefined();
+    expect(cat!.wikidataId).toBe("Q838121");
+    expect(cat!.ceremony).toBe("peabody");
+    expect(cat!.domain).toBe("documentary");
+  });
+
   it("has no duplicate ids or wikidataIds in ceremonies", () => {
     const ids = CEREMONIES.map((c) => c.id);
     const wikidataIds = CEREMONIES.map((c) => c.wikidataId);

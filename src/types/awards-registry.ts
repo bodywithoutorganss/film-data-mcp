@@ -61,6 +61,9 @@ export const CEREMONIES: Ceremony[] = [
   { id: "docnyc", label: "DOC NYC", wikidataId: "Q18349859", type: "festival" },
   { id: "hot-docs", label: "Hot Docs", wikidataId: "Q5909927", type: "festival" },
   { id: "true-false", label: "True/False Film Festival", wikidataId: "Q7847299", type: "festival" },
+
+  // Documentary and nonfiction ceremonies
+  { id: "peabody", label: "Peabody Awards", wikidataId: "Q838121", type: "ceremony" },
 ];
 
 // --- Award Categories ---
@@ -185,6 +188,9 @@ export const AWARD_CATEGORIES: AwardCategory[] = [
 
   // --- Toronto International Film Festival ---
   { id: "tiff-peoples-choice", ceremony: "tiff", label: "TIFF People's Choice Award", wikidataId: "Q39087364", domain: "picture" },
+
+  // --- Peabody Awards ---
+  { id: "peabody-award", ceremony: "peabody", label: "Peabody Award", wikidataId: "Q838121", domain: "documentary" },
 ];
 
 // --- Lookup functions ---
