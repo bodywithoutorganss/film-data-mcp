@@ -109,7 +109,12 @@ Film research is scattered across TMDB, IMDb, Wikipedia, JustWatch, and festival
 
 ## Current Status
 
-v0.10.0 tagged. 20 tools total (16 TMDB + 4 awards), 24 ceremonies, 101 award categories. 321 unit tests across 16 files + 20 integration tests across 3 files. M12, M15-M20 planned — spans new tools, data expansion, research, workflow design, impact campaign data, plugin architecture, and a standalone philanthropic intelligence MCP.
+v0.10.0 tagged. 20 tools total (16 TMDB + 4 awards), 24 ceremonies, 101 award categories. 321 unit tests across 16 files + 20 integration tests across 3 files. Producer GTM research script (`scripts/producer-research.mjs`) exercises 12/20 tools against live APIs — validated M11-M14 and BOD-198 in a real workflow. M12, M15-M20 planned — spans new tools, data expansion, research, workflow design, impact campaign data, plugin architecture, and a standalone philanthropic intelligence MCP.
+
+### Known Issues (from GTM stress test)
+- **BOD-206:** Gotham Best Documentary `get_award_history` returns empty — Wikidata P166 data gap (structural, not code)
+- **BOD-207:** Direct film awards from `get_film_awards` missing `result` field (win vs nomination)
+- **BOD-208:** `discover` with Documentary genre returns non-narrative docs (concert films, fan docs) — keyword filtering recommended
 
 ## Time Tracking
 

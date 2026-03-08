@@ -121,6 +121,14 @@ For filmography exploration, `discover` with `with_crew`/`with_cast` filters ret
   - Jesse Moss (Boys State co-director): 0 P166 and 0 P1411 claims — completely absent from Wikidata awards data.
   - Some crew members for smaller documentary productions are unresolvable in Wikidata (no entity exists).
   - **Tier 2 name resolution:** When TMDB ID and IMDb ID resolution both fail, `resolvePersonByName` accepts a sole Wikidata candidate even without a film-related P106 occupation (`resolvedVia: "name_search_unfiltered"`). This handles non-filmmaker EPs (businesspeople, philanthropists) who appear in TMDB credits. When multiple candidates exist without film occupations, resolution still fails (Tier 3) — see BOD-203 for future scored ranking.
+- **Gotham Best Documentary (BOD-206):** QID is in the registry and `search_awards` finds it, but `get_award_history` returns empty — Wikidata has no P166 claims for this category. Structural data gap, not a code bug.
+- **Direct film awards lack `result` field (BOD-207):** `get_film_awards` direct awards (P166-sourced) don't populate a win/nomination indicator. P166 implies "win" but the field is absent from the response.
+- **Discover Documentary genre is too broad (BOD-208):** TMDB genre 99 (Documentary) includes concert films, fan docs, and celebrity profiles. Keyword filtering via `with_keywords` is recommended for narrative doc discovery.
+
+### Scripts
+
+- `scripts/producer-research.mjs` — GTM research workflow exercising 12/20 tools against live APIs with BreakFall comp films. Requires `TMDB_ACCESS_TOKEN`. Run with `node scripts/producer-research.mjs`.
+- `scripts/verify-qids.ts` — Wikidata QID verification for awards registry entries.
 
 ### TMDB ID Stability
 
