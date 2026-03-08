@@ -258,12 +258,32 @@ export class WikidataClient {
     return binding?.count ? parseInt(binding.count.value, 10) : 0;
   }
 
-  async getAwardHistory(categoryQid: string): Promise<AwardHistoryEntry[]> {
+  async getAwardHistory(
+    categoryQid: string,
+    qualifier?: { property: string; values: string[] }
+  ): Promise<AwardHistoryEntry[]> {
     this.validateQid(categoryQid);
+    if (qualifier) {
+      if (!/^P\d+$/.test(qualifier.property)) {
+        throw new Error(`Invalid qualifier property: ${qualifier.property}`);
+      }
+      for (const v of qualifier.values) {
+        if (!/^Q\d+$/.test(v)) {
+          throw new Error(`Invalid qualifier value: ${v}`);
+        }
+      }
+    }
+
+    const qualifierClause = qualifier
+      ? `?stmt pq:${qualifier.property} ?qualifierValue .
+         FILTER(?qualifierValue IN (${qualifier.values.map((v) => `wd:${v}`).join(", ")}))`
+      : "";
+
     const query = `
       SELECT ?recipient ?recipientLabel ?date ?forWork ?forWorkLabel WHERE {
         ?recipient p:P166 ?stmt .
         ?stmt ps:P166 wd:${categoryQid} .
+        ${qualifierClause}
         OPTIONAL { ?stmt pq:P585 ?date }
         OPTIONAL { ?stmt pq:P1686 ?forWork }
         SERVICE wikibase:label { bd:serviceParam wikibase:language "en" . }

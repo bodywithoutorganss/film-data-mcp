@@ -498,6 +498,74 @@ describe("WikidataClient", () => {
       expect(result[0].recipientLabel).toBe("Unknown");
     });
 
+    it("gets award history with qualifier filter", async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          results: {
+            bindings: [
+              {
+                recipient: { type: "uri", value: "http://www.wikidata.org/entity/Q123" },
+                recipientLabel: { type: "literal", value: "Test Fellow" },
+                date: { type: "literal", value: "2020-01-01T00:00:00Z" },
+              },
+            ],
+          },
+        }),
+      });
+
+      const history = await client.getAwardHistory("Q1316544", {
+        property: "P101",
+        values: ["Q11424", "Q34508"],
+      });
+      expect(history).toHaveLength(1);
+      expect(history[0].recipientLabel).toBe("Test Fellow");
+
+      // Verify SPARQL contains qualifier filter
+      const [url] = mockFetch.mock.calls[0];
+      const decodedUrl = decodeURIComponent(url);
+      expect(decodedUrl).toContain("pq:P101");
+      expect(decodedUrl).toContain("Q11424");
+      expect(decodedUrl).toContain("Q34508");
+    });
+
+    it("rejects qualifier with invalid property format", async () => {
+      await expect(
+        client.getAwardHistory("Q131520", { property: "P101; DROP", values: ["Q1"] })
+      ).rejects.toThrow("Invalid qualifier property");
+    });
+
+    it("rejects qualifier with invalid value format", async () => {
+      await expect(
+        client.getAwardHistory("Q131520", { property: "P101", values: ["Q1", "evil"] })
+      ).rejects.toThrow("Invalid qualifier value");
+    });
+
+    it("gets award history without qualifier (unchanged behavior)", async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          results: {
+            bindings: [
+              {
+                recipient: { type: "uri", value: "http://www.wikidata.org/entity/Q460277" },
+                recipientLabel: { type: "literal", value: "Roger Deakins" },
+                date: { type: "literal", value: "2018-03-04T00:00:00Z" },
+              },
+            ],
+          },
+        }),
+      });
+
+      const history = await client.getAwardHistory("Q131520");
+      expect(history).toHaveLength(1);
+
+      // Verify SPARQL does NOT contain qualifier filter
+      const [url] = mockFetch.mock.calls[0];
+      const decodedUrl = decodeURIComponent(url);
+      expect(decodedUrl).not.toContain("pq:P101");
+    });
+
     it("filters wins to only recognized award QIDs", async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
