@@ -6,10 +6,11 @@
  * Film Data MCP Server
  * Provides access to The Movie Database (TMDB) API through Model Context Protocol
  *
- * 16 TMDB tools: search, movie_details, tv_details, person_details,
+ * 17 TMDB tools: search, movie_details, tv_details, person_details,
  * discover, trending, curated_lists, genres, watch_providers,
  * find_by_external_id, collection_details, company_details,
- * search_keywords, company_filmography, get_festival_premieres, get_credits
+ * search_keywords, company_filmography, get_festival_premieres,
+ * get_credits, get_financials
  *
  * 4 Wikidata awards tools: get_person_awards, get_film_awards,
  * get_award_history, search_awards
@@ -50,6 +51,8 @@ import {
 } from "./tools/awards.js";
 import { festivalPremieresTool, handleGetFestivalPremieres } from "./tools/premieres.js";
 import { creditsTool, handleGetCredits } from "./tools/credits.js";
+import { OMDbClient } from "./utils/omdb-client.js";
+import { financialsTool, handleGetFinancials } from "./tools/financials.js";
 
 // Load environment variables
 config();
@@ -63,6 +66,8 @@ if (!tmdbToken) {
 
 const tmdbClient = new TMDBClient(tmdbToken);
 const wikidataClient = new WikidataClient();
+const omdbKey = process.env.OMDB_API_KEY;
+const omdbClient = omdbKey ? new OMDbClient(omdbKey) : null;
 
 /**
  * Create MCP server with tools capability
@@ -70,7 +75,7 @@ const wikidataClient = new WikidataClient();
 const server = new Server(
     {
         name: "film-data-mcp",
-        version: "0.7.0",
+        version: "0.11.0",
     },
     {
         capabilities: {
@@ -105,6 +110,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             getFilmAwardsTool,
             getAwardHistoryTool,
             searchAwardsTool,
+            financialsTool,
         ],
     };
 });
@@ -139,6 +145,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             get_film_awards: (args) => handleGetFilmAwards(args, tmdbClient, wikidataClient),
             get_award_history: (args) => handleGetAwardHistory(args, tmdbClient, wikidataClient),
             search_awards: (args) => handleSearchAwards(args, tmdbClient, wikidataClient),
+            get_financials: (args) => handleGetFinancials(args, tmdbClient, omdbClient),
         };
 
         const handler = handlers[name];
