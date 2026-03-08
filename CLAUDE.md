@@ -6,7 +6,7 @@
 npm install
 npm run build
 
-TMDB_ACCESS_TOKEN=<your-token> node build/index.js
+TMDB_ACCESS_TOKEN=<your-token> OMDB_API_KEY=<optional-key> node build/index.js
 
 # Run tests
 npm test
@@ -30,18 +30,21 @@ src/
     representation.ts    - Talent representation via Wikidata P1875 (agency affiliations)
     premieres.ts         - Festival premiere extraction from TMDB release dates
     credits.ts           - Detailed credits with department/job filtering and pagination
+    financials.ts        - Financial data aggregation from TMDB + OMDb
   types/
     tmdb.ts              - TMDB response types
     tmdb-extended.ts     - Extended types for append_to_response and new endpoints
     wikidata.ts          - Wikidata/SPARQL response types
     awards-registry.ts   - Verified ceremony and award category QIDs
+    omdb.ts              - OMDb API response types
   utils/
     tmdb-client.ts       - TMDB API client (fetch-based, append_to_response bundling)
     wikidata-client.ts   - Wikidata SPARQL client + entity resolution
+    omdb-client.ts       - OMDb API client (IMDb ID lookup)
     tool-helpers.ts      - buildToolDef() — Zod schema to MCP tool definition
 ```
 
-## Tools (21 total: 16 TMDB, 4 awards, 1 representation)
+## Tools (22 total: 17 TMDB, 4 awards, 1 representation)
 
 | Tool | File | Description |
 |------|------|-------------|
@@ -66,6 +69,7 @@ src/
 | get_award_history | awards.ts | All winners of a specific award category across years |
 | search_awards | awards.ts | Search the awards registry by ceremony, category, or domain |
 | get_person_representation | representation.ts | Talent agency affiliations via Wikidata P1875 (by TMDB ID, with optional name fallback) |
+| get_financials | financials.ts | Financial data (budget, revenue, domestic gross) from TMDB + OMDb |
 
 ## Tool Pattern
 
@@ -78,7 +82,8 @@ Handlers validate via Zod internally and return `JSON.stringify(result, null, 2)
 
 ## Data Sources
 
-- **TMDB**: Crew/cast/credits, metadata. Requires `TMDB_ACCESS_TOKEN` env var.
+- **TMDB**: Crew/cast/credits, metadata, budget/revenue. Requires `TMDB_ACCESS_TOKEN` env var.
+- **OMDb**: Domestic box office gross (via IMDb ID). Optional `OMDB_API_KEY` env var — `get_financials` works TMDB-only when not set.
 - **Wikidata SPARQL**: Awards data and talent representation (P1875). No auth required. Live queries to `https://query.wikidata.org/sparql`.
 
 ## Awards Registry
@@ -91,7 +96,7 @@ M13 added: Peabody Awards (1 category), Gotham Awards (4 categories), Emmy docum
 
 ## Testing
 
-- `npm test` — unit tests (no network), 332 tests across 17 files
+- `npm test` — unit tests (no network)
 - `npm run test:integration` — integration tests (hits live TMDB + Wikidata APIs, needs `TMDB_ACCESS_TOKEN`)
 - Integration test files: `tests/integration/live-api.test.ts` (TMDB + Wikidata basics), `tests/integration/comp-films.integration.test.ts` (award tools vs. documentary comp films), `tests/tools/awards.integration.test.ts` (name-based resolution), `tests/integration/m13-registry.integration.test.ts` (M13 Wikidata-only — Peabody, Guggenheim, Gotham, Emmy), `tests/tools/representation.integration.test.ts` (Wikidata-only — Zendaya→CAA, Dwayne Johnson→UTA)
 - Test files mirror source structure: `tests/tools/`, `tests/types/`, `tests/utils/`

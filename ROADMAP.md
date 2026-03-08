@@ -68,7 +68,7 @@ Film research is scattered across TMDB, IMDb, Wikipedia, JustWatch, and festival
 
 ### M12: Box Office & Financial Data
 **Criteria:** New `get_financials` tool (#21) aggregating structured financial data from TMDB (budget, revenue) and OMDb (domestic gross). Multi-source architecture with source attribution per data point. OMDb API key optional — tool works TMDB-only when not set. Extensible for future sources (OpusData). Wikidata P2142 assessed and rejected (0.36% doc coverage, 0/5 comp films had data). Layer 2 (trade press scraping for deal intelligence) deferred to separate milestone.
-**Status:** Design complete, implementation plan ready (9 tasks).
+**Status:** Complete — v0.11.0 tagged. 21 tools (17 TMDB + 4 awards). OMDb client optional.
 - Design: `docs/plans/2026-03-08-m12-box-office-design.md`
 - Plan: `docs/plans/2026-03-08-m12-implementation.md`
 
@@ -114,7 +114,7 @@ Film research is scattered across TMDB, IMDb, Wikipedia, JustWatch, and festival
 
 ## Current Status
 
-M15 merged to master. 21 tools on master (16 TMDB + 4 awards + 1 representation), 24 ceremonies, 101 award categories. 332 unit tests across 17 files. `get_person_representation` queries Wikidata P1875 for talent agency affiliations. M12 (box office & financial data) design complete on separate `m12-financials` branch (not merged). M16-M20 planned.
+v0.12.0. 22 tools total (17 TMDB + 4 awards + 1 representation), 24 ceremonies, 101 award categories. M12 (`get_financials` — TMDB + OMDb financial data) and M15 (`get_person_representation` — Wikidata P1875 talent agencies) both merged. M16-M20 planned.
 
 ### Known Issues (from GTM stress test)
 - **BOD-206:** Gotham Best Documentary `get_award_history` returns empty — Wikidata P166 data gap (structural, not code)
@@ -136,7 +136,7 @@ M15 merged to master. 21 tools on master (16 TMDB + 4 awards + 1 representation)
 | M9: Crew Resolution | 1 session | 1 session (implementation) | — | Complete |
 | M10: Tooling Review | 1 session | 1 session (design + plan + implementation) | — | Complete |
 | M11: Batch Keywords | 1 session | 0.5 session | — | Complete |
-| M12: Box Office Data | 1-2 sessions | 0.5 session (research + design + plan) | — | Design complete |
+| M12: Box Office Data | 1-2 sessions | 1 session (research + design + plan + implementation) | — | Complete |
 | M13: Awards Registry Exp. | 1-2 sessions | 2 sessions (feasibility + design + plan, implementation) | — | Complete |
 | M14: Person Awards Fallback | 1 session | 0.5 session | — | Complete |
 | BOD-199: Tiered Name Resolution | 0.5 session | 0.5 session | — | Complete |
