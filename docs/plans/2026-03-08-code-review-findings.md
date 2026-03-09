@@ -65,6 +65,8 @@ The types already exist in `tmdb.ts` (`TMDBCreditsResponse`, `TMDBCastMember`, `
 
 **Fix:** Wire existing type interfaces to client return types. This is the single largest technical debt item.
 
+**Status (5c08df6):** Fixed. All 5 TMDBClient methods typed. Remaining `any` in `details.ts` (`truncateCredits`, `filterWatchProviders`) and `awards.ts` (`(details as any).credits`) are accepted — these operate on dynamically-shaped `append_to_response` results where the key set varies by caller. Typing these would require modeling all append variants as intersection types, which isn't worth the complexity.
+
 **I2. TMDB error response parsing may throw on non-JSON error bodies**
 *File: `src/utils/tmdb-client.ts`, lines 64-66*
 

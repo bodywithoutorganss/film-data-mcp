@@ -480,8 +480,8 @@ async function phase9_trending() {
 // ═══════════════════════════════════════════════════════════════
 async function main() {
   console.log("╔══════════════════════════════════════════════════════════════════════╗");
-  console.log("║           BREAKFALL GTM RESEARCH — film-data-mcp v0.10.0           ║");
-  console.log("║     Exercising 12 tools against live TMDB + Wikidata APIs            ║");
+  console.log("║           BREAKFALL GTM RESEARCH — film-data-mcp v0.13.0           ║");
+  console.log("║      Exercising 12 tools against live TMDB + Wikidata APIs         ║");
   console.log("╚══════════════════════════════════════════════════════════════════════╝");
 
   const t0 = Date.now();
