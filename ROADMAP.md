@@ -183,6 +183,9 @@ Cross-cutting view of every data type evaluated across all milestones and resear
 | Critics' Choice Doc, Cinema Eye, IDA | Rejected | M13 | No Wikidata editor communities |
 | Sundance Fund/Labs, Film Independent Labs, ITVS, Catapult, Ford/JustFilms | Rejected | M13 | Not on Wikidata (labs/grants, not ceremonies) |
 | Gotham Best Documentary | Live (empty) | BOD-206 | QID in registry but 0 P166 claims in Wikidata |
+| NEA Fellowship | Rejected | M13 | 246 P166 claims but only ~13 film-relevant |
+| TIFF Platform Prize | Rejected | M13 | 2 P166/P1411 claims. Too low density |
+| TIFF Talent Lab | Rejected | M13 | No Wikidata entity exists |
 
 ### Financial Data — TMDB + OMDb
 
@@ -192,6 +195,7 @@ Cross-cutting view of every data type evaluated across all milestones and resear
 | Domestic gross (OMDb) | Live | `get_financials` (M12) | Optional OMDb API key |
 | OpusData / The Numbers | Evaluate | M20 | $19/mo web, API enterprise pricing. Supplements M12. |
 | Wikidata P2142 box office | Rejected | M12 | 0.36% doc coverage, 0/5 comp films had data |
+| IMDb / Box Office Mojo | Rejected | M12 | ~$400K/yr. Gold-standard but not viable at cost |
 
 ### Talent & Representation — Wikidata P1875
 
@@ -200,6 +204,9 @@ Cross-cutting view of every data type evaluated across all milestones and resear
 | Agency affiliations | Live | `get_person_representation` (M15) | ~1,200 film professionals. US sparse (~70 CAA/WME/UTA/ICM), JP/KR strong |
 | IMDbPro representation | Rejected | M15 | Gold-standard data but no API, aggressive bot detection |
 | ContactAnyCelebrity | Rejected | M15 | No API, $39/mo |
+| Wikidata P6275 (copyright representative) | Rejected | M15 | 2,579 film professionals but mostly visual artists' rights societies |
+| filmmakers.eu API | Rejected | M15 | Right data model, wrong geography. ~40K profiles, D/A/CH only |
+| IMDb Bulk Data / AWS | Rejected | M15 | $150K-400K/yr, no representation data even in enterprise tier |
 
 ### Credits & Acknowledgments — TMDB
 
@@ -226,7 +233,7 @@ Cross-cutting view of every data type evaluated across all milestones and resear
 | IndieWire festival roundup extraction | Planned | M17 | Single richest extraction target (one URL, many deals) |
 | Wayback CDX historical article enumeration | Planned | M17 | 60 req/min, free |
 | LUMIERE European theatrical admissions | Planned | M17 | Free, 57K titles, 38 markets, Excel export |
-| LUMIERE VOD availability | Evaluate | M20 | Free web |
+| LUMIERE VOD availability | Evaluate | M20 | Free web. Assessed M20 — useful complement for territory-level availability mapping |
 | Cineuropa sales directory | Evaluate | M20 | 975 European sales companies, free web |
 | Screen Daily territory deals (MGs, pre-sales) | Manual | M20 | Hard paywall, best territory-level data. Subscribe for manual research |
 | Cinando (sales agents, territory availability) | Manual | M20 | €149/yr, no API, EU Database Directive. Academic Figshare dataset exists (77K films, one-off) |
@@ -237,6 +244,15 @@ Cross-cutting view of every data type evaluated across all milestones and resear
 | Structured film deal database | Doesn't exist | M20 | Nobody publishes this publicly or affordably |
 | Documentary-specific deal tracker | Doesn't exist | M20 | No org tracks doc deals systematically |
 | Territory-level deal terms (free) | Doesn't exist | M20 | Locked behind paywall + private relationships |
+| Hollywood Reporter RSS | Evaluate | M20 | PMC property, not profiled. Covers deals but less indie/doc focus |
+| Seventh Row (TIFF acquisition lists) | Evaluate | M20 | Minor supplementary source for TIFF deals |
+| IFTA Film Catalogue | Rejected | M20 | No API, ToS explicitly prohibits robots/automation |
+| Festival Scope Pro | Rejected | M20 | Screening platform, not deal data. No API. €70/yr |
+| Reelport | Rejected | M20 | European market focus, no API, custom pricing |
+| Filmhub | Rejected | M20 | Distribution aggregator, no data API |
+| EFP Sales Guide | Rejected | M20 | Static annual PDF, not queryable |
+| AFM exhibitor/buyer lists | Rejected | M20 | Registration-gated, no programmatic access |
+| Completed deal history (post-close terms) | Doesn't exist | M20 | Cinando tracks availability, not completed deals. No aggregator |
 | US equivalent to LUMIERE | Doesn't exist | M20 | |
 
 ### Impact Campaigns — No Source Identified
@@ -246,6 +262,11 @@ Cross-cutting view of every data type evaluated across all milestones and resear
 | Mission/theory of change, KPIs, partners, case studies | Design needed | M18 | May be extension or separate MCP |
 | Impact-specific funding (Ford, Catapult, Perspective Fund) | Design needed | M18 | Distinct from production funding |
 | Community screening / educational distribution | Design needed | M18 | |
+| DOC NYC (filmmaker directory, panels) | Evaluate | M20 | Resource directory + $30K Subject Matter award. Not a data product |
+| IDA educational resources | Evaluate | M20 | Panels, guides. No deal or impact data |
+| ITVS / Independent Lens / POV deal terms | Evaluate | M20 | 1,400+ films funded. Terms private. Mid-five-figures to low-six-figures |
+| The Film Collaborative (market analysis) | Rejected | M20 | Qualitative blog analysis only, not structured data |
+| Desktop Documentaries (distributor directory) | Rejected | M20 | 250+ distributors, paid course. Static, not data |
 
 ### Infrastructure & Architecture
 
