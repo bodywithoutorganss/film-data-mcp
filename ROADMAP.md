@@ -99,28 +99,39 @@ Film research is scattered across TMDB, IMDb, Wikipedia, JustWatch, and festival
 - Plan: `docs/plans/2026-03-08-m16-implementation.md`
 - Research: `docs/plans/2026-03-08-m16-research-findings.md`
 
-### M17: Skills & Command Workflows
-**Criteria:** Design and build Claude Code skills and slash commands that compose film-data-mcp tools into producer workflows. Examples: comp sheet generation (search → details → awards → synthesis), filmmaker career mapping (person → credits → collaborator network), distribution pathway analysis (festival premieres → watch providers → financial data), documentary discovery with curated keyword bundles (BOD-208: keyword exclusion sets for filtering concert/fan content from Documentary genre, predefined keyword bundles for common doc sub-genres like social issue, personal essay, investigative). Requires extensive design iteration — the tool surface is mature enough (23 tools) but the workflow layer that chains them for real production tasks doesn't exist yet.
+### M17: Plugin Architecture & Producer Workflows
+**Criteria:** Combined scope from former M17 (Skills & Commands) and M20 (Plugin Architecture + Wikipedia MCP). Restructure film-data-mcp as a Claude Code plugin, build producer workflow skills inside that plugin structure, and integrate Wikipedia MCP as a fallback enrichment layer.
+
+**Plugin architecture:** Restructure as a Claude Code plugin composable with other MCP servers. Wikipedia MCP integration for the 78% of skipped crew absent from Wikidata (70% of those appear on 2+ Wikipedia pages). Preserve standalone MCP usability.
+
+**Producer workflow skills:** Comp sheet generation (search → details → awards → synthesis), filmmaker career mapping (person → credits → collaborator network), distribution pathway analysis (festival premieres → watch providers → financial data), documentary discovery with curated keyword bundles (BOD-208: keyword exclusion sets, predefined sub-genre bundles).
+
 **Status:** Design needed.
+- Wikipedia research: `docs/plans/2026-03-08-m20-wikipedia-resolution-findings.md`
 
 ### M18: Impact Campaign Data
 **Criteria:** Research and design a structured data layer for documentary impact campaigns. Categories to model (requires careful design iteration): mission/theory of change, KPIs (screenings, policy meetings, media mentions, audience reach, legislative action), campaign timeline phases (pre-release grassroots, festival window, theatrical/streaming, long-tail educational), partners (NGOs, advocacy orgs, educational institutions), personnel (impact producers, outreach coordinators), case studies (measurable outcomes from comparable docs — e.g., Blackfish → SeaWorld policy, An Inconvenient Truth → climate legislation), political context (intersecting legislation, public debate, cultural moment), impact-specific funding (Ford Foundation, Catapult, Perspective Fund — distinct from production funding), community screening/educational distribution strategy, and measurement methodology (pre/post surveys, policy tracking, media analysis). Open architectural question: may be an extension of film-data-mcp or a separate MCP that composes with it — decide during design phase. Phase 1 is MCP tools for retrieving/querying impact campaign data; Phase 2 (likely M17 skills layer) is tools for *building* campaigns.
 **Status:** Design needed.
 
-### M20: Plugin Architecture & Wikipedia MCP Integration
-**Criteria:** Restructure film-data-mcp as a Claude Code plugin in the personal knowledge marketplace, composable with other MCP servers. Key integration: Wikipedia MCP as a fallback enrichment layer for the 37% of crew that Wikidata can't see. BOD-203 analysis (12 docs, 107 crew) found 78% of skipped crew have zero Wikidata presence, but 70% of those are mentioned on 2+ English Wikipedia pages (Jason Spingarn-Koff on 8 pages, Nels Bangerter on 10+, etc.). Wikipedia could provide: mention-based identity confirmation, unstructured award data from film article prose (especially for doc-specific ceremonies), and collaboration network signals from cross-article credit mentions. Design questions: resolution chain extension (4th step or parallel enrichment?), mention extraction from article text, performance impact (opt-in?), plugin structure that preserves standalone MCP usability.
-**Status:** Design needed. Research findings documented.
-- Research: `docs/plans/2026-03-08-m20-wikipedia-resolution-findings.md`
+### M19: Fellowship Registry Assessment
+**Criteria:** Evaluate additional fellowships for Wikidata viability and add to the awards registry, following the M13 pattern (SPARQL feasibility → QID verification → implementation → integration tests). Candidates: MacArthur Fellowship, Rockefeller Foundation, United States Artists Fellowship, Creative Capital. Each fellowship either added to the registry with verified QIDs or documented as non-viable with evidence.
+**Status:** Backlog.
+- Prior art: M13 feasibility study (`docs/plans/2026-03-07-m13-feasibility-study.md`), Guggenheim qualifier pattern in `awards-registry.ts`
+
+### M20: Trade Press Feasibility Study
+**Criteria:** Research programmatic access to film deal intelligence — distribution deals, sales agent agreements, MG amounts, territory sales, festival market acquisitions. Evaluate Cinando, Film Catalogue, trade press (Deadline, Variety, Screen Daily, The Wrap), The Numbers/OpusData, and festival market reports. Deliverable: feasibility report documenting each source's viability, access model, cost, coverage, and legal boundaries. Recommendation on architecture (standalone MCP, extension, or manual curation layer).
+**Status:** Backlog.
+- Context: M12 design doc Layer 2 scope (`docs/plans/2026-03-08-m12-box-office-design.md`)
 
 ## Current Status
 
-v0.13.0. 23 tools total (18 TMDB + 4 awards + 1 representation), 24 ceremonies, 101 award categories. M16 (`get_thanks_credits` — forward/reverse/batch Thanks credit queries) complete. M17, M18, M20 planned. M19 (Philanthropic & Financial Intelligence) migrated to `financial-mcp-tools` repo (Linear project: Financial Intelligence MCP, BOD-201).
+v0.13.0. 23 tools total (18 TMDB + 4 awards + 1 representation), 24 ceremonies, 101 award categories. M16 (`get_thanks_credits` — forward/reverse/batch Thanks credit queries) complete. M17 (combined plugin architecture + producer workflows), M18, M19 (fellowship registry), and M20 (trade press study) planned. Former M19 (Philanthropic & Financial Intelligence) migrated to `financial-mcp-tools` repo (BOD-201). Known data gaps tracked in BOD-206.
 
-### Known Issues (from GTM stress test)
-- **BOD-206:** Gotham Best Documentary `get_award_history` returns empty — Wikidata P166 data gap (structural, not code)
-- **BOD-207:** ~~Direct film awards missing `result` field~~ — Fixed. `WikidataAward.result: "win"` and `WikidataNomination.result: "nomination"` added.
-- **BOD-208:** ~~`discover` with Documentary genre returns non-narrative docs~~ — Fixed. Tool description warns about genre 99 breadth, recommends keyword filtering. Curated keyword bundles deferred to M17.
-- **BOD-203:** ~~Richer candidate scoring for name resolution~~ — Canceled. Evidence analysis (12 docs, 107 crew) showed 78% of skips are absent Wikidata entities, not disambiguation failures. Generic occupation QIDs (`Q3455803` director, `Q47541952` producer) added to `FILM_OCCUPATIONS` to fix the one recoverable case.
+### Known Issues
+- **BOD-206:** Consolidated data gaps tracker — Wikidata awards/fellowships/crew/representation, TMDB thanks/financials, and trade press deal intelligence. All structural gaps, not code bugs.
+- ~~**BOD-207:** Direct film awards missing `result` field~~ — Fixed.
+- ~~**BOD-208:** `discover` Documentary genre too broad~~ — Fixed. Keyword bundles deferred to M17.
+- ~~**BOD-203:** Richer candidate scoring~~ — Canceled (78% of skips are absent Wikidata entities).
 
 ## Time Tracking
 
@@ -152,10 +163,11 @@ Actuals measured from commit timestamps via `scripts/cc-time.sh`. Gaps > 45 minu
 | M20 Wikipedia research | — | 0.2 | Complete |
 | M16: Special Thanks Credits | 1.25 | 1.3 | Complete |
 | **Completed total** | — | **14.1** | |
-| M17: Skills & Commands | 4.0 | — | Design needed |
+| M17: Plugin & Workflows | 5.5 | — | Design needed |
 | M18: Impact Campaign Data | 4.0 | — | Design needed |
-| M20: Plugin Architecture | 2.5 | — | Design needed |
-| **Remaining total** | **10.5** | — | |
+| M19: Fellowship Registry | 1.5 | — | Backlog |
+| M20: Trade Press Study | 1.5 | — | Backlog |
+| **Remaining total** | **12.5** | — | |
 
 ## Key Decisions
 
