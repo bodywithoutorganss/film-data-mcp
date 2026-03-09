@@ -25,7 +25,7 @@ Wikidata P2142 has only 135 documentaries (0.36% of docs on Wikidata), and zero 
 **In scope (Layer 1):** Structured financial data from TMDB + OMDb APIs.
 
 **Deferred:**
-- Layer 2: Trade press scraping (Deadline, Variety, IndieWire) for deal intelligence — separate milestone.
+- Layer 2: Trade press scraping (Deadline, Variety, IndieWire) for deal intelligence — completed as M20 feasibility study (`docs/plans/2026-03-08-m20-trade-press-design.md`).
 - Layer 3: Obsidian integration for curated/manual data — future integration.
 - OpusData: Requires paid subscription evaluation — future enhancement to Layer 1.
 

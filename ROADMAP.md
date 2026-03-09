@@ -135,6 +135,134 @@ v0.13.0. 23 tools total (18 TMDB + 4 awards + 1 representation), 24 ceremonies, 
 - ~~**BOD-208:** `discover` Documentary genre too broad~~ — Fixed. Keyword bundles deferred to M17.
 - ~~**BOD-203:** Richer candidate scoring~~ — Canceled (78% of skips are absent Wikidata entities).
 
+## Data Domain Inventory
+
+Cross-cutting view of every data type evaluated across all milestones and research. Grouped by domain, not milestone. Status key: **Live** (shipped tool), **Planned** (milestone assigned), **Evaluate** (needs further research), **Manual** (usable but no API), **Rejected** (evaluated, not viable), **Doesn't exist** (no source anywhere).
+
+### Core Metadata — TMDB
+
+| Data | Status | Tool / Milestone | Notes |
+|------|--------|-----------------|-------|
+| Movie/TV/person search | Live | `search` (M2) | Multi, movie, TV, person, company |
+| Movie details + appended data | Live | `movie_details` (M2) | credits, videos, images, etc. |
+| TV details + appended data | Live | `tv_details` (M2) | |
+| Person details + appended data | Live | `person_details` (M2) | |
+| Detailed credits (dept/job filter, pagination) | Live | `get_credits` (M8) | |
+| Collections/franchises | Live | `collection_details` (M2) | |
+| Companies/networks | Live | `company_details` (M2) | |
+| Genres | Live | `genres` (M2) | |
+| Keywords | Live | `search_keywords` (M6, M11) | Batch lookup via string array |
+| External ID lookup | Live | `find_by_external_id` (M2) | IMDb/TVDB/social → TMDB |
+
+### Discovery & Browsing — TMDB
+
+| Data | Status | Tool / Milestone | Notes |
+|------|--------|-----------------|-------|
+| Advanced filtering (30+ params) | Live | `discover` (M2) | Genre, year, rating, crew, cast, keywords, etc. |
+| Trending (daily/weekly) | Live | `trending` (M2) | |
+| Curated lists (popular, top rated, etc.) | Live | `curated_lists` (M2) | |
+| Company filmography | Live | `company_filmography` (M6) | Paginated discover wrapper |
+| Documentary keyword bundles | Planned | M17 (BOD-208) | Predefined sub-genre bundles, exclusion sets |
+
+### Distribution & Availability — TMDB
+
+| Data | Status | Tool / Milestone | Notes |
+|------|--------|-----------------|-------|
+| Watch providers (streaming/rent/buy) | Live | `watch_providers` (M2) | Region-filterable |
+| Festival premieres | Live | `get_festival_premieres` (M8) | Extracted from TMDB release dates |
+
+### Awards & Recognition — Wikidata SPARQL
+
+| Data | Status | Tool / Milestone | Notes |
+|------|--------|-----------------|-------|
+| Person awards (wins + nominations) | Live | `get_person_awards` (M3, M14) | Name fallback added M14 |
+| Film awards + crew cross-referencing | Live | `get_film_awards` (M3, M7) | P1411 is primary doc value channel |
+| Award history by category | Live | `get_award_history` (M3) | |
+| Award search (registry lookup) | Live | `search_awards` (M3) | 24 ceremonies, 101 categories |
+| Fellowships (MacArthur, Rockefeller, USA, Creative Capital) | Planned | M19 | Wikidata viability TBD |
+| Critics' Choice Doc, Cinema Eye, IDA | Rejected | M13 | No Wikidata editor communities |
+| Sundance Fund/Labs, Film Independent Labs, ITVS, Catapult, Ford/JustFilms | Rejected | M13 | Not on Wikidata (labs/grants, not ceremonies) |
+| Gotham Best Documentary | Live (empty) | BOD-206 | QID in registry but 0 P166 claims in Wikidata |
+
+### Financial Data — TMDB + OMDb
+
+| Data | Status | Tool / Milestone | Notes |
+|------|--------|-----------------|-------|
+| Budget, revenue (TMDB) | Live | `get_financials` (M12) | `zeroToNull` pattern — 0 means unknown |
+| Domestic gross (OMDb) | Live | `get_financials` (M12) | Optional OMDb API key |
+| OpusData / The Numbers | Evaluate | M20 | $19/mo web, API enterprise pricing. Supplements M12. |
+| Wikidata P2142 box office | Rejected | M12 | 0.36% doc coverage, 0/5 comp films had data |
+
+### Talent & Representation — Wikidata P1875
+
+| Data | Status | Tool / Milestone | Notes |
+|------|--------|-----------------|-------|
+| Agency affiliations | Live | `get_person_representation` (M15) | ~1,200 film professionals. US sparse (~70 CAA/WME/UTA/ICM), JP/KR strong |
+| IMDbPro representation | Rejected | M15 | Gold-standard data but no API, aggressive bot detection |
+| ContactAnyCelebrity | Rejected | M15 | No API, $39/mo |
+
+### Credits & Acknowledgments — TMDB
+
+| Data | Status | Tool / Milestone | Notes |
+|------|--------|-----------------|-------|
+| Thanks / Special Thanks credits | Live | `get_thanks_credits` (M16) | 3 modes: forward, reverse, batch. ~45% film coverage |
+| Wikidata P7137 (acknowledged) | Rejected | M16 | Only 5 film entities globally |
+
+### Entity Resolution — Wikidata
+
+| Data | Status | Tool / Milestone | Notes |
+|------|--------|-----------------|-------|
+| TMDB → IMDb → name search (occupation filter) | Live | M1, M9 | 3-tier chain |
+| Tiered name resolution (Tier 1/2/3) | Live | BOD-199 | Tier 2: sole candidate without film occupation |
+| Wikipedia mention-based enrichment | Planned | M17 | For 78% of skipped crew absent from Wikidata (70% appear on 2+ Wikipedia pages) |
+| Scored ranking for disambiguation | Rejected | BOD-203 | 78% of skips are absent entities, not disambiguation failures |
+
+### Deal Intelligence — Trade Press (M20 Research)
+
+| Data | Status | Tool / Milestone | Notes |
+|------|--------|-----------------|-------|
+| RSS monitoring (Deadline, IndieWire, Variety, Wrap) | Planned | M17 | Deadline has dedicated `/category/acquisitions/feed/` |
+| LLM structured extraction from deal articles | Planned | M17 | Claude `tool_use` + Zod schema. Headline regex covers ~60-70% |
+| IndieWire festival roundup extraction | Planned | M17 | Single richest extraction target (one URL, many deals) |
+| Wayback CDX historical article enumeration | Planned | M17 | 60 req/min, free |
+| LUMIERE European theatrical admissions | Planned | M17 | Free, 57K titles, 38 markets, Excel export |
+| LUMIERE VOD availability | Evaluate | M20 | Free web |
+| Cineuropa sales directory | Evaluate | M20 | 975 European sales companies, free web |
+| Screen Daily territory deals (MGs, pre-sales) | Manual | M20 | Hard paywall, best territory-level data. Subscribe for manual research |
+| Cinando (sales agents, territory availability) | Manual | M20 | €149/yr, no API, EU Database Directive. Academic Figshare dataset exists (77K films, one-off) |
+| Vitrina AI (titles, companies, exec profiles, deals) | Evaluate | M20 | 200 free credits. Enterprise ~$10K+/yr for API |
+| Luminate / Variety Insight | Deferred | M20 | Enterprise subscription, contact sales |
+| FilmTake territory MG benchmarks | Deferred | M20 | $500K budget floor, narrative focus |
+| Screen Intelligence (GlobalData) | Deferred | M20 | Enterprise, likely high cost |
+| Structured film deal database | Doesn't exist | M20 | Nobody publishes this publicly or affordably |
+| Documentary-specific deal tracker | Doesn't exist | M20 | No org tracks doc deals systematically |
+| Territory-level deal terms (free) | Doesn't exist | M20 | Locked behind paywall + private relationships |
+| US equivalent to LUMIERE | Doesn't exist | M20 | |
+
+### Impact Campaigns — No Source Identified
+
+| Data | Status | Tool / Milestone | Notes |
+|------|--------|-----------------|-------|
+| Mission/theory of change, KPIs, partners, case studies | Design needed | M18 | May be extension or separate MCP |
+| Impact-specific funding (Ford, Catapult, Perspective Fund) | Design needed | M18 | Distinct from production funding |
+| Community screening / educational distribution | Design needed | M18 | |
+
+### Infrastructure & Architecture
+
+| Capability | Status | Milestone | Notes |
+|------------|--------|-----------|-------|
+| Plugin architecture (Claude Code plugin) | Planned | M17 | Restructure for composability with other MCPs |
+| Producer workflow skills | Planned | M17 | Comp sheets, career mapping, distribution analysis |
+| Neo4j + Obsidian persistence layer | Future | BOD-206 | Own the data strategy for structural gaps |
+
+### Legal Considerations
+
+| Source | Risk | Notes |
+|--------|------|-------|
+| PMC properties (Deadline, Variety, IndieWire) | Medium-High for scraping | PMC v. Google lawsuit (Sep 2025). RSS = LOW risk, scraping = HIGH risk |
+| TollBit | Low | Potential legitimate paid API for PMC content |
+| Cinando | High for automation | EU Database Directive, ToS prohibits robots |
+
 ## Time Tracking
 
 Actuals measured from commit timestamps via `scripts/cc-time.sh`. Gaps > 45 minutes between commits are treated as session breaks. M1–M8 actuals from manual commit-span analysis (pre-date the `(Mxx):` commit prefix convention).

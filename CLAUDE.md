@@ -87,6 +87,7 @@ Handlers validate via Zod internally and return `JSON.stringify(result, null, 2)
 - **TMDB**: Crew/cast/credits, metadata, budget/revenue. Requires `TMDB_ACCESS_TOKEN` env var.
 - **OMDb**: Domestic box office gross (via IMDb ID). Optional `OMDB_API_KEY` env var — `get_financials` works TMDB-only when not set.
 - **Wikidata SPARQL**: Awards data and talent representation (P1875). No auth required. Live queries to `https://query.wikidata.org/sparql`.
+- **Trade press / deal intelligence**: Not yet implemented. M20 feasibility study evaluated 15+ sources — see `docs/plans/2026-03-08-m20-trade-press-design.md` and `ROADMAP.md` Data Domain Inventory. Raw research in `.firecrawl/m20-trade-press/raw-research/`.
 
 ## Awards Registry
 
