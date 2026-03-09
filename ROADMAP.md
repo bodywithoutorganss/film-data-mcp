@@ -120,12 +120,14 @@ Film research is scattered across TMDB, IMDb, Wikipedia, JustWatch, and festival
 
 ### M20: Trade Press Feasibility Study
 **Criteria:** Research programmatic access to film deal intelligence — distribution deals, sales agent agreements, MG amounts, territory sales, festival market acquisitions. Evaluate Cinando, Film Catalogue, trade press (Deadline, Variety, Screen Daily, The Wrap), The Numbers/OpusData, and festival market reports. Deliverable: feasibility report documenting each source's viability, access model, cost, coverage, and legal boundaries. Recommendation on architecture (standalone MCP, extension, or manual curation layer).
-**Status:** Backlog.
+**Status:** Complete — feasibility study delivered. 15+ sources evaluated across 5 tiers (accessible/paid/enterprise/not viable/doesn't exist). Key finding: no structured deal database exists publicly. RSS feeds + LLM extraction is the viable architecture. 5-phase implementation plan from IndieWire roundup extraction through LUMIERE integration. Architecture recommendation: Claude Code skills (M17), not MCP tools.
+- Design: `docs/plans/2026-03-08-m20-trade-press-design.md`
+- Raw research: `.firecrawl/m20-trade-press/raw-research/` (11 files)
 - Context: M12 design doc Layer 2 scope (`docs/plans/2026-03-08-m12-box-office-design.md`)
 
 ## Current Status
 
-v0.13.0. 23 tools total (18 TMDB + 4 awards + 1 representation), 24 ceremonies, 101 award categories. M16 (`get_thanks_credits` — forward/reverse/batch Thanks credit queries) complete. M17 (combined plugin architecture + producer workflows), M18, M19 (fellowship registry), and M20 (trade press study) planned. Former M19 (Philanthropic & Financial Intelligence) migrated to `financial-mcp-tools` repo (BOD-201). Known data gaps tracked in BOD-206.
+v0.13.0. 23 tools total (18 TMDB + 4 awards + 1 representation), 24 ceremonies, 101 award categories. M16 (`get_thanks_credits`) and M20 (trade press feasibility study) complete. M17 (combined plugin architecture + producer workflows), M18 (impact campaigns), and M19 (fellowship registry) planned. Former M19 (Philanthropic & Financial Intelligence) migrated to `financial-mcp-tools` repo (BOD-201). Known data gaps tracked in BOD-206.
 
 ### Known Issues
 - **BOD-206:** Consolidated data gaps tracker — Wikidata awards/fellowships/crew/representation, TMDB thanks/financials, and trade press deal intelligence. All structural gaps, not code bugs.
@@ -162,12 +164,14 @@ Actuals measured from commit timestamps via `scripts/cc-time.sh`. Gaps > 45 minu
 | BOD-208 + BOD-203 + misc fixes | — | 0.4 | Complete |
 | M20 Wikipedia research | — | 0.2 | Complete |
 | M16: Special Thanks Credits | 1.25 | 1.3 | Complete |
-| **Completed total** | — | **14.1** | |
+| M20: Trade Press Study | 1.5 | 1.1* | Complete |
+| **Completed total** | — | **15.2** | |
 | M17: Plugin & Workflows | 5.5 | — | Design needed |
 | M18: Impact Campaign Data | 4.0 | — | Design needed |
 | M19: Fellowship Registry | 1.5 | — | Backlog |
-| M20: Trade Press Study | 1.5 | — | Backlog |
-| **Remaining total** | **12.5** | — | |
+| **Remaining total** | **11.0** | — | |
+
+\* M20 actual: `cc-time.sh` reports 0.1h (research-heavy session had no intermediate commits during 60min agent dispatch + synthesis phase). Manual estimate: ~1.1h.
 
 ## Key Decisions
 
