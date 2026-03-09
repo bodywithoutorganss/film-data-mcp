@@ -106,8 +106,12 @@ Film research is scattered across TMDB, IMDb, Wikipedia, JustWatch, and festival
 
 **Producer workflow skills:** Comp sheet generation (search → details → awards → synthesis), filmmaker career mapping (person → credits → collaborator network), distribution pathway analysis (festival premieres → watch providers → financial data), documentary discovery with curated keyword bundles (BOD-208: keyword exclusion sets, predefined sub-genre bundles).
 
+**Trade press extraction (from M20):** 5-phase pipeline — IndieWire roundup extraction (Phase 1, standalone script prototype), RSS deal monitoring (Phase 2), historical Wayback corpus (Phase 3), LUMIERE European data (Phase 4), paid supplements evaluation (Phase 5). Architecture: Claude Code skills composing existing tools. `DealExtraction` schema, keyword filters, and headline regex patterns defined in design doc.
+
 **Status:** Design needed.
+- Trade press design: `docs/plans/2026-03-08-m20-trade-press-design.md`
 - Wikipedia research: `docs/plans/2026-03-08-m20-wikipedia-resolution-findings.md`
+- Raw trade press research: `.firecrawl/m20-trade-press/raw-research/` (11 files, indexed by README.md)
 
 ### M18: Impact Campaign Data
 **Criteria:** Research and design a structured data layer for documentary impact campaigns. Categories to model (requires careful design iteration): mission/theory of change, KPIs (screenings, policy meetings, media mentions, audience reach, legislative action), campaign timeline phases (pre-release grassroots, festival window, theatrical/streaming, long-tail educational), partners (NGOs, advocacy orgs, educational institutions), personnel (impact producers, outreach coordinators), case studies (measurable outcomes from comparable docs — e.g., Blackfish → SeaWorld policy, An Inconvenient Truth → climate legislation), political context (intersecting legislation, public debate, cultural moment), impact-specific funding (Ford Foundation, Catapult, Perspective Fund — distinct from production funding), community screening/educational distribution strategy, and measurement methodology (pre/post surveys, policy tracking, media analysis). Open architectural question: may be an extension of film-data-mcp or a separate MCP that composes with it — decide during design phase. Phase 1 is MCP tools for retrieving/querying impact campaign data; Phase 2 (likely M17 skills layer) is tools for *building* campaigns.
