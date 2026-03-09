@@ -137,7 +137,7 @@ v0.13.0. 23 tools total (18 TMDB + 4 awards + 1 representation), 24 ceremonies, 
 
 ## Data Domain Inventory
 
-Cross-cutting view of every data type evaluated across all milestones and research. Grouped by domain, not milestone. Status key: **Live** (shipped tool), **Planned** (milestone assigned), **Evaluate** (needs further research), **Manual** (usable but no API), **Rejected** (evaluated, not viable), **Doesn't exist** (no source anywhere).
+Cross-cutting view of every data type evaluated across all milestones and research. Grouped by domain, not milestone. Status key: **Live** (shipped tool), **Planned** (milestone assigned), **Evaluate** (needs further research), **Manual** (usable but no API), **Deferred** (not acting now, may revisit), **Rejected** (evaluated, not viable), **Doesn't exist** (no source anywhere).
 
 ### Core Metadata — TMDB
 
@@ -235,23 +235,23 @@ Cross-cutting view of every data type evaluated across all milestones and resear
 | LUMIERE European theatrical admissions | Planned | M17 | Free, 57K titles, 38 markets, Excel export |
 | LUMIERE VOD availability | Evaluate | M20 | Free web. Assessed M20 — useful complement for territory-level availability mapping |
 | Cineuropa sales directory | Evaluate | M20 | 975 European sales companies, free web |
+| Vitrina AI (titles, companies, exec profiles, deals) | Evaluate | M20 | 200 free credits. Enterprise ~$10K+/yr for API |
+| Hollywood Reporter RSS | Evaluate | M20 | PMC property, not profiled. Covers deals but less indie/doc focus |
+| Seventh Row (TIFF acquisition lists) | Evaluate | M20 | Minor supplementary source for TIFF deals |
 | Screen Daily territory deals (MGs, pre-sales) | Manual | M20 | Hard paywall, best territory-level data. Subscribe for manual research |
 | Cinando (sales agents, territory availability) | Manual | M20 | €149/yr, no API, EU Database Directive. Academic Figshare dataset exists (77K films, one-off) |
-| Vitrina AI (titles, companies, exec profiles, deals) | Evaluate | M20 | 200 free credits. Enterprise ~$10K+/yr for API |
 | Luminate / Variety Insight | Deferred | M20 | Enterprise subscription, contact sales |
 | FilmTake territory MG benchmarks | Deferred | M20 | $500K budget floor, narrative focus |
 | Screen Intelligence (GlobalData) | Deferred | M20 | Enterprise, likely high cost |
-| Structured film deal database | Doesn't exist | M20 | Nobody publishes this publicly or affordably |
-| Documentary-specific deal tracker | Doesn't exist | M20 | No org tracks doc deals systematically |
-| Territory-level deal terms (free) | Doesn't exist | M20 | Locked behind paywall + private relationships |
-| Hollywood Reporter RSS | Evaluate | M20 | PMC property, not profiled. Covers deals but less indie/doc focus |
-| Seventh Row (TIFF acquisition lists) | Evaluate | M20 | Minor supplementary source for TIFF deals |
 | IFTA Film Catalogue | Rejected | M20 | No API, ToS explicitly prohibits robots/automation |
 | Festival Scope Pro | Rejected | M20 | Screening platform, not deal data. No API. €70/yr |
 | Reelport | Rejected | M20 | European market focus, no API, custom pricing |
 | Filmhub | Rejected | M20 | Distribution aggregator, no data API |
 | EFP Sales Guide | Rejected | M20 | Static annual PDF, not queryable |
 | AFM exhibitor/buyer lists | Rejected | M20 | Registration-gated, no programmatic access |
+| Structured film deal database | Doesn't exist | M20 | Nobody publishes this publicly or affordably |
+| Documentary-specific deal tracker | Doesn't exist | M20 | No org tracks doc deals systematically |
+| Territory-level deal terms (free) | Doesn't exist | M20 | Locked behind paywall + private relationships |
 | Completed deal history (post-close terms) | Doesn't exist | M20 | Cinando tracks availability, not completed deals. No aggregator |
 | US equivalent to LUMIERE | Doesn't exist | M20 | |
 
