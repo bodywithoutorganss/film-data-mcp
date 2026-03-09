@@ -4,6 +4,7 @@
 import { z } from "zod";
 import { TMDBClient } from "../utils/tmdb-client.js";
 import { buildToolDef } from "../utils/tool-helpers.js";
+import type { TMDBAggregateCreditsRole, TMDBAggregateCreditsJob } from "../types/tmdb.js";
 
 // BaseSchema for buildToolDef (no .refine() — avoids ZodEffects)
 export const CreditsBaseSchema = z.object({
@@ -66,7 +67,7 @@ interface CrewEntry {
   episode_count?: number;
 }
 
-function normalizeTVCast(aggregate: any[]): CastEntry[] {
+function normalizeTVCast(aggregate: TMDBAggregateCreditsRole[]): CastEntry[] {
   return aggregate.map((person) => ({
     id: person.id,
     name: person.name,
@@ -76,12 +77,12 @@ function normalizeTVCast(aggregate: any[]): CastEntry[] {
   }));
 }
 
-function normalizeTVCrew(aggregate: any[]): CrewEntry[] {
+function normalizeTVCrew(aggregate: TMDBAggregateCreditsJob[]): CrewEntry[] {
   return aggregate.map((person) => ({
     id: person.id,
     name: person.name,
     department: person.department ?? "",
-    job: (person.jobs ?? []).map((j: any) => j.job).join(", "),
+    job: (person.jobs ?? []).map((j) => j.job).join(", "),
     episode_count: person.total_episode_count,
   }));
 }

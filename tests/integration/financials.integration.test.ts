@@ -6,11 +6,13 @@ import { TMDBClient } from "../../src/utils/tmdb-client.js";
 import { OMDbClient } from "../../src/utils/omdb-client.js";
 import { handleGetFinancials } from "../../src/tools/financials.js";
 
-const tmdbToken = process.env.TMDB_ACCESS_TOKEN;
+const TMDB_TOKEN = process.env.TMDB_ACCESS_TOKEN;
 const omdbKey = process.env.OMDB_API_KEY;
 
-describe("get_financials integration", () => {
-    const tmdbClient = new TMDBClient(tmdbToken!);
+describe.skipIf(!TMDB_TOKEN)("get_financials integration", () => {
+    const tmdbClient = TMDB_TOKEN
+        ? new TMDBClient(TMDB_TOKEN)
+        : (null as unknown as TMDBClient);
     const omdbClient = omdbKey ? new OMDbClient(omdbKey) : null;
 
     it("returns financial data for Fight Club (550)", async () => {

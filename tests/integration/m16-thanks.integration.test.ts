@@ -5,12 +5,13 @@ import { describe, it, expect } from "vitest";
 import { TMDBClient } from "../../src/utils/tmdb-client.js";
 import { handleGetThanksCredits } from "../../src/tools/thanks.js";
 
-const token = process.env.TMDB_ACCESS_TOKEN;
-if (!token) throw new Error("TMDB_ACCESS_TOKEN required for integration tests");
+const TMDB_TOKEN = process.env.TMDB_ACCESS_TOKEN;
 
-const client = new TMDBClient(token);
+describe.skipIf(!TMDB_TOKEN)("get_thanks_credits integration", () => {
+  const client = TMDB_TOKEN
+    ? new TMDBClient(TMDB_TOKEN)
+    : (null as unknown as TMDBClient);
 
-describe("get_thanks_credits integration", () => {
   it("forward mode returns thanks credits for Pulp Fiction", { timeout: 30000 }, async () => {
     // Pulp Fiction (680): 11 Thanks credits confirmed by research
     const result = JSON.parse(

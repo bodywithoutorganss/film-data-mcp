@@ -5,7 +5,7 @@ import { describe, it, expect } from "vitest";
 import { TMDBClient } from "../../src/utils/tmdb-client.js";
 import { WikidataClient } from "../../src/utils/wikidata-client.js";
 
-const TMDB_TOKEN = process.env.TMDB_ACCESS_TOKEN!;
+const TMDB_TOKEN = process.env.TMDB_ACCESS_TOKEN;
 const SPARQL_ENDPOINT = "https://query.wikidata.org/sparql";
 const USER_AGENT = "film-data-mcp/1.0 (BOD-203 analysis)";
 
@@ -258,8 +258,10 @@ async function analyzeFilm(
   };
 }
 
-describe("BOD-203 Resolution Analysis", () => {
-  const tmdbClient = new TMDBClient(TMDB_TOKEN);
+describe.skipIf(!TMDB_TOKEN)("BOD-203 Resolution Analysis", () => {
+  const tmdbClient = TMDB_TOKEN
+    ? new TMDBClient(TMDB_TOKEN)
+    : (null as unknown as TMDBClient);
   const wikidataClient = new WikidataClient();
 
   it("analyzes name resolution failures across documentary films", { timeout: 300_000 }, async () => {

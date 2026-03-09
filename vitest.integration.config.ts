@@ -1,5 +1,5 @@
 // ABOUTME: Vitest configuration for integration tests that hit live external APIs.
-// ABOUTME: Runs tests matching *.integration.test.ts against Wikidata SPARQL endpoint.
+// ABOUTME: Runs tests matching *.integration.test.ts against TMDB, Wikidata, and OMDb.
 
 import { defineConfig } from "vitest/config";
 

@@ -4,3 +4,5 @@ build/
 .env
 .worktrees/
 .firecrawl/
+.DS_Store
+.serena/

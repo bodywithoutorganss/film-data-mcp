@@ -50,13 +50,26 @@ function isThanksJob(job: string | undefined): boolean {
   return job?.toLowerCase().includes("thank") ?? false;
 }
 
-function filterThanksCrew(crew: any[]): ThanksEntry[] {
+// Accepts movie crew (flat job field), TV aggregate crew (jobs[] array),
+// and person combined_credits crew (adds title, media_type, department)
+type CrewLike = {
+  id: number;
+  name: string;
+  job?: string;
+  jobs?: Array<{ job: string }>;
+  total_episode_count?: number;
+  title?: string;
+  media_type?: string;
+  department?: string;
+};
+
+function filterThanksCrew(crew: CrewLike[]): ThanksEntry[] {
   return crew
-    .filter((c) => isThanksJob(c.job) || (c.jobs && c.jobs.some((j: any) => isThanksJob(j.job))))
+    .filter((c) => isThanksJob(c.job) || (c.jobs && c.jobs.some((j) => isThanksJob(j.job))))
     .map((c) => ({
       id: c.id,
       name: c.name,
-      job: c.job ?? (c.jobs ? c.jobs.filter((j: any) => isThanksJob(j.job)).map((j: any) => j.job).join(", ") : ""),
+      job: c.job ?? (c.jobs ? c.jobs.filter((j) => isThanksJob(j.job)).map((j) => j.job).join(", ") : ""),
       ...(c.total_episode_count !== undefined ? { episode_count: c.total_episode_count } : {}),
     }));
 }
@@ -93,11 +106,12 @@ async function handleReverse(
   client: TMDBClient
 ): Promise<Record<string, any>> {
   const details = await client.getPersonDetails(args.person_id, ["combined_credits"]);
-  const crew = details.combined_credits?.crew ?? [];
+  // combined_credits is dynamically attached by TMDB append_to_response
+  const crew: CrewLike[] = (details as any).combined_credits?.crew ?? [];
 
   const thankedIn = crew
-    .filter((c: any) => isThanksJob(c.job))
-    .map((c: any) => ({
+    .filter((c) => isThanksJob(c.job))
+    .map((c) => ({
       id: c.id,
       title: c.title || c.name,
       media_type: c.media_type,
@@ -105,13 +119,13 @@ async function handleReverse(
     }));
 
   const formalRoles: FormalRole[] = crew
-    .filter((c: any) => !isThanksJob(c.job))
-    .map((c: any) => ({
+    .filter((c) => !isThanksJob(c.job))
+    .map((c) => ({
       id: c.id,
       title: c.title || c.name,
-      media_type: c.media_type,
-      department: c.department,
-      job: c.job,
+      media_type: c.media_type ?? "",
+      department: c.department ?? "",
+      job: c.job ?? "",
     }));
 
   return {

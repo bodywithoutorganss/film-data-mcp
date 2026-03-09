@@ -158,12 +158,56 @@ export interface TMDBCrewMember {
 }
 
 /**
- * Credits response for a movie
+ * Credits response for a movie (/movie/{id}/credits).
+ * TMDB includes title in the response despite not documenting it.
  */
 export interface TMDBCreditsResponse {
-    id: number; // Movie ID
+    id: number;
     cast: TMDBCastMember[];
     crew: TMDBCrewMember[];
+    title?: string;
+}
+
+/**
+ * Aggregate credits for a TV series (/tv/{id}/aggregate_credits).
+ * Cast entries have roles[] instead of a single character,
+ * crew entries have jobs[] instead of a single job.
+ */
+export interface TMDBAggregateCreditsResponse {
+    id: number;
+    cast: TMDBAggregateCreditsRole[];
+    crew: TMDBAggregateCreditsJob[];
+    name?: string;
+}
+
+export interface TMDBAggregateCreditsRole {
+    id: number;
+    name: string;
+    profile_path: string | null;
+    gender: number;
+    known_for_department: string;
+    order: number;
+    total_episode_count: number;
+    roles: Array<{
+        credit_id: string;
+        character: string;
+        episode_count: number;
+    }>;
+}
+
+export interface TMDBAggregateCreditsJob {
+    id: number;
+    name: string;
+    profile_path: string | null;
+    gender: number;
+    known_for_department: string;
+    department: string;
+    total_episode_count: number;
+    jobs: Array<{
+        credit_id: string;
+        job: string;
+        episode_count: number;
+    }>;
 }
 
 /**

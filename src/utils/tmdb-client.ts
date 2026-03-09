@@ -12,7 +12,11 @@ import type {
     TMDBTVShow,
     TMDBTVShowDetails,
     TMDBPerson,
+    TMDBPersonDetails,
     TMDBSearchResponse,
+    TMDBCreditsResponse,
+    TMDBAggregateCreditsResponse,
+    TMDBTrendingItem,
     TMDBError,
 } from "../types/tmdb.js";
 import type {
@@ -62,8 +66,14 @@ export class TMDBClient {
         });
 
         if (!response.ok) {
-            const error: TMDBError = await response.json();
-            throw new Error(`TMDB API Error: ${error.status_message}`);
+            let message = `HTTP ${response.status}`;
+            try {
+                const error: TMDBError = await response.json();
+                message = error.status_message;
+            } catch {
+                // Non-JSON error body (e.g., 502 HTML page)
+            }
+            throw new Error(`TMDB API Error: ${message}`);
         }
 
         return response.json();
@@ -120,8 +130,8 @@ export class TMDBClient {
         mediaType: "all" | "movie" | "tv" | "person",
         timeWindow: "day" | "week",
         page: number = 1
-    ): Promise<TMDBSearchResponse<any>> {
-        return this.get<TMDBSearchResponse<any>>(`/trending/${mediaType}/${timeWindow}`, {
+    ): Promise<TMDBSearchResponse<TMDBTrendingItem>> {
+        return this.get<TMDBSearchResponse<TMDBTrendingItem>>(`/trending/${mediaType}/${timeWindow}`, {
             page: String(page),
         });
     }
@@ -129,26 +139,26 @@ export class TMDBClient {
     /**
      * Get person details by ID
      */
-    async getPersonDetails(personId: number, appendToResponse?: string[]): Promise<any> {
+    async getPersonDetails(personId: number, appendToResponse?: string[]): Promise<TMDBPersonDetails> {
         const params: Record<string, string> = {};
         if (appendToResponse?.length) {
             params.append_to_response = appendToResponse.join(",");
         }
-        return this.get<any>(`/person/${personId}`, params);
+        return this.get<TMDBPersonDetails>(`/person/${personId}`, params);
     }
 
     /**
      * Get full credits for a movie (cast + crew, no truncation)
      */
-    async getMovieCredits(movieId: number): Promise<any> {
-        return this.get<any>(`/movie/${movieId}/credits`);
+    async getMovieCredits(movieId: number): Promise<TMDBCreditsResponse> {
+        return this.get<TMDBCreditsResponse>(`/movie/${movieId}/credits`);
     }
 
     /**
      * Get aggregate credits for a TV series (all seasons combined)
      */
-    async getTVAggregateCredits(tvId: number): Promise<any> {
-        return this.get<any>(`/tv/${tvId}/aggregate_credits`);
+    async getTVAggregateCredits(tvId: number): Promise<TMDBAggregateCreditsResponse> {
+        return this.get<TMDBAggregateCreditsResponse>(`/tv/${tvId}/aggregate_credits`);
     }
 
     /**

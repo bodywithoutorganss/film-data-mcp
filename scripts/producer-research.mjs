@@ -1,5 +1,5 @@
 // ABOUTME: GTM research script for BreakFall documentary.
-// ABOUTME: Exercises all 20 MCP tools against live APIs to produce real producer intelligence.
+// ABOUTME: Exercises 12 of 23 MCP tools against live APIs to produce real producer intelligence.
 
 import { config } from "dotenv";
 config();
@@ -481,7 +481,7 @@ async function phase9_trending() {
 async function main() {
   console.log("╔══════════════════════════════════════════════════════════════════════╗");
   console.log("║           BREAKFALL GTM RESEARCH — film-data-mcp v0.10.0           ║");
-  console.log("║     Exercising all 20 tools against live TMDB + Wikidata APIs       ║");
+  console.log("║     Exercising 12 tools against live TMDB + Wikidata APIs            ║");
   console.log("╚══════════════════════════════════════════════════════════════════════╝");
 
   const t0 = Date.now();

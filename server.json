@@ -6,13 +6,13 @@
     "url": "https://github.com/bodywithoutorganss/film-data-mcp",
     "source": "github"
   },
-  "version": "0.4.0",
+  "version": "0.13.0",
   "packages": [
     {
       "registryType": "npm",
       "registryBaseUrl": "https://registry.npmjs.org",
       "identifier": "film-data-mcp",
-      "version": "0.4.0",
+      "version": "0.13.0",
       "transport": {
         "type": "stdio"
       },
@@ -23,6 +23,13 @@
           "format": "string",
           "isSecret": true,
           "name": "TMDB_ACCESS_TOKEN"
+        },
+        {
+          "description": "OMDb API key for domestic box office data (optional, get free at https://www.omdbapi.com/apikey.aspx)",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": true,
+          "name": "OMDB_API_KEY"
         }
       ]
     }
