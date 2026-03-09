@@ -117,10 +117,13 @@ Film research is scattered across TMDB, IMDb, Wikipedia, JustWatch, and festival
 **Criteria:** Research and design a structured data layer for documentary impact campaigns. Categories to model (requires careful design iteration): mission/theory of change, KPIs (screenings, policy meetings, media mentions, audience reach, legislative action), campaign timeline phases (pre-release grassroots, festival window, theatrical/streaming, long-tail educational), partners (NGOs, advocacy orgs, educational institutions), personnel (impact producers, outreach coordinators), case studies (measurable outcomes from comparable docs — e.g., Blackfish → SeaWorld policy, An Inconvenient Truth → climate legislation), political context (intersecting legislation, public debate, cultural moment), impact-specific funding (Ford Foundation, Catapult, Perspective Fund — distinct from production funding), community screening/educational distribution strategy, and measurement methodology (pre/post surveys, policy tracking, media analysis). Open architectural question: may be an extension of film-data-mcp or a separate MCP that composes with it — decide during design phase. Phase 1 is MCP tools for retrieving/querying impact campaign data; Phase 2 (likely M17 skills layer) is tools for *building* campaigns.
 **Status:** Design needed.
 
-### M19: Fellowship Registry Assessment
-**Criteria:** Evaluate additional fellowships for Wikidata viability and add to the awards registry, following the M13 pattern (SPARQL feasibility → QID verification → implementation → integration tests). Candidates: MacArthur Fellowship, Rockefeller Foundation, United States Artists Fellowship, Creative Capital. Each fellowship either added to the registry with verified QIDs or documented as non-viable with evidence.
-**Status:** Backlog.
-- Prior art: M13 feasibility study (`docs/plans/2026-03-07-m13-feasibility-study.md`), Guggenheim qualifier pattern in `awards-registry.ts`
+### M19: Fellowship & Labs Research
+**Criteria:** Comprehensive landscape survey of documentary film fellowships, labs, development programs, funding sources, and doc-specific awards ceremonies. Three dimensions: wide scope inventory, current operational state, and data harvesting feasibility. 80+ programs researched across 4 categories (US labs, foundation grants, international programs, doc-specific awards).
+**Status:** Complete — research delivered. Key findings: CPB dissolved Jan 2026 (ITVS, ethnic media funders severely impacted); NEH CC0 and NEA Excel export are gold-standard structured data sources; Ford Foundation has Elasticsearch-backed grants DB; zero programs offer APIs; doc-specific awards ceremonies lack Wikidata editor communities (confirms M13). Implementation decomposed into M21-M25.
+- Research: `docs/plans/2026-03-08-m19-fellowship-labs-research.md`
+- Prior art: M13 feasibility study (`docs/plans/2026-03-07-m13-feasibility-study.md`)
+- Linear: BOD-215 (Done)
+- Artifacts feed into: M21 (BOD-217), M22 (BOD-218), M23 (BOD-219), M24 (BOD-220), M25 (BOD-221)
 
 ### M20: Trade Press Feasibility Study
 **Criteria:** Research programmatic access to film deal intelligence — distribution deals, sales agent agreements, MG amounts, territory sales, festival market acquisitions. Evaluate Cinando, Film Catalogue, trade press (Deadline, Variety, Screen Daily, The Wrap), The Numbers/OpusData, and festival market reports. Deliverable: feasibility report documenting each source's viability, access model, cost, coverage, and legal boundaries. Recommendation on architecture (standalone MCP, extension, or manual curation layer).
@@ -129,9 +132,40 @@ Film research is scattered across TMDB, IMDb, Wikipedia, JustWatch, and festival
 - Raw research: `.firecrawl/m20-trade-press/raw-research/` (11 files)
 - Context: M12 design doc Layer 2 scope (`docs/plans/2026-03-08-m12-box-office-design.md`)
 
+### M21: Awards Registry Expansion II
+**Criteria:** Add doc-specific ceremonies and fellowships to the awards registry via Wikidata SPARQL verification. Follows M13 pattern. Ceremony candidates: Critics' Choice Documentary Awards (Q98079026), News & Documentary Emmy Awards (Q11247971 — NATAS, separate from Television Academy), NBR Best Doc (Q1169140), duPont-Columbia (Q4722910), Grierson Awards (Q5608702). Fellowship candidates: MacArthur, Creative Capital, USA Fellowship. Each assessed as Viable/Marginal/Not Viable; viable entries added with integration tests.
+**Status:** Backlog.
+- Research: `docs/plans/2026-03-08-m19-fellowship-labs-research.md` §Part 5, §Part 9
+- Prior art: M13 feasibility study, Guggenheim qualifier pattern
+- Linear: BOD-217. GitHub: bodywithoutorganss/film-data-mcp milestone 1 (#1-#3)
+
+### M22: Urgent Data Archival
+**Criteria:** Archive at-risk CPB-dependent data sources before potential shutdown. Targets: ITVS projects page (1,400+ funded films), Black Public Media funded works catalog, CAAM program data, LPB, PIC, Vision Maker Media, CPB.org. Store locally as JSON + submit to Wayback Machine.
+**Status:** Backlog. Priority: Urgent.
+- Research: `docs/plans/2026-03-08-m19-fellowship-labs-research.md` §Part 3
+- Linear: BOD-218 (Urgent). GitHub: bodywithoutorganss/film-data-mcp milestone 2 (#4-#6)
+
+### M23: Federal & Foundation Data Import
+**Criteria:** Import structured data from highest-value, lowest-friction sources. Tier 1: NEH CC0 database (1966-present), NEA Excel export (1998-present), Ford Foundation Elasticsearch (2006-present), USASpending.gov API. Tier 2: MacArthur Fellows DB, Creative Capital Index, ProPublica 990s. Requires data storage architecture decision (where does imported data live?). Blocked by M17 plugin architecture for skills integration.
+**Status:** Backlog.
+- Research: `docs/plans/2026-03-08-m19-fellowship-labs-research.md` §Part 8 Tier 1
+- Linear: BOD-219 (blocked by BOD-190/M17). GitHub: bodywithoutorganss/film-data-mcp milestone 3 (#7-#11)
+
+### M24: Program & Lab Data Harvest
+**Criteria:** Scrape structured data from documentary lab and market program archives. US: Film Independent Talent Guide (1,000+ alumni), Gotham Project Market, Good Pitch DB. International: IDFA Bertha Fund + Forum (600+ films, 30 years), CPH:FORUM (500+ projects), DOKweb aggregator, Berlinale WCF (350+), DFI Grants (600+). Blog post scraper pattern for annual cohort announcements (Sundance, Firelight, Chicken & Egg, Catapult, LEF). Blocked by M17 + M23 data storage decision.
+**Status:** Backlog.
+- Research: `docs/plans/2026-03-08-m19-fellowship-labs-research.md` §Part 6, §Part 8 Tiers 2-3
+- Linear: BOD-220 (blocked by BOD-219, BOD-190). GitHub: bodywithoutorganss/film-data-mcp milestone 4 (#12-#15)
+
+### M25: Doc Awards Web Scraping
+**Criteria:** Harvest winner/nominee data from doc-specific awards ceremonies via Wikipedia tables and official websites. Fallback path for ceremonies where M21 Wikidata SPARQL proves insufficient. Primary: Cinema Eye Honors (~17 categories, 19 years), IDA Documentary Awards (~15 categories, 41 years). Secondary: News & Doc Emmys, Critics' Choice Doc, NBR (if not covered by M21). Festival: Sheffield, Full Frame, DOC NYC, Thessaloniki, RIDM, Ji.hlava, Grierson, duPont-Columbia. Conditional on M21 results.
+**Status:** Backlog.
+- Research: `docs/plans/2026-03-08-m19-fellowship-labs-research.md` §Part 5
+- Linear: BOD-221 (blocked by BOD-217/M21). GitHub: bodywithoutorganss/film-data-mcp milestone 5 (#16-#18)
+
 ## Current Status
 
-v0.13.0. 23 tools total (18 TMDB + 4 awards + 1 representation), 24 ceremonies, 101 award categories. M16 (`get_thanks_credits`) and M20 (trade press feasibility study) complete. M17 (combined plugin architecture + producer workflows), M18 (impact campaigns), and M19 (fellowship registry) planned. Former M19 (Philanthropic & Financial Intelligence) migrated to `financial-mcp-tools` repo (BOD-201). Known data gaps tracked in BOD-206.
+v0.13.0. 23 tools total (18 TMDB + 4 awards + 1 representation), 24 ceremonies, 101 award categories. M19 (fellowship & labs research) complete — comprehensive landscape survey of 80+ programs, decomposed into 5 implementation milestones (M21-M25). M22 (urgent data archival) is time-sensitive due to CPB dissolution. M17 (plugin architecture) is the critical-path blocker for M23-M24. Former M19 (Philanthropic & Financial Intelligence) migrated to `financial-mcp-tools` repo (BOD-201). Known data gaps tracked in BOD-206.
 
 ### Known Issues
 - **BOD-206:** Consolidated data gaps tracker — Wikidata awards/fellowships/crew/representation, TMDB thanks/financials, and trade press deal intelligence. All structural gaps, not code bugs.
@@ -183,8 +217,14 @@ Cross-cutting view of every data type evaluated across all milestones and resear
 | Film awards + crew cross-referencing | Live | `get_film_awards` (M3, M7) | P1411 is primary doc value channel |
 | Award history by category | Live | `get_award_history` (M3) | |
 | Award search (registry lookup) | Live | `search_awards` (M3) | 24 ceremonies, 101 categories |
-| Fellowships (MacArthur, Rockefeller, USA, Creative Capital) | Planned | M19 | Wikidata viability TBD |
-| Critics' Choice Doc, Cinema Eye, IDA | Rejected | M13 | No Wikidata editor communities |
+| Fellowships (MacArthur, Creative Capital, USA Fellows) | Evaluate | M21 | SPARQL feasibility TBD. Rockefeller has no film program. |
+| Critics' Choice Documentary Awards | Evaluate | M21 | Q98079026 — strongest doc Wikidata presence. Edition QIDs exist. 18 categories |
+| News & Documentary Emmy Awards | Evaluate | M21 | Q11247971 — NATAS (separate from TV Academy). ~15 doc categories |
+| NBR Best Documentary | Evaluate | M21 | Q1169140 — P166 confirmed. 1940-present |
+| duPont-Columbia Awards | Evaluate | M21 | Q4722910 — doc-eligible since 2012 |
+| Grierson Awards (UK) | Evaluate | M21 | Q5608702 — 16 categories, since 1972 |
+| Cinema Eye Honors | Planned | M25 | Q5120729. ~17 categories. Web scraping path (Wikipedia + official site) |
+| IDA Documentary Awards | Planned | M25 | Q96206663. ~15 categories, 41 years. Web scraping path |
 | Sundance Fund/Labs, Film Independent Labs, ITVS, Catapult, Ford/JustFilms | Rejected | M13 | Not on Wikidata (labs/grants, not ceremonies) |
 | Gotham Best Documentary | Live (empty) | BOD-206 | QID in registry but 0 P166 claims in Wikidata |
 | NEA Fellowship | Rejected | M13 | 246 P166 claims but only ~13 film-relevant |
@@ -272,12 +312,71 @@ Cross-cutting view of every data type evaluated across all milestones and resear
 | The Film Collaborative (market analysis) | Rejected | M20 | Qualitative blog analysis only, not structured data |
 | Desktop Documentaries (distributor directory) | Rejected | M20 | 250+ distributors, paid course. Static, not data |
 
+### Fellowships & Grants — Multiple Sources (M19 Research)
+
+| Data | Status | Source / Milestone | Notes |
+|------|--------|-------------------|-------|
+| NEH Media Projects grants | Planned | M23 | **CC0 public domain.** Structured DB, 1966-present, 500+ films. Gold standard. |
+| NEA Media Arts grants | Planned | M23 | **Excel export.** 1998-present. Under threat of elimination. |
+| Ford Foundation / JustFilms grants | Planned | M23 | Elasticsearch backend. 2006-present. $4.2M/year |
+| USASpending.gov federal arts grants | Planned | M23 | REST API + bulk download. All federal arts spending |
+| MacArthur Fellows (film-relevant) | Planned | M23 | Searchable DB. 1,175+ fellows since 1981. ~1-3 filmmakers/class |
+| Creative Capital awardees | Planned | M23 | HTML index. 1,000+ since 1999. Film/video category |
+| Guggenheim Fellows (Film-Video) | Live | M13 | Already in registry via Wikidata P166 + qualifier SPARQL |
+| USA Fellowship | Evaluate | M21 | Wikipedia list. ~50/year across 10 disciplines |
+| Catapult Film Fund grantees | Planned | M24 | Press releases. ~18 grants/year, 1% acceptance rate |
+| Chicken & Egg Films grantees | Planned | M24 | Press releases. 500+ filmmakers since 2005 |
+| Firelight Media fellows | Planned | M24 | Medium blog posts. ~150 filmmakers over 15 years |
+| Sundance Documentary Fund grantees | Planned | M24 | Blog posts. 30-40 projects/year since ~2002 |
+| Perspective Fund | Manual | M19 | Invitation-only, no public data. ProPublica 990s only |
+| ProPublica 990 tax data | Planned | M23 | Universal backup for all foundation grantees |
+
+### Documentary Programs & Labs — Web Scraping (M19 Research)
+
+| Data | Status | Source / Milestone | Notes |
+|------|--------|-------------------|-------|
+| Film Independent Talent Guide | Planned | M24 | Searchable web app. 1,000+ alumni across all FI programs. Highest-value US source |
+| Gotham Project Market slates | Planned | M24 | Structured HTML per year. 90-142 projects/year |
+| Good Pitch project database | Planned | M24 | Searchable DB. 134+ films from 60 countries |
+| ITVS funded projects | Planned | M22, M24 | 1,400+ films. **Archive urgently** (CPB dissolution) |
+| IDFA Bertha Fund collection | Planned | M24 | 600+ funded films since 1998 |
+| IDFA Forum catalogues | Planned | M24 | 30+ years of per-year HTML catalogues |
+| CPH:FORUM project archive | Planned | M24 | 500+ projects since ~2011 |
+| DOKweb aggregator | Planned | M24 | Richest European source. Aggregates Ex Oriente, East Doc Platform, etc. |
+| Berlinale World Cinema Fund | Planned | M24 | 350+ funded films since 2004 |
+| Doha Film Institute grants | Planned | M24 | 600+ funded films since 2010 |
+| Black Public Media catalog | Planned | M22 | **Archive urgently.** ~50% budget lost (CPB) |
+| CAAM program data | Planned | M22 | **Archive urgently.** Main Doc Fund paused |
+| Sundance Catalyst | Manual | M19 | Intentionally private — slate confidential by design |
+| Tribeca Film Institute | Rejected | M19 | Defunct (closed 2021). Wayback Machine only |
+
+### Doc-Specific Awards Ceremonies — Web Scraping (M19 Research)
+
+| Data | Status | Source / Milestone | Notes |
+|------|--------|-------------------|-------|
+| Cinema Eye Honors | Planned | M25 | ~17 categories, 19 years. Wikipedia + official site |
+| IDA Documentary Awards | Planned | M25 | ~15 categories, 41 years. documentary.org predictable URLs |
+| News & Documentary Emmys | Evaluate | M21/M25 | Wikipedia tables, 40+ years. SPARQL first, web scraping fallback |
+| Critics' Choice Doc Awards | Evaluate | M21/M25 | Wikipedia tables, 10 years. SPARQL first, web scraping fallback |
+| NBR Best Documentary | Evaluate | M21/M25 | Wikipedia complete 1940-present. SPARQL first |
+| Sheffield DocFest awards | Planned | M25 | ~7 awards, 30 years |
+| Full Frame awards | Planned | M25 | 9 awards ($45K total), 27 years |
+| DOC NYC awards | Planned | M25 | ~12 awards, 15 years |
+| Thessaloniki Doc Fest awards | Planned | M25 | ~15 awards (EUR prizes), Oscar-qualifying |
+| RIDM awards | Planned | M25 | ~12 awards, 27 years |
+| Grierson Awards (UK) | Evaluate | M21/M25 | ~16 categories, since 1972. SPARQL first |
+| duPont-Columbia Awards | Evaluate | M21/M25 | "Broadcast Pulitzer," since 1942. SPARQL first |
+| Ji.hlava IDFF | Planned | M25 | 7+ competition sections, 28 years |
+| True/False | Deferred | M19 | Only 1 award (True Vision). Low value |
+| AFI DOCS | Rejected | M19 | Defunct (merged into AFI Fest 2022) |
+
 ### Infrastructure & Architecture
 
 | Capability | Status | Milestone | Notes |
 |------------|--------|-----------|-------|
 | Plugin architecture (Claude Code plugin) | Planned | M17 | Restructure for composability with other MCPs |
 | Producer workflow skills | Planned | M17 | Comp sheets, career mapping, distribution analysis |
+| Data storage architecture for imports | Planned | M23 | Where does imported grant/fellowship data live? Blocks M23-M24 |
 | Neo4j + Obsidian persistence layer | Future | BOD-206 | Own the data strategy for structural gaps |
 
 ### Legal Considerations
@@ -287,6 +386,9 @@ Cross-cutting view of every data type evaluated across all milestones and resear
 | PMC properties (Deadline, Variety, IndieWire) | Medium-High for scraping | PMC v. Google lawsuit (Sep 2025). RSS = LOW risk, scraping = HIGH risk |
 | TollBit | Low | Potential legitimate paid API for PMC content |
 | Cinando | High for automation | EU Database Directive, ToS prohibits robots |
+| NEH/NEA databases | None | Federal public domain / CC0. Free to use |
+| Ford Foundation grants DB | Low | Major foundation, transparency commitment. Data intentionally public |
+| Film Independent, IDFA, etc. | Low | Standard website ToS. No explicit anti-scraping measures observed |
 
 ## Time Tracking
 
@@ -318,13 +420,19 @@ Actuals measured from commit timestamps via `scripts/cc-time.sh`. Gaps > 45 minu
 | M20 Wikipedia research | — | 0.2 | Complete |
 | M16: Special Thanks Credits | 1.25 | 1.3 | Complete |
 | M20: Trade Press Study | 1.5 | 1.1* | Complete |
-| **Completed total** | — | **15.2** | |
+| M19: Fellowship & Labs Research | 1.5 | 1.0* | Complete |
+| **Completed total** | — | **16.2** | |
 | M17: Plugin & Workflows | 5.5 | — | Design needed |
 | M18: Impact Campaign Data | 4.0 | — | Design needed |
-| M19: Fellowship Registry | 1.5 | — | Backlog |
-| **Remaining total** | **11.0** | — | |
+| M21: Awards Registry Exp. II | 2.0 | — | Backlog |
+| M22: Urgent Data Archival | 1.0 | — | Backlog (Urgent) |
+| M23: Federal & Foundation Import | 3.0 | — | Backlog |
+| M24: Program & Lab Harvest | 4.0 | — | Backlog |
+| M25: Doc Awards Web Scraping | 2.0 | — | Backlog |
+| **Remaining total** | **21.5** | — | |
 
 \* M20 actual: `cc-time.sh` reports 0.1h (research-heavy session had no intermediate commits during 60min agent dispatch + synthesis phase). Manual estimate: ~1.1h.
+\* M19 actual: Research-heavy session with 4 parallel agents. Manual estimate: ~1.0h (includes agent dispatch, synthesis, issue creation).
 
 ## Key Decisions
 
