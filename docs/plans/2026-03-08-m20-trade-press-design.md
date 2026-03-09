@@ -32,7 +32,7 @@ Every source researched, with honest viability ratings and implementation status
 
 | Source | Data | Access | Cost | Doc Coverage | Status |
 |--------|------|--------|------|-------------|--------|
-| **OpusData** | Box office, budgets, 14M+ facts | Web + API | $19/mo (web), API enterprise | Fair | **Evaluate** (supplements M12 `get_financials`) |
+| **The Numbers / OpusData** | Box office, budgets, 14M+ facts | Web + API | $19/mo (web), API enterprise | Fair | **Evaluate** (supplements M12 `get_financials`) |
 | **Cinando** | Sales agents, territory availability, 61K-126K films | Login-gated web, XLS export | €149/yr | Market-biased (commercial docs) | **Evaluate** (manual use, no API) |
 | **Screen Daily** | Best territory-level deal data: MGs, pre-sales, territory splits | Hard paywall | Unknown (enterprise, "contact sales") | Strong (international docs) | **Evaluate** (subscription for manual research) |
 
@@ -40,7 +40,7 @@ Every source researched, with honest viability ratings and implementation status
 
 | Source | Data | Access | Cost | Doc Coverage | Status |
 |--------|------|--------|------|-------------|--------|
-| **Vitrina AI** | 1.6M titles, 140K companies, deal flow, territory data | SaaS + API | Enterprise (likely $10K+/yr). 200 free credits. | Good | **Evaluate free tier** |
+| **Vitrina AI** | 1.6M titles, 140K companies, 3M+ exec profiles, deal flow, territory data | SaaS + API | Enterprise (likely $10K+/yr). 200 free credits. | Good | **Evaluate free tier** |
 | **Luminate Film & TV** (fka Variety Insight) | 6M+ programs, org charts, contacts | SaaS + API | Tiered subscription (contact sales) | Fair | **Defer** |
 | **FilmTake** | 1,300 territory MG benchmarks ($500K-$60M budgets) | Subscription | Unknown | Low (narrative focus, $500K floor) | **Defer** |
 | **Screen Intelligence** (GlobalData) | Projects, deals, credits | Enterprise subscription | Unknown (likely high) | Fair | **Defer** |
@@ -49,7 +49,7 @@ Every source researched, with honest viability ratings and implementation status
 
 | Source | Why | Notes |
 |--------|-----|-------|
-| **Cinando** (programmatic) | No API, login-gated, EU Database Directive, ToS prohibits automation | Manual use at €149/yr is fine |
+| **Cinando** (programmatic) | No API, login-gated, EU Database Directive, ToS prohibits automation | Manual use at €149/yr is fine. Academic Figshare dataset exists (77K films, anonymized, one-off research partnership 2021 — not repeatable). GitHub: `andreskarjus/cinandofestivals` |
 | **IFTA Film Catalogue** | No API, ToS explicitly prohibits robots/automation | |
 | **Festival Scope Pro** | Screening platform, not deal data. No API. €70/yr. | |
 | **Reelport** | European market focus, no API, custom pricing | |
@@ -78,7 +78,7 @@ Every source researched, with honest viability ratings and implementation status
 - **Doc coverage:** Regular. Criterion Channel, CAT&Docs, Documentary+ acquisitions covered.
 
 ### Variety (PMC)
-- **RSS:** `variety.com/feed/`, `variety.com/v/film/feed`, `variety.com/c/global/feed`
+- **RSS:** `variety.com/feed/`, `variety.com/v/film/feed`, `variety.com/c/global/feed`, `variety.com/e/contenders/feed` (awards)
 - **URL pattern:** `variety.com/{YEAR}/{category}/{type}/{slug}-{id}/`
 - **Paywall:** Free since 2013 (VIP+ is separate premium product)
 - **Deal quality:** High. "Dealmakers" annual feature. `markets-festivals` URL subcategory.
@@ -122,6 +122,7 @@ Every source researched, with honest viability ratings and implementation status
 - Affiliate revenue dropped >33% since end of 2024
 - Google seeking dismissal (Jan 2026), case ongoing
 - PMC has TollBit deal for monetizing/controlling bot access
+- **TollBit as legitimate access path:** PMC's TollBit partnership may offer a paid API for accessing PMC content legally — worth investigating as an alternative to scraping. If TollBit provides article text access, it would resolve the legal risk for Deadline, Variety, and IndieWire content extraction.
 
 ### Risk Assessment by Access Method
 
@@ -157,6 +158,18 @@ Every source researched, with honest viability ratings and implementation status
 | Desktop Documentaries | 250+ distributor directory (paid course) | Static directory, not deal data |
 
 **Best doc deal sources are the same trade press publications.** IndieWire and Screen Daily have the strongest doc-specific coverage.
+
+### Market Context (Deal Value Benchmarks)
+
+For calibration on what deal data looks like when reported:
+- **Sundance 2025:** ~19 titles secured US distribution (down from 30 in 2024). Together/Neon/$17M, Train Dreams/Netflix/$15M+, Sorry Baby/A24/$8M.
+- **Cannes 2025:** Die My Love/MUBI/$24M (largest MUBI deal ever). Multi-territory deals common.
+- **TIFF:** Historically an "unofficial" acquisition venue. C$23M formal market launching in 2026.
+- **ITVS/POV:** Mid-five-figures for POV broadcast sale, low-six-figures for Netflix SVOD (one published example).
+
+### Not Profiled (Scoping Decision)
+
+**Hollywood Reporter** (PMC) — major trade publication not separately evaluated. Same PMC legal constraints as Deadline/Variety/IndieWire. Covers deals but with less focus on indie/doc acquisitions than Deadline or IndieWire. Could be added as an additional RSS source if needed.
 
 ---
 
@@ -294,6 +307,54 @@ const DEAL_KEYWORDS = [
 ];
 ```
 
+### Headline Parsing (Fast-Path Pre-Filter)
+
+Trade press headlines follow predictable patterns. Regex can extract buyer + title from ~60-70% of deal headlines without LLM calls:
+
+```typescript
+const HEADLINE_PATTERNS = [
+  // "'Film' Acquired By Buyer"
+  /'(.+?)'\s+(?:Acquired|Bought|Picked Up|Nabbed)\s+By\s+(.+?)(?:\s+(?:For|In|After|Following)|\s*$)/,
+  // "Buyer Buys 'Film'"
+  /(.+?)\s+(?:Buys|Acquires|Picks Up|Nabs|Lands|Secures)\s+'(.+?)'/,
+  // "'Film' Lands At Buyer"
+  /'(.+?)'\s+(?:Lands|Goes)\s+(?:At|To)\s+(.+?)(?:\s+(?:For|In|After)|\s*$)/,
+];
+```
+
+### Price Signal Regex (Supplementary)
+
+Fast pre-filter to detect articles that mention deal values before running full LLM extraction:
+
+```typescript
+const PRICE_PATTERNS = [
+  /(?:low|mid|high)\s+(?:five|six|seven|eight)[- ]figure/,
+  /\$[\d.,]+\s*(?:million|M|billion|B)/,
+  /(?:seven|six|five)[- ]figure\s+(?:deal|sum|price|range)/,
+  /(?:undisclosed|reported|estimated)\s+(?:sum|amount|price|terms)/,
+  /(?:north of|south of|around|approximately|roughly)\s+\$[\d.,]+\s*(?:million|M)?/,
+];
+```
+
+### JSON-LD / Structured Data in Articles
+
+Trade press sites emit standard `schema.org/NewsArticle` JSON-LD (headline, datePublished, author, publisher) but nothing deal-specific. No custom schemas for entertainment deals. The headline field in JSON-LD is the most actionable structured element — combined with headline regex above, this provides a zero-scraping fast path for ~60-70% of buyer/title extraction. Full article text + LLM extraction is still required for complete deal data (territories, price, negotiators).
+
+### LLM Extraction Approach
+
+LLM structured extraction is the clear winner over traditional NLP for this domain:
+- Deal articles are highly templated (Headline → Lead → Context → Details → Negotiators → Price)
+- Claude `tool_use` with a Zod schema fits naturally into this codebase (same pattern as `buildToolDef()`)
+- Cost: ~$0.01-0.05 per article with Haiku/Sonnet
+- Traditional NLP (spaCy NER) would require ~1,000+ annotated deal articles to train — overkill when LLMs handle templated prose out of the box
+
+**Extraction libraries:** Instructor (Python, Pydantic-based), LangExtract (Google, open source), LlamaExtract (LlamaIndex). For this codebase, Claude native `tool_use` with Zod→JSON Schema is the natural fit.
+
+### URL Discovery Supplements
+
+- **Google `site:` operator** — still works for discovering deal article URLs across publications (e.g., `site:deadline.com "acquired" "documentary" 2026`). Returns live URLs. Useful as a supplementary discovery method alongside CDX API. Zero cost, low legal risk (URL discovery only).
+- **Seventh Row** — publishes updating acquisition title lists for TIFF. Minor supplementary source.
+
 ### RSS Feed URLs (Confirmed)
 
 | Publication | Feed URL | Scope |
@@ -303,6 +364,7 @@ const DEAL_KEYWORDS = [
 | Deadline (business) | `https://deadline.com/v/business/feed` | Business/deals |
 | Variety (film) | `https://variety.com/v/film/feed` | All film news |
 | Variety (global) | `https://variety.com/c/global/feed` | International |
+| Variety (awards) | `https://variety.com/e/contenders/feed` | Awards coverage |
 | IndieWire (all) | `https://www.indiewire.com/feed/rss/` | Everything |
 | IndieWire (film) | `https://www.indiewire.com/c/film/feed` | Film category |
 | The Wrap (deals) | `https://www.thewrap.com/industry-news/deals-ma/feed/` | Deals & M&A (inferred) |
@@ -359,6 +421,7 @@ Key params:
   showResumeKey=true / resumeKey=<key> — pagination
 
 Content access: https://web.archive.org/web/<TIMESTAMP>/<URL>
+Practical throughput: ~3,600 URLs/hour (Python wayback client defaults to 0.8 req/sec)
 ```
 
 ---
@@ -389,7 +452,7 @@ Content access: https://web.archive.org/web/<TIMESTAMP>/<URL>
 |--------|------|-----------|
 | Screen Daily subscription | Unknown (enterprise) | Territory-level MGs, pre-sales |
 | Cinando manual access | €149/yr | Sales agent lookup, territory availability |
-| OpusData web access | $19/mo | Supplements `get_financials` |
+| The Numbers / OpusData web access | $19/mo | Supplements `get_financials` |
 | Vitrina AI free tier | $0 (200 credits) | Explore deal flow tracking capability |
 
 ---
@@ -406,7 +469,7 @@ Extract structured deal data from IndieWire's festival roundup articles (2021-20
 - JSON output: structured deal records for ~6 years of Sundance + fall festivals
 - Estimated yield: 150-300+ deals across 8+ roundup articles
 
-**Architecture question:** MCP tool, standalone script, or Claude Code skill? Likely a skill in M17.
+**Architecture:** Standalone script as Phase 1 prototype, graduates to Claude Code skill in M17 (see Architecture Recommendation above).
 
 ### Phase 2: RSS Deal Monitoring Pipeline
 
@@ -451,17 +514,19 @@ Assess whether paid sources add enough value:
 
 ---
 
+## Architecture Recommendation
+
+**Claude Code skills (M17), not MCP tools or a separate MCP server.** Deal extraction is a multi-step workflow (RSS monitoring → content fetch → LLM extraction → storage) that composes existing tools rather than exposing a single-query endpoint. The film-data-mcp tools remain the data layer; skills compose them into research workflows. Standalone scripts serve as prototypes (Phase 1) that graduate into skills when the M17 plugin architecture is ready.
+
 ## Open Questions
 
-1. **Architecture:** Should deal extraction be MCP tools (this repo), Claude Code skills (M17), or standalone scripts? Likely skills — deal extraction is a workflow, not a single-query tool.
+1. **Storage:** JSON files → Neo4j is the planned path. When does Neo4j become necessary? Probably Phase 2 (ongoing monitoring needs a queryable store).
 
-2. **Storage:** JSON files → Neo4j is the planned path. When does Neo4j become necessary? Probably Phase 2 (ongoing monitoring needs a queryable store).
+2. **PMC legal risk:** RSS consumption is defensible, but should we avoid storing/redistributing extracted deal data from PMC properties? The data itself (deal facts) isn't copyrightable, but the expression is.
 
-3. **PMC legal risk:** RSS consumption is defensible, but should we avoid storing/redistributing extracted deal data from PMC properties? The data itself (deal facts) isn't copyrightable, but the expression is.
+3. **Screen Daily:** Is the subscription worth it for manual research even without programmatic access? It has the best territory-level data by far.
 
-4. **Screen Daily:** Is the subscription worth it for manual research even without programmatic access? It has the best territory-level data by far.
-
-5. **Deduplication:** Multiple outlets report the same deal. How do we detect and merge duplicate deal records? TMDB movie ID + buyer is probably the natural key.
+4. **Deduplication:** Multiple outlets report the same deal. How do we detect and merge duplicate deal records? TMDB movie ID + buyer is probably the natural key.
 
 ---
 
