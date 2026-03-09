@@ -163,9 +163,15 @@ Film research is scattered across TMDB, IMDb, Wikipedia, JustWatch, and festival
 - Research: `docs/plans/2026-03-08-m19-fellowship-labs-research.md` §Part 5
 - Linear: BOD-221 (blocked by BOD-217/M21). GitHub: bodywithoutorganss/film-data-mcp milestone 5 (#16-#18)
 
+### Code Review Cleanup
+**Criteria:** Address remaining findings from comprehensive 2026-03-08 code review (6 agents, all 48 source+test files). Fixed in-session: git hygiene (.DS_Store, .serena/), TMDBClient `any` types (5 methods wired to proper types, 3 new aggregate credits types), TMDB error parsing hardening, integration test skipIf consistency (3 files), dispatch.test.ts relocation, server.json version bump, .env.example cleanup, stale ABOUTMEs, CLAUDE.md scripts section. Remaining: README/CONTRIBUTING rewrite, error propagation tests, test hygiene (global.fetch stubs, BOD-203 placement, comp-films warns), batch parallelization, schema description enrichment, ROADMAP traceability for orphaned docs.
+**Status:** Backlog (low priority — all critical + important code issues fixed, remaining items are documentation + test polish).
+- Findings: `docs/plans/2026-03-08-code-review-findings.md`
+- Linear: BOD-222. GitHub: bodywithoutorganss/film-data-mcp milestone 6 (#19-#23)
+
 ## Current Status
 
-v0.13.0. 23 tools total (18 TMDB + 4 awards + 1 representation), 24 ceremonies, 101 award categories. M19 (fellowship & labs research) complete — comprehensive landscape survey of 80+ programs, decomposed into 5 implementation milestones (M21-M25). M22 (urgent data archival) is time-sensitive due to CPB dissolution. M17 (plugin architecture) is the critical-path blocker for M23-M24. Former M19 (Philanthropic & Financial Intelligence) migrated to `financial-mcp-tools` repo (BOD-201). Known data gaps tracked in BOD-206.
+v0.13.0. 23 tools total (18 TMDB + 4 awards + 1 representation), 24 ceremonies, 101 award categories. Code review complete — all critical and important code issues fixed (type safety, error handling, test consistency, git hygiene). Remaining cleanup items (docs rewrite, test polish) tracked in BOD-222 / GitHub milestone 6. M19 (fellowship & labs research) complete — 80+ programs surveyed, decomposed into M21-M25. M22 (urgent data archival) is time-sensitive due to CPB dissolution. M17 (plugin architecture) is the critical-path blocker for M23-M24. Known data gaps tracked in BOD-206.
 
 ### Known Issues
 - **BOD-206:** Consolidated data gaps tracker — Wikidata awards/fellowships/crew/representation, TMDB thanks/financials, and trade press deal intelligence. All structural gaps, not code bugs.
@@ -421,7 +427,9 @@ Actuals measured from commit timestamps via `scripts/cc-time.sh`. Gaps > 45 minu
 | M16: Special Thanks Credits | 1.25 | 1.3 | Complete |
 | M20: Trade Press Study | 1.5 | 1.1* | Complete |
 | M19: Fellowship & Labs Research | 1.5 | 1.0* | Complete |
-| **Completed total** | — | **16.2** | |
+| Code Review (partial) | 1.5 | 1.0* | Partial (critical+important fixed) |
+| **Completed total** | — | **17.2** | |
+| Code Review Cleanup (remaining) | 1.5 | — | Backlog |
 | M17: Plugin & Workflows | 5.5 | — | Design needed |
 | M18: Impact Campaign Data | 4.0 | — | Design needed |
 | M21: Awards Registry Exp. II | 2.0 | — | Backlog |
@@ -429,7 +437,7 @@ Actuals measured from commit timestamps via `scripts/cc-time.sh`. Gaps > 45 minu
 | M23: Federal & Foundation Import | 3.0 | — | Backlog |
 | M24: Program & Lab Harvest | 4.0 | — | Backlog |
 | M25: Doc Awards Web Scraping | 2.0 | — | Backlog |
-| **Remaining total** | **21.5** | — | |
+| **Remaining total** | **23.0** | — | |
 
 \* M20 actual: `cc-time.sh` reports 0.1h (research-heavy session had no intermediate commits during 60min agent dispatch + synthesis phase). Manual estimate: ~1.1h.
 \* M19 actual: Research-heavy session with 4 parallel agents. Manual estimate: ~1.0h (includes agent dispatch, synthesis, issue creation).
